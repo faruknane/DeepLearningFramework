@@ -1,5 +1,5 @@
 # DeepLearningFramework
-Every expression is a term whose derivative can be calculated by the DeepLearningLibrary automatically. 
+Every expression is a term whose derivative can be calculated by the DeepLearningLibrary automatically. An example of XOR model is shown below.
 
 ### Hyperparameters
 Global, independent from model.
