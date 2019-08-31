@@ -56,3 +56,5 @@ for (int epoch = 0; epoch < 1000; epoch++)
 loss.DeleteResults();
 Console.WriteLine("Results: " + model.GetResult()[0] + ", " + model.GetResult()[1] + ", " + model.GetResult()[2] + ", " + model.GetResult()[3]);
 ```
+
+To support me: [My Patreon](https://www.patreon.com/afaruknane)
