@@ -42,8 +42,7 @@ namespace DeepLearningFramework.Data
 
         public override void DeleteResults()
         {
-            base.DeleteResults();
-            v1.DeleteResults();
+            Result = null;
         }
     }
 }

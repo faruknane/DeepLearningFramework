@@ -25,36 +25,39 @@ namespace Tests
         }
         public static void deneme()
         {
-
             Hyperparameters.LearningRate = 0.2f;
             Hyperparameters.Optimizer = new SGD();
 
-            Variable x = new Variable(2, 4)
-            {
-                Weights = new float[2, 4] 
-                {{ 1, 1, 0, 0},
-                 { 1, 0, 1, 0}},
-                Name = "x",
-                Trainable = false
-            };
+            //Inputs to the model
+            PlaceHolder x = new PlaceHolder(2);
+            PlaceHolder y = new PlaceHolder(1);
 
-            Variable y = new Variable(1, 4)
-            {
-                Weights = new float[1, 4]
-                {
-                    { 0,1,1,0}
-                },
-                Name = "y",
-                Trainable = false
-            };
-
+            //The model
             Term l1 = Layer(x, 2, true);
             Term model = Layer(l1, 1, true);
 
+            //The error function
             Term lossdiscrete = new Power(new Minus(model, y), 2);
             Term loss = new ShrinkByAdding(lossdiscrete, lossdiscrete.D1, lossdiscrete.D2);
-         
-            for (int epoch = 0; epoch < 3000; epoch++)
+
+
+            //Manually add values to Inputs
+            x.SetVariable(new Variable(2, 4)
+            {
+                Weights = new float[2, 4]
+                {{ 1, 1, 0, 0},
+                { 1, 0, 1, 0}},
+                Trainable = false
+            });
+
+            y.SetVariable(new Variable(1, 4)
+            {
+                Weights = new float[1, 4] { { 0, 1, 1, 0 } },
+                Trainable = false
+            });
+
+            //Train the model with the same Inputs
+            for (int epoch = 0; epoch < 1000; epoch++)
             {
                 loss.Minimize();
                 Console.WriteLine("loss: " + loss.GetResult()[0]);
@@ -110,8 +113,8 @@ namespace Tests
                             l[k, j] = d[i * 10 + j].Value[k];
                     }
 
-                    x.SetVariable(new Variable(256, 10) { Weights = f });
-                    y.SetVariable(new Variable(10, 10) { Weights = l });
+                    x.SetVariable(new Variable(256, 10) { Weights = f, Trainable = false });
+                    y.SetVariable(new Variable(10, 10) { Weights = l, Trainable = false });
                     loss.Minimize();
                     err += loss.GetResult().Array[0];
                 }
@@ -150,7 +153,7 @@ namespace Tests
             Stopwatch s = new Stopwatch();
             s.Start();
             LoadData();
-            deneme2();
+            deneme();
             s.Stop();
             Console.WriteLine(s.ElapsedMilliseconds);
             Console.WriteLine("Hello World!");
