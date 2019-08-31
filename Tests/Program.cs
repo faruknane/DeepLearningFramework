@@ -23,12 +23,13 @@ namespace Tests
             }
             return a;
         }
+
         public static void deneme()
         {
             Hyperparameters.LearningRate = 0.2f;
             Hyperparameters.Optimizer = new SGD();
 
-            //Inputs to the model
+            //Inputs of the model
             PlaceHolder x = new PlaceHolder(2);
             PlaceHolder y = new PlaceHolder(1);
 
@@ -62,6 +63,8 @@ namespace Tests
                 loss.Minimize();
                 Console.WriteLine("loss: " + loss.GetResult()[0]);
             }
+
+            //Print results
             loss.DeleteResults();
             Console.WriteLine("Results: " + model.GetResult()[0] + ", " + model.GetResult()[1] + ", " + model.GetResult()[2] + ", " + model.GetResult()[3]);
         }
