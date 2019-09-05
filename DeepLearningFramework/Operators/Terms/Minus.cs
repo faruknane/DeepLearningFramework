@@ -2,15 +2,15 @@
 using PerformanceWork.OptimizedNumerics;
 using System;
 
-namespace DeepLearningFramework.Operators
+namespace DeepLearningFramework.Operators.Terms
 {
-    public class Plus : Term
+    public class Minus : Term
     {
         Term v1, v2;
         public override Dimension D1 { get; internal set; }
         public override Dimension D2 { get; internal set; }
 
-        public Plus(Term v1, Term v2)
+        public Minus(Term v1, Term v2)
         {
             this.v1 = v1;
             this.v2 = v2;
@@ -25,14 +25,18 @@ namespace DeepLearningFramework.Operators
             if (!this.v1.D1.HardEquals(this.v2.D1) || !this.v1.D2.HardEquals(this.v2.D2))
                 throw new Exception("Terms to be sum should have the same dimensions!");
             v1.Derivate(s);
+
+            //when we go out, MMDerivative s should remain the same as it was.
+            s.Negative = !s.Negative;
             v2.Derivate(s);
+            s.Negative = !s.Negative;
         }
 
         internal override Matrix CalculateResult()
         {
             if (!this.v1.D1.HardEquals(this.v2.D1) || !this.v1.D2.HardEquals(this.v2.D2))
                 throw new Exception("Terms to be sum should have the same dimensions!");
-            return v1.GetResult() + v2.GetResult();
+            return v1.GetResult() - v2.GetResult();
         }
 
         public override void DeleteResults()

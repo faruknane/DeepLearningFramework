@@ -3,7 +3,7 @@ using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Diagnostics;
 
-namespace DeepLearningFramework.Operators
+namespace DeepLearningFramework.Operators.Terms
 {
     public class MatrixMultiply : Term
     {

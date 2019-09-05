@@ -74,40 +74,40 @@ namespace DeepLearningFramework.Data
             Vectorization.ElementWiseMultiplyAVX(this.Derivatives, 1/x, this.Derivatives, D1 * D2 * D3 * D4);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public MMDerivative CombineWith(MMDerivative m)
-        {
-            if (D3 != m.D1 || D4 != m.D2)
-                throw new Exception("The last two dimensions and The first two dimensions should match!");
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public MMDerivative CombineWith(MMDerivative m)
+        //{
+        //    if (D3 != m.D1 || D4 != m.D2)
+        //        throw new Exception("The last two dimensions and The first two dimensions should match!");
 
 
-            //1) Care for negative
+        //    //1) Care for negative
 
-            MMDerivative res = new MMDerivative(D1, D2, m.D3, m.D4);
+        //    MMDerivative res = new MMDerivative(D1, D2, m.D3, m.D4);
 
-            bool turn = m.Negative != this.Negative;
-            if (turn)
-            {
-                for (int i1 = 0; i1 < D1; i1++)
-                    for (int i2 = 0; i2 < D2; i2++)
-                        for (int i3 = 0; i3 < m.D3; i3++)
-                            for (int i4 = 0; i4 < m.D4; i4++)
-                                for (int x1 = 0; x1 < D3; x1++)
-                                    for (int x2 = 0; x2 < D4; x2++)
-                                        res[i1, i2, i3, i4] -= this[i1, i2, x1, x2] * m[x1, x2, i3, i4];
-            }
-            else
-            {
-                for (int i1 = 0; i1 < D1; i1++)
-                    for (int i2 = 0; i2 < D2; i2++)
-                        for (int i3 = 0; i3 < m.D3; i3++)
-                            for (int i4 = 0; i4 < m.D4; i4++)
-                                for (int x1 = 0; x1 < D3; x1++)
-                                    for (int x2 = 0; x2 < D4; x2++)
-                                        res[i1, i2, i3, i4] += this[i1, i2, x1, x2] * m[x1, x2, i3, i4];
-            }
-            return res;
-        }
+        //    bool turn = m.Negative != this.Negative;
+        //    if (turn)
+        //    {
+        //        for (int i1 = 0; i1 < D1; i1++)
+        //            for (int i2 = 0; i2 < D2; i2++)
+        //                for (int i3 = 0; i3 < m.D3; i3++)
+        //                    for (int i4 = 0; i4 < m.D4; i4++)
+        //                        for (int x1 = 0; x1 < D3; x1++)
+        //                            for (int x2 = 0; x2 < D4; x2++)
+        //                                res[i1, i2, i3, i4] -= this[i1, i2, x1, x2] * m[x1, x2, i3, i4];
+        //    }
+        //    else
+        //    {
+        //        for (int i1 = 0; i1 < D1; i1++)
+        //            for (int i2 = 0; i2 < D2; i2++)
+        //                for (int i3 = 0; i3 < m.D3; i3++)
+        //                    for (int i4 = 0; i4 < m.D4; i4++)
+        //                        for (int x1 = 0; x1 < D3; x1++)
+        //                            for (int x2 = 0; x2 < D4; x2++)
+        //                                res[i1, i2, i3, i4] += this[i1, i2, x1, x2] * m[x1, x2, i3, i4];
+        //    }
+        //    return res;
+        //}
 
     }
 }

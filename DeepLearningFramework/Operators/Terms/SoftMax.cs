@@ -2,7 +2,7 @@
 using PerformanceWork.OptimizedNumerics;
 using System;
 
-namespace DeepLearningFramework.Operators
+namespace DeepLearningFramework.Operators.Terms
 {
     public class SoftMax : Term
     {

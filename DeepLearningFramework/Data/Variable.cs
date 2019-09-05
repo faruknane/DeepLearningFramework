@@ -1,5 +1,5 @@
 ﻿using DeepLearningFramework.Core;
-using DeepLearningFramework.Operators;
+using DeepLearningFramework.Operators.Terms;
 using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;

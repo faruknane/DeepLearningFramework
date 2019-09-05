@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
-namespace DeepLearningFramework.Operators
+namespace DeepLearningFramework.Operators.Terms
 {
     public class Sigmoid : Term
     {

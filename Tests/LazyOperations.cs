@@ -1,5 +1,5 @@
 ﻿using DeepLearningFramework.Data;
-using DeepLearningFramework.Operators;
+using DeepLearningFramework.Operators.Terms;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerformanceWork.OptimizedNumerics;
 using System;

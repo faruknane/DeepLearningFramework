@@ -3,7 +3,7 @@ using PerformanceWork.OptimizedNumerics;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DeepLearningFramework.Operators
+namespace DeepLearningFramework.Operators.Terms
 {
     public class Term
     {

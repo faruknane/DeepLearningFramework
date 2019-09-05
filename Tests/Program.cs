@@ -1,6 +1,7 @@
 ﻿using DeepLearningFramework.Core;
 using DeepLearningFramework.Data;
-using DeepLearningFramework.Operators;
+using DeepLearningFramework.Operators.Layers;
+using DeepLearningFramework.Operators.Terms;
 using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;
@@ -29,44 +30,33 @@ namespace Tests
             Hyperparameters.LearningRate = 0.2f;
             Hyperparameters.Optimizer = new SGD();
 
-            //Inputs of the model
-            PlaceHolder x = new PlaceHolder(2);
-            PlaceHolder y = new PlaceHolder(1);
+            var x = new Input(2);
+            var y = new Input(1);
 
-            //The model
-            Term l1 = Layer(x, 2, true);
-            Term model = Layer(l1, 1, true);
+            var l1 = new Dense(2, "sigmoid"); l1.PreviousLayer = x;
+            var model = new Dense(1, "sigmoid"); model.PreviousLayer = l1;
+            var loss = new SquaredError(model, y);
 
-            //The error function
-            Term lossdiscrete = new Power(new Minus(model, y), 2);
-            Term loss = new ShrinkByAdding(lossdiscrete, lossdiscrete.D1, lossdiscrete.D2);
-
-
-            //Manually add values to Inputs
-            x.SetVariable(new Variable(2, 4)
-            {
-                Weights = new float[2, 4]
+            x.SetInput(0, new float[2, 4]
                 {{ 1, 1, 0, 0},
-                { 1, 0, 1, 0}},
-                Trainable = false
-            });
+                { 1, 0, 1, 0}});
 
-            y.SetVariable(new Variable(1, 4)
-            {
-                Weights = new float[1, 4] { { 0, 1, 1, 0 } },
-                Trainable = false
-            });
+            y.SetInput(0, new float[1, 4]
+                 {{ 0, 1, 1, 0 }});
 
-            //Train the model with the same Inputs
-            for (int epoch = 0; epoch < 1000; epoch++)
+
+            Stopwatch s = new Stopwatch();
+            s.Start();
+            for (int epoch = 0; epoch < 5000; epoch++)
             {
-                loss.Minimize();
-                Console.WriteLine("loss: " + loss.GetResult()[0]);
+                loss.GetTerm(0).Minimize();
+                //Console.WriteLine("loss: " + loss.GetResult()[0]);
             }
 
-            //Print results
-            loss.DeleteResults();
-            Console.WriteLine("Results: " + model.GetResult()[0] + ", " + model.GetResult()[1] + ", " + model.GetResult()[2] + ", " + model.GetResult()[3]);
+            loss.GetTerm(0).DeleteResults();
+            Console.WriteLine("Results: " + model.GetTerm(0).GetResult()[0] + ", " + model.GetTerm(0).GetResult()[1] + ", " + model.GetTerm(0).GetResult()[2] + ", " + model.GetTerm(0).GetResult()[3]);
+            s.Stop();
+            Console.WriteLine(s.ElapsedMilliseconds);
         }
         public static Term Layer(Term x, int size, bool sigmoid) //Demo Dense Layer
         {
@@ -90,6 +80,38 @@ namespace Tests
                 return new Sigmoid(h);
             return h;
         }
+
+        public static Func<Term, Term> Layer(int size, bool sigmoid) //Demo Dense Layer
+        {
+            //Initializers will be in Layer classes, not in variable class!.
+
+            Term M(Term x)
+            {
+                Variable w0 = new Variable(size, x.D1)
+                {
+                    Weights = Randomize(new float[size, x.D1]),
+                    Name = "w0",
+                    Trainable = true
+                };
+
+                Variable b0 = new Variable(size, 1)
+                {
+                    Weights = Randomize(new float[size, 1]),
+                    Name = "b0",
+                    Trainable = true
+                };
+                Term h = new Plus(new MatrixMultiply(w0, x), new ExpandWithSame(b0, 1, x.D2));
+
+                if (sigmoid)
+                    return new Sigmoid(h);
+                return h;
+            }
+
+            return M;
+
+        }
+
+        
         public static void deneme2()
         {
             PlaceHolder x = new PlaceHolder(256);
@@ -153,12 +175,10 @@ namespace Tests
         
         static void Main(string[] args)
         {
-            Stopwatch s = new Stopwatch();
-            s.Start();
+            
             LoadData();
             deneme();
-            s.Stop();
-            Console.WriteLine(s.ElapsedMilliseconds);
+           
             Console.WriteLine("Hello World!");
         }
     }
