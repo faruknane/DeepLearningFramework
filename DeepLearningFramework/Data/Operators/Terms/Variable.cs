@@ -1,11 +1,10 @@
 ﻿using DeepLearningFramework.Core;
-using DeepLearningFramework.Operators.Terms;
 using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DeepLearningFramework.Data
+namespace DeepLearningFramework.Data.Operators.Terms
 {
     public class Variable : Term
     {
@@ -31,6 +30,7 @@ namespace DeepLearningFramework.Data
 
         public Variable(int D1, int D2) // add initializer
         {
+            Type = TermType.Variable;
             this.D1 = D1;
             this.D2 = D2;
             m = new Matrix(D1, D2);
@@ -64,7 +64,7 @@ namespace DeepLearningFramework.Data
             return Weights;
         }
 
-        public override void Derivate(MMDerivative s)
+        public override void CalculateDerivate(MMDerivative s)
         {
             if(Trainable)
             {
@@ -72,9 +72,14 @@ namespace DeepLearningFramework.Data
             }
         }
 
+        public override void CalculateHowManyTimesUsed()
+        {
+            Used++;
+        }
+
         public override void DeleteResults()
         {
-            Result = null;
+            base.DeleteResults();
         }
     }
 }

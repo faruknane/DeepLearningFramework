@@ -1,5 +1,5 @@
 ﻿using DeepLearningFramework.Data;
-using DeepLearningFramework.Operators.Terms;
+using DeepLearningFramework.Data.Operators.Terms;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerformanceWork.OptimizedNumerics;
 using System;
@@ -87,9 +87,9 @@ namespace Tests
             };
 
             MatrixMultiply s = new MatrixMultiply(v1, v2);
-            s.Derivate(MMDerivative.I(s.D1, s.D2));
+            s.CalculateDerivate(MMDerivative.I(s.D1, s.D2));
             s = new MatrixMultiply(s, v2);
-            s.Derivate(MMDerivative.I(s.D1, s.D2));
+            s.CalculateDerivate(MMDerivative.I(s.D1, s.D2));
         }
     }
 }

@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using DeepLearningFramework.Data;
-using DeepLearningFramework.Operators.Terms;
+using DeepLearningFramework.Data.Operators.Layers;
+using DeepLearningFramework.Data.Operators.Terms;
 using PerformanceWork.OptimizedNumerics;
 
-namespace DeepLearningFramework.Operators.Layers
+namespace DeepLearningFramework.Data.Operators.Layers
 {
     public class Input : Layer
     {

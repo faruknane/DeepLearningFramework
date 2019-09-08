@@ -1,10 +1,10 @@
 ﻿using DeepLearningFramework.Data;
-using DeepLearningFramework.Operators.Terms;
+using DeepLearningFramework.Data.Operators.Terms;
 using PerformanceWork.OptimizedNumerics;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DeepLearningFramework.Operators.Layers
+namespace DeepLearningFramework.Data.Operators.Layers
 {
     public abstract class Layer
     {

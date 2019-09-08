@@ -3,7 +3,7 @@ using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Diagnostics;
 
-namespace DeepLearningFramework.Operators.Terms
+namespace DeepLearningFramework.Data.Operators.Terms
 {
     public class MatrixMultiply : Term
     {
@@ -13,15 +13,17 @@ namespace DeepLearningFramework.Operators.Terms
 
         public MatrixMultiply(Term v1, Term v2)
         {
+            Type = TermType.MatrixMultiply;
             this.v1 = v1;
             this.v2 = v2;
             if (!this.v1.D2.SoftEquals(this.v2.D1))
                 throw new Exception("the same dimensions should match correctly!");
             D1 = this.v1.D1;
             D2 = this.v2.D2;
+            //Console.WriteLine("-> " + v1.D1.Value + ", " + v1.D2.Value + ", " + v2.D2.Value);
         }
 
-        public override unsafe void Derivate(MMDerivative s)
+        public override unsafe void CalculateDerivate(MMDerivative s)
         {
             if (!this.v1.D2.HardEquals(this.v2.D1))
                 throw new Exception("the same dimensions should match correctly!");
@@ -107,7 +109,15 @@ namespace DeepLearningFramework.Operators.Terms
             Matrix res = Matrix.MatrixMultiply(a, b);
             return res;
         }
-
+        public override void CalculateHowManyTimesUsed()
+        {
+            if (Used == 0)
+            {
+                v1.CalculateHowManyTimesUsed();
+                v2.CalculateHowManyTimesUsed();
+            }
+            Used++;
+        }
         public override void DeleteResults()
         {
             base.DeleteResults();

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
-namespace DeepLearningFramework.Operators.Terms
+namespace DeepLearningFramework.Data.Operators.Terms
 {
     public class Sigmoid : Term
     {
@@ -15,12 +15,13 @@ namespace DeepLearningFramework.Operators.Terms
 
         public Sigmoid(Term v1)
         {
+            Type = TermType.Sigmoid;
             this.v1 = v1;
             D1 = this.v1.D1;
             D2 = this.v1.D2;
         }
 
-        public override void Derivate(MMDerivative s)
+        public override void CalculateDerivate(MMDerivative s)
         {
             if (!D1.HardEquals(D1) || !D2.HardEquals(D2))
                 throw new Exception("Terms should have an exact value!");
@@ -58,6 +59,14 @@ namespace DeepLearningFramework.Operators.Terms
                 for (int j = 0; j < D2; j++)
                     sigmo[i, j] = (float)(1 / (1 + Math.Exp(-v[i, j])));
             return sigmo;
+        }
+        public override void CalculateHowManyTimesUsed()
+        {
+            if (Used == 0)
+            {
+                v1.CalculateHowManyTimesUsed();
+            }
+            Used++;
         }
         public override void DeleteResults()
         {

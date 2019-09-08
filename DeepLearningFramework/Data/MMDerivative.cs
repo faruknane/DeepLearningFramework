@@ -68,6 +68,21 @@ namespace DeepLearningFramework.Data
         {
             Vectorization.ElementWiseMultiplyAVX(this.Derivatives, x, this.Derivatives, D1 * D2 * D3 * D4);
         }
+
+        internal void Add(MMDerivative m)
+        {
+            Vectorization.ElementWiseAddAVX(this.Derivatives, m.Derivatives, this.Derivatives, D1 * D2 * D3 * D4);
+        }
+
+        public static MMDerivative Clone(MMDerivative m)
+        {
+            MMDerivative n = new MMDerivative(m.D1, m.D2, m.D3, m.D4);
+            n.Negative = m.Negative;
+            n.Derivatives = Matrix.Pool.Rent(m.D1 * m.D2 * m.D3 * m.D4);
+            Vectorization.ElementWiseAssignAVX(n.Derivatives, m.Derivatives, m.D1 * m.D2 * m.D3 * m.D4);
+            return n;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void DivideBy(float x)
         {

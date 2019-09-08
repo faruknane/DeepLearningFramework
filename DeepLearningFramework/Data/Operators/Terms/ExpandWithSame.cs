@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DeepLearningFramework.Operators.Terms
+namespace DeepLearningFramework.Data.Operators.Terms
 {
     public class ExpandWithSame : Term
     {
@@ -15,12 +15,13 @@ namespace DeepLearningFramework.Operators.Terms
         public Dimension ColumnMultiplier { get; private set; }
         public ExpandWithSame(Term v1, Dimension rowmul, Dimension colmul)
         {
+            Type = TermType.ExpandWithSame;
             this.v1 = v1;
             RowMultiplier = rowmul;
             ColumnMultiplier = colmul;
         }
 
-        public override void Derivate(MMDerivative s)
+        public override void CalculateDerivate(MMDerivative s)
         {
             if (!RowMultiplier.HardEquals(RowMultiplier) || !ColumnMultiplier.HardEquals(ColumnMultiplier))
                 throw new Exception("Dividers should have an exact value!");
@@ -66,6 +67,15 @@ namespace DeepLearningFramework.Operators.Terms
                         for (int i4 = 0; i4 < v1.D2; i4++)
                             res[i1 * v1.D1 + i3, i2 * v1.D2 + i4] = v[i3, i4];
             return res;
+        }
+
+        public override void CalculateHowManyTimesUsed()
+        {
+            if(Used == 0)
+            {
+                v1.CalculateHowManyTimesUsed();
+            }
+            Used++;
         }
 
         public override void DeleteResults()

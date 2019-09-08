@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DeepLearningFramework.Operators.Terms
+namespace DeepLearningFramework.Data.Operators.Terms
 {
     public class ShrinkByAdding : Term
     {
@@ -15,12 +15,13 @@ namespace DeepLearningFramework.Operators.Terms
         public Dimension ColumnDivider { get; private set; }
         public ShrinkByAdding(Term v1, Dimension rowdiv, Dimension coldiv)
         {
+            Type = TermType.ShrinkByAdding;
             this.v1 = v1;
             RowDivider = rowdiv;
             ColumnDivider = coldiv;
         }
 
-        public override void Derivate(MMDerivative s)
+        public override void CalculateDerivate(MMDerivative s)
         {
             if (!RowDivider.HardEquals(RowDivider) || !ColumnDivider.HardEquals(ColumnDivider))
                 throw new Exception("Dividers should have an exact value!");
@@ -56,7 +57,14 @@ namespace DeepLearningFramework.Operators.Terms
                     res[i3 / RowDivider, i4 / ColumnDivider] += v[i3, i4];
             return res;
         }
-
+        public override void CalculateHowManyTimesUsed()
+        {
+            if (Used == 0)
+            {
+                v1.CalculateHowManyTimesUsed();
+            }
+            Used++;
+        }
         public override void DeleteResults()
         {
             base.DeleteResults();

@@ -1,10 +1,9 @@
-﻿using DeepLearningFramework.Operators.Terms;
-using PerformanceWork.OptimizedNumerics;
+﻿using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DeepLearningFramework.Data
+namespace DeepLearningFramework.Data.Operators.Terms
 {
     public class PlaceHolder : Term
     {
@@ -15,6 +14,7 @@ namespace DeepLearningFramework.Data
 
         public PlaceHolder(int Size)
         {
+            Type = TermType.PlaceHolder;
             D1 = Size;
             D2 = new Dimension();
         }
@@ -26,7 +26,7 @@ namespace DeepLearningFramework.Data
             D2.Value = v.D2.Value;
         }
 
-        public override void Derivate(MMDerivative s)
+        public override void CalculateDerivate(MMDerivative s)
         {
             if (!D1.HardEquals(D1) || !D2.HardEquals(D2))
                 throw new Exception("Terms should have an exact value!");
@@ -40,9 +40,19 @@ namespace DeepLearningFramework.Data
             return v1.GetResult();
         }
 
+        public override void CalculateHowManyTimesUsed()
+        {
+            if (Used == 0)
+            {
+                v1.CalculateHowManyTimesUsed();
+            }
+            Used++;
+        }
+
         public override void DeleteResults()
         {
-            Result = null;
+            base.DeleteResults();
+            v1.DeleteResults();
         }
     }
 }

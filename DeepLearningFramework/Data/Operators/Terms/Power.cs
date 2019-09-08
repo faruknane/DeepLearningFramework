@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DeepLearningFramework.Operators.Terms
+namespace DeepLearningFramework.Data.Operators.Terms
 {
     public class Power : Term
     {
@@ -15,6 +15,7 @@ namespace DeepLearningFramework.Operators.Terms
 
         public Power(Term v1, int pow)
         {
+            Type = TermType.Power;
             this.v1 = v1;
             this.PowerOf = pow;
             if (PowerOf <= 1)
@@ -23,7 +24,7 @@ namespace DeepLearningFramework.Operators.Terms
             D2 = this.v1.D2;
         }
 
-        public override void Derivate(MMDerivative s)
+        public override void CalculateDerivate(MMDerivative s)
         {
             if (!D1.HardEquals(D1) || !D2.HardEquals(D2))
                 throw new Exception("Terms should have an exact value!");
@@ -61,7 +62,14 @@ namespace DeepLearningFramework.Operators.Terms
                 m.ElementWiseMultiply(res);
             return m;
         }
-
+        public override void CalculateHowManyTimesUsed()
+        {
+            if (Used == 0)
+            {
+                v1.CalculateHowManyTimesUsed();
+            }
+            Used++;
+        }
         public override void DeleteResults()
         {
             base.DeleteResults();

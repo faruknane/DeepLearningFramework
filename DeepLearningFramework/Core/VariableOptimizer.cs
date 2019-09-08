@@ -1,4 +1,5 @@
 ﻿using DeepLearningFramework.Data;
+using DeepLearningFramework.Data.Operators.Terms;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using DeepLearningFramework.Operators.Terms;
+using DeepLearningFramework.Data.Operators.Terms;
 
-namespace DeepLearningFramework.Operators.Layers
+namespace DeepLearningFramework.Data.Operators.Layers
 {
     public class SquaredError : Layer
     {

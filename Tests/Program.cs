@@ -1,8 +1,6 @@
 ﻿using DeepLearningFramework.Core;
-using DeepLearningFramework.Data;
-using DeepLearningFramework.Operators.Layers;
-using DeepLearningFramework.Operators.Terms;
-using PerformanceWork.OptimizedNumerics;
+using DeepLearningFramework.Data.Operators.Layers;
+using DeepLearningFramework.Data.Operators.Terms;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -68,6 +66,7 @@ namespace Tests
                 Trainable = true
             };
 
+
             Variable b0 = new Variable(size, 1)
             {
                 Weights = Randomize(new float[size, 1]),
@@ -80,7 +79,7 @@ namespace Tests
                 return new Sigmoid(h);
             return h;
         }
-
+ 
         public static Func<Term, Term> Layer(int size, bool sigmoid) //Demo Dense Layer
         {
             //Initializers will be in Layer classes, not in variable class!.
@@ -120,7 +119,10 @@ namespace Tests
             Term l1 = Layer(x, 128, true);
             Term l2 = Layer(l1, 64, true);
             Term l3 = Layer(l2, 10, true);
-            Term lossdiscrete = new Power(new Minus(l3, y), 2);
+
+            Term diff = new Minus(l3, y);
+
+            Term lossdiscrete = new Power(diff, 2);
             Term loss = new ShrinkByAdding(lossdiscrete, lossdiscrete.D1, lossdiscrete.D2);
 
             for (int ss = 0; ss < 20; ss++)
@@ -145,6 +147,7 @@ namespace Tests
                 }
                 Console.WriteLine(err / 1000);
             }
+
         }
 
         public static List<KeyValuePair<float[], float[]>> d;
@@ -177,8 +180,11 @@ namespace Tests
         {
             
             LoadData();
-            deneme();
-           
+            Stopwatch s = new Stopwatch();
+            s.Start();
+            deneme2();
+            s.Stop();
+            Console.WriteLine(s.ElapsedMilliseconds);
             Console.WriteLine("Hello World!");
         }
     }
