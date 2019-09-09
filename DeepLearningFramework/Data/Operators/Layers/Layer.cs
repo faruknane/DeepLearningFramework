@@ -19,7 +19,7 @@ namespace DeepLearningFramework.Data.Operators.Layers
                 Terms.Add(null);
 
             if (Terms[time] == null)
-                return Terms[time] = CreateTerm(time);
+                return Terms[time] = CreateTerm(time); // Activation -> new sigmoid(createterm(time));
             return Terms[time];
         }
 

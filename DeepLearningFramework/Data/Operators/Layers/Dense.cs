@@ -47,6 +47,7 @@ namespace DeepLearningFramework.Data.Operators.Layers
         {
             this.Size = size;
         }
+
         public Dense(int size, string act)
         {
             this.Size = size;
@@ -56,7 +57,7 @@ namespace DeepLearningFramework.Data.Operators.Layers
         public override Term CreateTerm(int time)
         {
             Term x = PreviousLayer.GetTerm(time);
-            if(Activation == "sigmoid")
+            if(Activation == "sigmoid")//Remove soon to the layer class.
                 return new Sigmoid( new Plus(new MatrixMultiply(W, x), new ExpandWithSame(B, 1, x.D2)));
 
             return new Plus(new MatrixMultiply(W, x), new ExpandWithSame(B, 1, x.D2));

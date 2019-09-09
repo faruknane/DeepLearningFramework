@@ -32,6 +32,8 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
             Matrix B = v2.GetResult();
             Matrix A = v1.GetResult();
+            B = Matrix.TranposeOf(B);
+            A = Matrix.TranposeOf(A);
 
             //MMDerivative WRTLeft = new MMDerivative(v1.D1, v2.D2, v1.D1, v1.D2);
             //for (int a = 0; a < v1.D1; a++)
@@ -48,9 +50,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
             var combinedleft = new MMDerivative(s.D1, s.D2, v1.D1, v1.D2);
             var combinedright = new MMDerivative(s.D1, s.D2, v2.D1, v2.D2);
             
-            B = Matrix.TranposeOf(B);
-            A = Matrix.TranposeOf(A);
-
+           
             fixed (float* ptr_left = combinedleft.Derivatives, ptr_s = s.Derivatives, ptr_b = B.Array)
                 for (int i1 = 0; i1 < s.D1; i1++)
                     for (int i2 = 0; i2 < s.D2; i2++)

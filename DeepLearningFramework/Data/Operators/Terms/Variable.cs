@@ -33,17 +33,18 @@ namespace DeepLearningFramework.Data.Operators.Terms
             Type = TermType.Variable;
             this.D1 = D1;
             this.D2 = D2;
+            if (!this.D1.HardEquals(this.D1) || !this.D2.HardEquals(this.D2))
+                throw new Exception("Terms should have an exact value!");
             m = new Matrix(D1, D2);
         }
-
-        public Variable(int R, int C, bool trainable) // add initializer
+        public Variable(Matrix m) // add initializer
         {
-            this.D1 = R;
-            this.D2 = C;
-            if (!D1.HardEquals(D1) || !D2.HardEquals(D2))
+            Type = TermType.Variable;
+            this.D1 = m.D1;
+            this.D2 = m.D2;
+            if (!this.D1.HardEquals(this.D1) || !this.D2.HardEquals(this.D2))
                 throw new Exception("Terms should have an exact value!");
-            m = new Matrix(R, C);
-            Trainable = trainable;
+            this.m = m;
         }
 
         public void SetValue(Matrix n)

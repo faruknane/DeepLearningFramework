@@ -20,6 +20,13 @@ namespace DeepLearningFramework.Data.Operators.Terms
         }
         public void SetVariable(Variable v)
         {
+            if(v1 != null)
+            {
+                Variable v11 = (Variable)v1;
+                v11.Weights.Dispose();
+                v11 = null;
+                v1 = null;
+            }
             v1 = v;
             if (!D1.HardEquals(v1.D1))
                 throw new Exception("Placeholder!");

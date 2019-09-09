@@ -23,7 +23,7 @@ namespace DeepLearningFramework.Data.Operators.Layers
         public void SetInput(int time, Matrix inp)
         {
             PlaceHolder h = (PlaceHolder)GetTerm(time);
-            h.SetVariable(new Variable(inp.D1, inp.D2) { Name = "Input", Trainable = false, Weights = inp });
+            h.SetVariable(new Variable(inp) { Name = "Input", Trainable = false });
         }
     }
 }

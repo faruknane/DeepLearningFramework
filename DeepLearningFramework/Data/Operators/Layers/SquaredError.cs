@@ -43,8 +43,10 @@ namespace DeepLearningFramework.Data.Operators.Layers
 
         public override Term CreateTerm(int time)
         {
-            var lossdiscrete = new Power(new Minus(PreviousLayer.GetTerm(time), Y.GetTerm(time)), 2);
-            var loss = new ShrinkByAdding(lossdiscrete, lossdiscrete.D1, lossdiscrete.D2);
+            Term lossdiscrete = new Power(new Minus(PreviousLayer.GetTerm(time), Y.GetTerm(time)), 2);
+            Term loss = new ShrinkByAdding(lossdiscrete, lossdiscrete.D1, lossdiscrete.D2);
+            if(time > 0)
+                loss = new Plus(this.GetTerm(time - 1), loss);
             return loss; 
         }
     }

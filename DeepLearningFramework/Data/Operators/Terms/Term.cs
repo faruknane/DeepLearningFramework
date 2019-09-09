@@ -60,7 +60,9 @@ namespace DeepLearningFramework.Data.Operators.Terms
         {
             this.DeleteResults();
             this.CalculateHowManyTimesUsed();
-            this.Derivate(MMDerivative.I(D1, D2));
+            MMDerivative I = MMDerivative.I(D1, D2);
+            this.Derivate(I);
+            I.Dispose();
         }
 
 
@@ -68,9 +70,10 @@ namespace DeepLearningFramework.Data.Operators.Terms
         {
             this.DeleteResults();
             this.CalculateHowManyTimesUsed();
-            MMDerivative m = MMDerivative.I(D1, D2);
-            m.Negative = true;
-            this.Derivate(m);
+            MMDerivative I = MMDerivative.I(D1, D2);
+            I.Negative = true;
+            this.Derivate(I);
+            I.Dispose();
         }
 
         public void Derivate(MMDerivative m)
