@@ -10,6 +10,10 @@ namespace DeepLearningFramework.Data.Operators.Terms
     {
         private Matrix m;
         public String Name { get; set; }
+
+        public int UniqueId { get; set; }
+        public static int UniqueIdAssigner = 0;
+
         public bool Trainable { get; set; } = true;
         public float LearningRateMultiplier { get; set; } = 1;
 
@@ -36,6 +40,8 @@ namespace DeepLearningFramework.Data.Operators.Terms
             if (!this.D1.HardEquals(this.D1) || !this.D2.HardEquals(this.D2))
                 throw new Exception("Terms should have an exact value!");
             m = new Matrix(D1, D2);
+            UniqueId = UniqueIdAssigner;
+            UniqueIdAssigner++;
         }
         public Variable(Matrix m) // add initializer
         {
@@ -45,6 +51,8 @@ namespace DeepLearningFramework.Data.Operators.Terms
             if (!this.D1.HardEquals(this.D1) || !this.D2.HardEquals(this.D2))
                 throw new Exception("Terms should have an exact value!");
             this.m = m;
+            UniqueId = UniqueIdAssigner;
+            UniqueIdAssigner++;
         }
 
         public void SetValue(Matrix n)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using DeepLearningFramework.Data;
 using DeepLearningFramework.Data.Operators.Layers;
@@ -10,20 +11,38 @@ namespace DeepLearningFramework.Data.Operators.Layers
 {
     public class Input : Layer
     {
+        public override Dimension D1 { get; internal set; }
+        public override Dimension D2 { get; internal set; }
+
         public Input(int size)
         {
-            this.Size = size;
+            D1 = size;
+            D2 = new Dimension();
+            this.SequenceLength = new Dimension();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override Term CreateTerm(int time)
         {
-            return new PlaceHolder(Size);
+            return new PlaceHolder(D1);
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetInput(int time, Matrix inp)
         {
             PlaceHolder h = (PlaceHolder)GetTerm(time);
-            h.SetVariable(new Variable(inp) { Name = "Input", Trainable = false });
+            h.SetVariable(new Terms.Variable(inp) { Name = "Input", Trainable = false });
+            D2.Value = h.D2.Value;
+        }
+        public void SetSequenceLength(int l)
+        {
+            this.SequenceLength.Value = l;
+        }
+
+        public override void DeleteTerms()
+        {
+
         }
     }
 }

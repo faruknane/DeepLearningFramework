@@ -9,8 +9,8 @@ namespace DeepLearningFramework.Data.Operators.Terms
     public class ExpandWithSame : Term
     {
         Term v1;
-        public override Dimension D1 { get { return this.v1.D1 * RowMultiplier; } }
-        public override Dimension D2 { get { return this.v1.D2 * ColumnMultiplier; } }
+        public override Dimension D1 { get; internal set; }
+        public override Dimension D2 { get; internal set; }
         public Dimension RowMultiplier { get; private set; }
         public Dimension ColumnMultiplier { get; private set; }
         public ExpandWithSame(Term v1, Dimension rowmul, Dimension colmul)
@@ -19,6 +19,9 @@ namespace DeepLearningFramework.Data.Operators.Terms
             this.v1 = v1;
             RowMultiplier = rowmul;
             ColumnMultiplier = colmul;
+
+            D1 = this.v1.D1 * RowMultiplier;
+            D2 = this.v1.D2 * ColumnMultiplier;
         }
 
         public override void CalculateDerivate(MMDerivative s)
@@ -45,7 +48,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
                         for (int i2 = 0; i2 < ColumnMultiplier; i2++)
                             for (int i3 = 0; i3 < v1.D1; i3++)
                                 for (int i4 = 0; i4 < v1.D2; i4++)
-                                    combined[x1, x2, i3, i4] += s[x1, x2, i1 * v1.D1 + i3, i2 * v1.D2 + i4];//m[i1 * v1.D1 + i3, i2 * v1.D2 + i4, i3, i4] = 1;
+                                    combined[x1, x2, i3, i4] += s[x1, x2, i1 * v1.D1.Value + i3, i2 * v1.D2.Value + i4];//m[i1 * v1.D1 + i3, i2 * v1.D2 + i4, i3, i4] = 1;
             combined.Negative = s.Negative;
             v1.Derivate(combined);
             combined.Dispose();
@@ -65,7 +68,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
                 for (int i2 = 0; i2 < ColumnMultiplier; i2++)
                     for (int i3 = 0; i3 < v1.D1; i3++)
                         for (int i4 = 0; i4 < v1.D2; i4++)
-                            res[i1 * v1.D1 + i3, i2 * v1.D2 + i4] = v[i3, i4];
+                            res[i1 * v1.D1.Value + i3, i2 * v1.D2.Value + i4] = v[i3, i4];
             return res;
         }
 

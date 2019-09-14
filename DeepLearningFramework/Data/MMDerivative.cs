@@ -1,4 +1,5 @@
-﻿using PerformanceWork.OptimizedNumerics;
+﻿using PerformanceWork;
+using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -15,6 +16,7 @@ namespace DeepLearningFramework.Data
         public bool Negative { get; set; } = false;
 
         public float[] Derivatives;
+        public static ArrayPool<float> Pool = ArrayPool<float>.Create(2, 1350);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public MMDerivative(int d1, int d2, int d3, int d4)
@@ -23,13 +25,13 @@ namespace DeepLearningFramework.Data
             D2 = d2;
             D3 = d3;
             D4 = d4;
-            Derivatives = Matrix.Pool.Rent(d1 * d2 * d3 * d4);
+            Derivatives = Pool.Rent(d1 * d2 * d3 * d4);
             Vectorization.ElementWiseSetValueAVX(Derivatives, 0, d1 * d2 * d3 * d4);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Dispose()
         {
-            Matrix.Pool.Return(Derivatives);
+            Pool.Return(Derivatives);
         }
         public float this[int x1, int x2, int x3, int x4]
         {
@@ -78,7 +80,7 @@ namespace DeepLearningFramework.Data
         {
             MMDerivative n = new MMDerivative(m.D1, m.D2, m.D3, m.D4);
             n.Negative = m.Negative;
-            n.Derivatives = Matrix.Pool.Rent(m.D1 * m.D2 * m.D3 * m.D4);
+            n.Derivatives = Pool.Rent(m.D1 * m.D2 * m.D3 * m.D4);
             Vectorization.ElementWiseAssignAVX(n.Derivatives, m.Derivatives, m.D1 * m.D2 * m.D3 * m.D4);
             return n;
         }
@@ -94,8 +96,6 @@ namespace DeepLearningFramework.Data
         //{
         //    if (D3 != m.D1 || D4 != m.D2)
         //        throw new Exception("The last two dimensions and The first two dimensions should match!");
-
-
         //    //1) Care for negative
 
         //    MMDerivative res = new MMDerivative(D1, D2, m.D3, m.D4);

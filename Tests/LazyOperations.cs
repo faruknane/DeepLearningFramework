@@ -87,9 +87,16 @@ namespace Tests
             };
 
             MatrixMultiply s = new MatrixMultiply(v1, v2);
+
+            s.CalculateHowManyTimesUsed();
             s.CalculateDerivate(MMDerivative.I(s.D1, s.D2));
+            s.DeleteResults();
+
             s = new MatrixMultiply(s, v2);
+
+            s.CalculateHowManyTimesUsed();
             s.CalculateDerivate(MMDerivative.I(s.D1, s.D2));
+            s.DeleteResults();
         }
     }
 }

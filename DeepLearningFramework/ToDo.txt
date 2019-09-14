@@ -1,0 +1,1 @@
+﻿If there is no variable to be trained in a term expression, we should not dive into, waste of time.

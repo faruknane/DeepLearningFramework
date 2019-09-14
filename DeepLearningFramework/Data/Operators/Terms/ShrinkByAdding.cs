@@ -9,8 +9,8 @@ namespace DeepLearningFramework.Data.Operators.Terms
     public class ShrinkByAdding : Term
     {
         Term v1;
-        public override Dimension D1 { get { return this.v1.D1 / RowDivider; }  }
-        public override Dimension D2 { get { return this.v1.D2 / ColumnDivider; }  }
+        public override Dimension D1 { get; internal set; }
+        public override Dimension D2 { get; internal set; }
         public Dimension RowDivider { get; private set; }
         public Dimension ColumnDivider { get; private set; }
         public ShrinkByAdding(Term v1, Dimension rowdiv, Dimension coldiv)
@@ -19,6 +19,8 @@ namespace DeepLearningFramework.Data.Operators.Terms
             this.v1 = v1;
             RowDivider = rowdiv;
             ColumnDivider = coldiv;
+            D1 = this.v1.D1 / RowDivider;
+            D2 = this.v1.D2 / ColumnDivider;
         }
 
         public override void CalculateDerivate(MMDerivative s)
@@ -34,7 +36,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
                 for (int i2 = 0; i2 < s.D2; i2++)
                     for (int i3 = 0; i3 < v1.D1; i3++)
                         for (int i4 = 0; i4 < v1.D2; i4++)
-                            combined[i1, i2, i3, i4] += s[i1, i2, i3 / RowDivider, i4 / ColumnDivider];// * (m[i3 / RowDivider, i4 / ColumnDivider, i3, i4] = 1);
+                            combined[i1, i2, i3, i4] += s[i1, i2, i3 / RowDivider.Value, i4 / ColumnDivider.Value];// * (m[i3 / RowDivider, i4 / ColumnDivider, i3, i4] = 1);
 
             combined.Negative = s.Negative;
             v1.Derivate(combined);
@@ -54,7 +56,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
             for (int i3 = 0; i3 < v1.D1; i3++)
                 for (int i4 = 0; i4 < v1.D2; i4++)
-                    res[i3 / RowDivider, i4 / ColumnDivider] += v[i3, i4];
+                    res[i3 / RowDivider.Value, i4 / ColumnDivider.Value] += v[i3, i4];
             return res;
         }
         public override void CalculateHowManyTimesUsed()
