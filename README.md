@@ -1,5 +1,5 @@
 # DeepLearningFramework
-Every expression is a term whose derivative can be calculated by the DeepLearningFramework automatically. An example of XOR model is shown below.
+Every expression is a term whose derivative can be calculated by the DeepLearningFramework automatically. Every Layer is consist of Terms which corresponds to sequential input. An example of XOR model is shown below.
 
 ### Hyperparameters
 Global, independent from model.
@@ -10,35 +10,18 @@ Hyperparameters.Optimizer = new SGD();
 
 ### Inputs/Arguments of Model
 ```csharp
-PlaceHolder x = new PlaceHolder(2);
-PlaceHolder y = new PlaceHolder(1);
+var x = new Input(2);
+var y = new Input(1);
 ```
 ### Creating a Model
 ```csharp
-Term l1 = Layer(x, 2, true);
-Term model = Layer(l1, 1, true);
+var l1 = Layer.Dense(2, x, "sigmoid"); 
+var model = Layer.Dense(1, l1, "sigmoid"); 
 ```
 
 ### The loss/error function
 ```csharp
-Term lossdiscrete = new Power(new Minus(model, y), 2);
-Term loss = new ShrinkByAdding(lossdiscrete, lossdiscrete.D1, lossdiscrete.D2);
-```
-### Assign Input Values
-```csharp
-x.SetVariable(new Variable(2, 4)
-{
-    Weights = new float[2, 4]
-    {{ 1, 1, 0, 0},
-    { 1, 0, 1, 0}},
-    Trainable = false
-});
-
-y.SetVariable(new Variable(1, 4)
-{
-    Weights = new float[1, 4] { { 0, 1, 1, 0 } },
-    Trainable = false
-});
+var loss = Layer.SquaredError(model, y);
 ```
 
 ### Training Process
@@ -46,15 +29,21 @@ Very simple If you manually assign inputs! Dot Minimize or Maximize whichever yo
 ```csharp
 for (int epoch = 0; epoch < 1000; epoch++)
 {
+    x.SetSequenceLength(1);
+    y.SetSequenceLength(1);
+    x.SetInput(0, new float[2, 4] { { 1, 1, 0, 0 }, { 1, 0, 1, 0 } } );
+    y.SetInput(0, new float[1, 4] { { 0, 1, 1, 0 } } );
+    
     loss.Minimize();
-    Console.WriteLine("loss: " + loss.GetResult()[0]);
+    //Console.WriteLine("loss: " + loss.GetTerm(0).GetResult()[0]);
 }
 ```
 
 ### Print Results
 ```csharp
-loss.DeleteResults();
-Console.WriteLine("Results: " + model.GetResult()[0] + ", " + model.GetResult()[1] + ", " + model.GetResult()[2] + ", " + model.GetResult()[3]);
+loss.DeleteTerms();
+var result = model.GetTerm(0).GetResult();
+Console.WriteLine("Results: " + result[0] + ", " + result[1] + ", " + result[2] + ", " + result[3]);
 ```
 
 To support me: [My Patreon](https://www.patreon.com/afaruknane)
