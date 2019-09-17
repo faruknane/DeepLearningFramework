@@ -98,5 +98,7 @@ namespace Tests
             s.CalculateDerivate(MMDerivative.I(s.D1, s.D2));
             s.DeleteResults();
         }
+
+       
     }
 }

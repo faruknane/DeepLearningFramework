@@ -23,7 +23,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
     }
     public class Term
     {
-        public virtual Dimension D1 { get; internal set; } //Create a Dimension class to changable sizes.
+        public virtual Dimension D1 { get; internal set; } //Assign in in initializer.
         public virtual Dimension D2 { get; internal set; }
         public Matrix Result { get; internal set; }
         public TermType Type { get; internal set; }

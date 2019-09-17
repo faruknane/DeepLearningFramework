@@ -1,7 +1,6 @@
 ﻿using DeepLearningFramework.Core;
 using DeepLearningFramework.Data;
 using DeepLearningFramework.Data.Operators.Layers;
-using DeepLearningFramework.Data.Operators.Terms;
 using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;
@@ -23,15 +22,17 @@ namespace Tests
             var y = new Input(1);
             //var l1 = Layer.Dense(2, x, "sigmoid"); 
 
-            var l1 = Layer.Dense(2, x, "sigmoid"); 
-            var model = Layer.Dense(1, l1, "sigmoid"); 
+            var model = Layer.Dense(2, x, "sigmoid"); 
+            model = Layer.Dense(10, model, ""); 
+            model = Layer.Dense(1, model, "sigmoid"); 
+
             var loss = Layer.SquaredError(model, y);
 
 
             Stopwatch s = new Stopwatch();
             s.Start();
             Console.WriteLine("Pool.UnreturnedArrayCount: " + MMDerivative.Pool.UnreturnedArrayCount);
-            for (int epoch = 0; epoch < 20000; epoch++)
+            for (int epoch = 0; epoch < 1000; epoch++)
             {
                 x.SetSequenceLength(1);
                 y.SetSequenceLength(1);
@@ -39,26 +40,28 @@ namespace Tests
                 y.SetInput(0, new float[1, 4] { { 0, 1, 1, 0 } } );
 
                 loss.Minimize();
-                //Console.WriteLine("loss: " + loss.GetResult()[0]);
+                //Console.WriteLine("loss: " + loss.GetTerm(0).GetResult()[0]);
             }
-            loss.GetTerm(0).DeleteResults();
+            loss.DeleteTerms();
             Console.WriteLine("Pool.UnreturnedArrayCount: " + MMDerivative.Pool.UnreturnedArrayCount);
-            Console.WriteLine("Results: " + model.GetTerm(0).GetResult()[0] + ", " + model.GetTerm(0).GetResult()[1] + ", " + model.GetTerm(0).GetResult()[2] + ", " + model.GetTerm(0).GetResult()[3]);
+            var result = model.GetTerm(0).GetResult();
+            Console.WriteLine("Results: " + result[0] + ", " + result[1] + ", " + result[2] + ", " + result[3]);
             s.Stop();
             Console.WriteLine(s.ElapsedMilliseconds);
         }
 
         public static void deneme2()
         {
+            Hyperparameters.LearningRate = 0.2f;
             var x = new Input(256);
             var y = new Input(10);
             var l1 = Layer.Dense(32, x, "sigmoid");
-            var model = Layer.Dense(10, l1, "sigmoid");
-            var loss = Layer.SquaredError(model, y);
+            var model = Layer.Dense(10, l1, "");
+            var softmax = new SoftMax(model);
+            var loss = Layer.SquaredError(softmax, y);
 
 
             int batchsize = 32;
-            Hyperparameters.LearningRate = 0.1f;
             Console.WriteLine("Pool.UnreturnedArrayCount: " + Matrix.Pool.UnreturnedArrayCount);
             for (int ss = 0; ss < 20; ss++)
             {
@@ -93,30 +96,31 @@ namespace Tests
             loss.DeleteTerms();
             Console.WriteLine("Pool.UnreturnedArrayCount: " + Matrix.Pool.UnreturnedArrayCount);
 
-            //while (true)
-            //{
-            //    Thread.Sleep(1000);
-            //    string path = @"C:\Users\Faruk\OneDrive\Faruk Nane\Kod\Eski\handwritten digit\NeuralNetwork temiz\NeuralNetwork temiz\NeuralNetwork\bin\Debug";
-            //    StreamReader sr = new StreamReader(path + "\\resim.txt");
-            //    string s = sr.ReadToEnd();
-            //    sr.Close();
-            //    string[] data = s.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            //    float[,] features = new float[256, 1];
+            while (true)
+            {
+                Thread.Sleep(1000);
+                string path = @"C:\Users\Faruk\OneDrive\Faruk Nane\Kod\Eski\handwritten digit\NeuralNetwork temiz\NeuralNetwork temiz\NeuralNetwork\bin\Debug";
+                StreamReader sr = new StreamReader(path + "\\resim.txt");
+                string s = sr.ReadToEnd();
+                sr.Close();
+                string[] data = s.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                float[,] features = new float[256, 1];
 
-            //    for (int j = 0; j < 256; j++)
-            //        features[j, 0] = float.Parse(data[j]);
-            //    x.SetVariable(new Variable(256, 1) { Weights = features, Trainable = false });
-            //    l3.DeleteResults();
-            //    Matrix res = l3.GetResult();
-            //    float max = -1;
-            //    int index = -1;
-            //    for (int i = 0; i < res.D1; i++)
-            //    {
-            //        if (max < res[i])
-            //        { max = res[i]; index = i; }
-            //    }
-            //    Console.WriteLine(index);
-            //}
+                for (int j = 0; j < 256; j++)
+                    features[j, 0] = float.Parse(data[j]);
+                x.SetSequenceLength(1);
+                x.SetInput(0, features);
+                softmax.DeleteTerms();
+                Matrix res = softmax.GetTerm(0).GetResult();
+                float max = -1;
+                int index = -1;
+                for (int i = 0; i < res.D1; i++)
+                {
+                    if (max < res[i])
+                    { max = res[i]; index = i; }
+                }
+                Console.WriteLine(index);
+            }
 
         }
 
@@ -214,7 +218,7 @@ namespace Tests
         }
 
       
-        public static void deneme4()
+        public static void TestTimeShift()
         {
             Hyperparameters.LearningRate = 0.2f;
             Hyperparameters.Optimizer = new SGD();
@@ -240,14 +244,34 @@ namespace Tests
 
             }
         }
+        public static void TestSoftMax()
+        {
+            DeepLearningFramework.Data.Operators.Terms.Variable v1 = new DeepLearningFramework.Data.Operators.Terms.Variable(3, 2)
+            {
+                Weights = new float[3, 2] {
+                { 1, 1 },
+                { 3, 2 },
+                { 5, 1 }}
+            };
 
+            
+            var s = new DeepLearningFramework.Data.Operators.Terms.SoftMax(v1);
+            var softres = s.GetResult();
+
+            Console.WriteLine(softres[0,0]);
+            Console.WriteLine(softres[1,0]);
+            Console.WriteLine(softres[2,0]);
+            Console.WriteLine("-----");
+            Console.WriteLine(softres[0,1]);
+            Console.WriteLine(softres[1,1]);
+            Console.WriteLine(softres[2,1]);
+        }
         static void Main(string[] args)
         {
-
             LoadData();
             Stopwatch s = new Stopwatch();
             s.Start();
-            deneme();
+            deneme2();
             s.Stop();
             Console.WriteLine(s.ElapsedMilliseconds);
 

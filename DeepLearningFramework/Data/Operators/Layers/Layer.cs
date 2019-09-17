@@ -62,6 +62,8 @@ namespace DeepLearningFramework.Data.Operators.Layers
             l = new SumSequenceToOneByAdding(l); // SequenceLength = 1
             return l;
         }
+
+        
         public static Layer Dense(int size, Layer prev, string act)
         {
             Variable W = new Variable(size, prev.D1, prev.SequenceLength);
