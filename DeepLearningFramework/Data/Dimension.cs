@@ -104,4 +104,15 @@ namespace DeepLearningFramework.Data
             this.b = b;
         }
     }
+
+    public class ReflectDimension : Dimension
+    {
+        Dimension r;
+        public override int Value { [MethodImpl(MethodImplOptions.AggressiveInlining)] get { return r.Value; } set { } }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReflectDimension(Dimension r)
+        {
+            this.r = r;
+        }
+    }
 }

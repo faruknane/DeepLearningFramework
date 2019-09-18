@@ -6,34 +6,34 @@ using System.Text;
 
 namespace DeepLearningFramework.Data.Operators.Layers
 {
-    public class Recurrent : Layer
+    public class SimpleRNNDemo : Layer
     {
         public Layer L { get; internal set; }
         public override Dimension D1 { get; internal set; }
         public override Dimension D2 { get; internal set; }
 
-        public Func<Layer, Layer, Layer> F;
-        public Layer past;
-        public Layer res;
+        Terms.Variable W, B, WH;
 
-        public Recurrent(int size, Layer l, Func<Layer, Layer, Layer> x)
+        public SimpleRNNDemo(int size, Layer l)
         {
             this.L = l;
-            this.SequenceLength = L.SequenceLength;
             D1 = size;
-            D2 = L.D2;
-            this.past = new ShiftTime(this, -1);
-            F = x;
-            res = F(past, L);
-            if (!res.D1.HardEquals(D1))
-                throw new Exception("Dimensions should match!");
+            D2 = l.D2;
+            WH = new Terms.Variable(D1, D1);
+            W = new Terms.Variable(D1, l.D1);
+            B = new Terms.Variable(D1, 1);
+            this.SequenceLength = L.SequenceLength;
         }
-
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override Term CreateTerm(int time)
         {
-            return res.GetTerm(time);
+            Term x = L.GetTerm(time);
+            x = new Terms.Plus(new Terms.MatrixMultiply(W, x), new Terms.ExpandWithSame(B, 1, x.D2));
+
+            if (time > 0)
+                return new Terms.Plus(new Terms.MatrixMultiply(WH, GetTerm(time - 1)), x);
+            return x;
         }
 
         public override void DeleteTerms()

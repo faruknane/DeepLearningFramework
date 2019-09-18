@@ -52,7 +52,7 @@ namespace Tests
 
         public static void deneme2()
         {
-            Hyperparameters.LearningRate = 0.2f;
+            Hyperparameters.LearningRate = 0.15f;
             var x = new Input(256);
             var y = new Input(10);
             var l1 = Layer.Dense(32, x, "sigmoid");
@@ -266,12 +266,47 @@ namespace Tests
             Console.WriteLine(softres[1,1]);
             Console.WriteLine(softres[2,1]);
         }
+
+        public static void deneme4()
+        {
+            var x = new Input(1);
+
+            var l1 = new Recurrent(1, x, 
+                (Layer past, Layer x) => 
+                {
+                    return new Plus(past, x);
+                }
+            );
+
+            int seqlength = 10;
+            Random r = new Random();
+            {
+                x.SetSequenceLength(seqlength);
+                Console.Write("\nReal Results: ");
+                float sum = 0;
+                for (int i = 0; i < seqlength; i++)
+                {
+                    float num = (float)r.NextDouble() * 1;
+                    x.SetInput(i, new float[1, 1]
+                    {{ num}});
+                    sum += num;
+                    Console.Write(sum + ", ");
+                }
+                //Console.WriteLine("Matrix.Pool.UnreturnedArrayCount: " + Matrix.Pool.UnreturnedArrayCount);
+                Console.Write("\nExperiment Results: ");
+                l1.DeleteTerms();
+                for (int i = 0; i < seqlength; i++)
+                    Console.Write(l1.GetTerm(i).GetResult()[0] + ", ");
+                //Console.WriteLine("Matrix.Pool.UnreturnedArrayCount: " + Matrix.Pool.UnreturnedArrayCount);
+            }
+            
+        }
         static void Main(string[] args)
         {
             LoadData();
             Stopwatch s = new Stopwatch();
             s.Start();
-            deneme2();
+            deneme4();
             s.Stop();
             Console.WriteLine(s.ElapsedMilliseconds);
 

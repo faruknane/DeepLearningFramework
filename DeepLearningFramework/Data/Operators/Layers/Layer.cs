@@ -78,6 +78,8 @@ namespace DeepLearningFramework.Data.Operators.Layers
         {
             return new SimpleRNNDemo(size, prev);
         }
+
+    
     }
 
 }
