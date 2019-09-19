@@ -19,6 +19,20 @@ namespace DeepLearningFramework.Data.Operators.Layers
             D2 = W.D2;
             this.SequenceLength = Length;
         }
+
+        public Variable(int d1, int d2, Dimension Length, bool setzero)
+        {
+            W = new Terms.Variable(d1, d2);
+            if (setzero)
+                W.Weights.SetZero();
+            else
+                Randomiz.Randomize(W.Weights.Array);
+            D1 = W.D1;
+            D2 = W.D2;
+            this.SequenceLength = Length;
+        }
+
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override Term CreateTerm(int time)
         {

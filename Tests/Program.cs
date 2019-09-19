@@ -153,13 +153,22 @@ namespace Tests
 
         public static void deneme3()
         {
-            Hyperparameters.LearningRate = 0.0001f;
+            Hyperparameters.LearningRate = 0.001f;
             Hyperparameters.Optimizer = new SGD();
 
             var x = new Input(1);
             var y = new Input(1);
 
-            var l1 = Layer.SimpleRNNDemo(10, x);
+
+            var l1 = new Recurrent(10, x,
+                (Layer h, Layer x) =>
+                {
+                    var WH = new Variable(h.D1, h.D1, x.SequenceLength, true);
+                    return new Plus(new MatrixMultiply(WH, h), Layer.Dense(h.D1, x, ""));
+                }
+            );
+
+
             var model = Layer.Dense(1, l1, "");
             var loss = Layer.SquaredError(model, y);
             int seqlength = 10;
@@ -186,6 +195,8 @@ namespace Tests
                 //Console.WriteLine("Matrix.Pool.UnreturnedArrayCount: " + Matrix.Pool.UnreturnedArrayCount);
             }
             Console.WriteLine("Loss: " + loss.GetTerm(0).GetResult()[0]);
+
+
             while (true)
             {
                 x.SetSequenceLength(seqlength);
@@ -218,7 +229,7 @@ namespace Tests
         }
 
       
-        public static void TestTimeShift()
+        public static void TestShiftingTime()
         {
             Hyperparameters.LearningRate = 0.2f;
             Hyperparameters.Optimizer = new SGD();
@@ -272,9 +283,9 @@ namespace Tests
             var x = new Input(1);
 
             var l1 = new Recurrent(1, x, 
-                (Layer past, Layer x) => 
+                (Layer h, Layer x) => 
                 {
-                    return new Plus(past, x);
+                    return new Plus(h, x);
                 }
             );
 

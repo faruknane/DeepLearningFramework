@@ -2,6 +2,7 @@
 using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace DeepLearningFramework.Data.Operators.Terms
@@ -37,11 +38,13 @@ namespace DeepLearningFramework.Data.Operators.Terms
         //is variable ? 
         //how many times used
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal virtual Matrix CalculateResult()
         {
             throw new NotImplementedException();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual Matrix GetResult()
         {
             if(Result == null)
@@ -51,11 +54,13 @@ namespace DeepLearningFramework.Data.Operators.Terms
             return Result;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void CalculateDerivate(MMDerivative s)
         {
             throw new NotImplementedException();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void Minimize()
         {
             this.DeleteResults();
@@ -66,6 +71,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
         }
 
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void Maximize()
         {
             this.DeleteResults();
@@ -76,6 +82,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
             I.Dispose();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Derivate(MMDerivative m)
         {
             if (Used <= 0)
@@ -98,6 +105,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
             //Console.WriteLine(Type.ToString() + " -> " + Used);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void AddDerivative(MMDerivative m)
         {
             if (SumOfDerivative == null)
@@ -116,11 +124,13 @@ namespace DeepLearningFramework.Data.Operators.Terms
             //}
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void CalculateHowManyTimesUsed()
         {
             throw new NotImplementedException();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void DeleteResults()
         {
             if (SumOfDerivative != null)

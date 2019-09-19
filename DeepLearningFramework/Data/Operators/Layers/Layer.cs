@@ -32,6 +32,7 @@ namespace DeepLearningFramework.Data.Operators.Layers
 
         public abstract Term CreateTerm(int time);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void DeleteTerms()
         {
             for (int i = 0; i < Terms.Count; i++)
@@ -42,6 +43,7 @@ namespace DeepLearningFramework.Data.Operators.Layers
             Terms.Clear();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual void Minimize()
         {
             //first deleteresults of all terms of the layer
