@@ -45,5 +45,23 @@ loss.DeleteTerms();
 var result = model.GetTerm(0).GetResult();
 Console.WriteLine("Results: " + result[0] + ", " + result[1] + ", " + result[2] + ", " + result[3]);
 ```
+# Recurrent Layers
+```csharp
+var l1 = new Recurrent(1, x, 
+    (Layer h, Layer x) => 
+    {
+        return new Plus(h, x);
+    }
+);
+```
+```csharp
+var l1 = new Recurrent(10, x,
+    (Layer h, Layer x) =>
+    {
+        var WH = new Variable(h.D1, h.D1, x.SequenceLength, true);
+        return new Plus(new MatrixMultiply(WH, h), Layer.Dense(h.D1, x, ""));
+    }
+);
+```
 
 To support me: [My Patreon](https://www.patreon.com/afaruknane)
