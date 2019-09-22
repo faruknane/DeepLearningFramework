@@ -24,7 +24,8 @@ namespace DeepLearningFramework.Core
             m.MultiplyBy(neg * v.LearningRateMultiplier * Hyperparameters.LearningRate);
 
             float* ptr_v = v.Weights.GetPointer();
-            fixed(float* ptr_m = m.Derivatives)
+            float* ptr_m = m.Derivatives;
+
             for (int i1 = 0; i1 < m.D1; i1++)
                 for (int i2 = 0; i2 < m.D2; i2++)
                 {

@@ -55,9 +55,10 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
             Matrix sigmo = new Matrix(D1, D2);
             Matrix v = v1.GetResult();
-            for (int i = 0; i < D1; i++)
-                for (int j = 0; j < D2; j++)
-                    sigmo[i, j] = (1 / (1 + MathF.Exp(-v[i, j])));
+            unsafe
+            {
+                Vectorization.Sigmoid(v.Array, sigmo.Array, sigmo.D1 * sigmo.D2);
+            }
             return sigmo;
         }
         public override void CalculateHowManyTimesUsed()

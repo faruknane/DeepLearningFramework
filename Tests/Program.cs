@@ -50,9 +50,9 @@ namespace Tests
             Console.WriteLine(s.ElapsedMilliseconds);
         }
 
-        public static void deneme2()
+        public static unsafe void deneme2()
         {
-            Hyperparameters.LearningRate = 0.15f;
+            Hyperparameters.LearningRate = 0.1f;
             var x = new Input(256);
             var y = new Input(10);
             var l1 = Layer.Dense(32, x, "sigmoid");
@@ -96,7 +96,7 @@ namespace Tests
             loss.DeleteTerms();
             Console.WriteLine("Pool.UnreturnedArrayCount: " + Matrix.Pool.UnreturnedArrayCount);
 
-            while (true)
+            while (false)
             {
                 Thread.Sleep(1000);
                 string path = @"C:\Users\Faruk\OneDrive\Faruk Nane\Kod\Eski\handwritten digit\NeuralNetwork temiz\NeuralNetwork temiz\NeuralNetwork\bin\Debug";
@@ -317,7 +317,7 @@ namespace Tests
             LoadData();
             Stopwatch s = new Stopwatch();
             s.Start();
-            deneme4();
+            deneme2();
             s.Stop();
             Console.WriteLine(s.ElapsedMilliseconds);
 

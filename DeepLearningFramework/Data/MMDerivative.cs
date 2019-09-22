@@ -7,7 +7,7 @@ using System.Text;
 
 namespace DeepLearningFramework.Data
 {
-    public class MMDerivative
+    public unsafe class MMDerivative
     {
         public int D1 { get; set; }
         public int D2 { get; set; }
@@ -15,7 +15,8 @@ namespace DeepLearningFramework.Data
         public int D4 { get; set; }
         public bool Negative { get; set; } = false;
 
-        public float[] Derivatives;
+        public float* Derivatives;
+        private int Length;
         public static ArrayPool<float> Pool = ArrayPool<float>.Create(2, 1350);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -25,13 +26,13 @@ namespace DeepLearningFramework.Data
             D2 = d2;
             D3 = d3;
             D4 = d4;
-            Derivatives = Pool.Rent(d1 * d2 * d3 * d4);
+            Derivatives = (float*)Pool.Rent(d1 * d2 * d3 * d4, out Length);
             Vectorization.ElementWiseSetValueAVX(Derivatives, 0, d1 * d2 * d3 * d4);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Dispose()
         {
-            Pool.Return(Derivatives);
+            Pool.Return(Derivatives, Length);
         }
         public float this[int x1, int x2, int x3, int x4]
         {
@@ -80,7 +81,6 @@ namespace DeepLearningFramework.Data
         {
             MMDerivative n = new MMDerivative(m.D1, m.D2, m.D3, m.D4);
             n.Negative = m.Negative;
-            n.Derivatives = Pool.Rent(m.D1 * m.D2 * m.D3 * m.D4);
             Vectorization.ElementWiseAssignAVX(n.Derivatives, m.Derivatives, m.D1 * m.D2 * m.D3 * m.D4);
             return n;
         }

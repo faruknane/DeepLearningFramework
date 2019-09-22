@@ -32,8 +32,8 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
             Matrix B = v2.GetResult();
             Matrix A = v1.GetResult();
-            B = Matrix.TranposeOf(B);
-            A = Matrix.TranposeOf(A);
+            //B = Matrix.TranposeOf(B);
+            //A = Matrix.TranposeOf(A);
 
             //MMDerivative WRTLeft = new MMDerivative(v1.D1, v2.D2, v1.D1, v1.D2);
             //for (int a = 0; a < v1.D1; a++)
@@ -49,16 +49,16 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
             var combinedleft = new MMDerivative(s.D1, s.D2, v1.D1, v1.D2);
             var combinedright = new MMDerivative(s.D1, s.D2, v2.D1, v2.D2);
-            
-           
-            fixed (float* ptr_left = combinedleft.Derivatives, ptr_s = s.Derivatives, ptr_b = B.Array)
+
+
+            float* ptr_left = combinedleft.Derivatives, ptr_s = s.Derivatives, ptr_b = B.Array;
                 for (int i1 = 0; i1 < s.D1; i1++)
                     for (int i2 = 0; i2 < s.D2; i2++)
                     {
                         //i1 * D2 * D3 * D4 + i2 * D3 * D4
                         int loc_left = i1 * combinedleft.D2 * combinedleft.D3 * combinedleft.D4 + i2 * combinedleft.D3 * combinedleft.D4;
                         int loc_s = i1 * s.D2 * s.D3 * s.D4 + i2 * s.D3 * s.D4;
-                        Vectorization.MatrixMultiply(ptr_s + loc_s, s.D3, s.D4, ptr_b, B.D1, B.D2, ptr_left + loc_left);
+                        Vectorization.TransposeBandMatrixMultiply(ptr_s + loc_s, s.D3, s.D4, ptr_b, B.D1, B.D2, ptr_left + loc_left);
                         //combinedleft[i1, i2, i3, x2] += s[i1, i2, i3, i4] * B[i4, x2];//for transpose of B
                     }
 
@@ -69,13 +69,13 @@ namespace DeepLearningFramework.Data.Operators.Terms
             //                for (int i4 = 0; i4 < s.D4; i4++) //v2.D2
             //                    combinedleft[i1, i2, i3, x2] += s[i1, i2, i3, i4] * B[x2, i4];//for normal B 
 
-            fixed (float* ptr_right = combinedright.Derivatives, ptr_s = s.Derivatives, ptr_a = A.Array)
+            float* ptr_right = combinedright.Derivatives, ptr_a = A.Array; ptr_s = s.Derivatives;
                 for (int i1 = 0; i1 < s.D1; i1++)
                     for (int i2 = 0; i2 < s.D2; i2++)
                     {
                         int loc_right = i1 * combinedright.D2 * combinedright.D3 * combinedright.D4 + i2 * combinedright.D3 * combinedright.D4;
                         int loc_s = i1 * s.D2 * s.D3 * s.D4 + i2 * s.D3 * s.D4;
-                        Vectorization.MatrixMultiply(ptr_a, A.D1, A.D2, ptr_s + loc_s, s.D3, s.D4, ptr_right + loc_right);
+                        Vectorization.TransposeAandMatrixMultiply(ptr_a, A.D1, A.D2, ptr_s + loc_s, s.D3, s.D4, ptr_right + loc_right);
                         //combinedright[i1, i2, x1, i4] += s[i1, i2, i3, i4] * A[x1, i3];
                     }
             //for (int i1 = 0; i1 < s.D1; i1++)
@@ -90,8 +90,8 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
             v1.Derivate(combinedleft);
             v2.Derivate(combinedright);
-            A.Dispose();
-            B.Dispose();
+            //A.Dispose();
+            //B.Dispose();
             combinedleft.Dispose();
             combinedright.Dispose();
 

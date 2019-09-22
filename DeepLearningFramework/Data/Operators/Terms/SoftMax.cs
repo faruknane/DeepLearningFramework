@@ -59,16 +59,22 @@ namespace DeepLearningFramework.Data.Operators.Terms
             sum.SetZero();
             Matrix v = v1.GetResult();
 
-            for (int j = 0; j < D2; j++)
+            unsafe
             {
-                for (int i = 0; i < D1; i++)
+                Vectorization.Exponential(v.Array, sm.Array, sm.D1 * sm.D2);
+
+                for (int j = 0; j < D2; j++)
                 {
-                    sm[i, j] = MathF.Exp(v[i, j]);
-                    sum[0, j] += sm[i, j];
+                    for (int i = 0; i < D1; i++)
+                    {
+                        //sm[i, j] = MathF.Exp(v[i, j]);
+                        sum[0, j] += sm[i, j];
+                    }
+                    for (int i = 0; i < D1; i++)
+                        sm[i, j] = sm[i, j] / sum[0, j];
                 }
-                for (int i = 0; i < D1; i++)
-                    sm[i, j] = sm[i,j] / sum[0,j];
             }
+
             sum.Dispose();
             return sm;
         }
