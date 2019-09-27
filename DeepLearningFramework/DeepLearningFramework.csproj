@@ -21,8 +21,7 @@
 
   <ItemGroup>
     <Reference Include="PerformanceWork">
-      <HintPath>..\..\Performance-Work\PerformanceWork\bin\Debug\netcoreapp3.0\PerformanceWork.dll</HintPath>
-      <Private>true</Private>
+      <HintPath>..\..\Performance-Work\PerformanceWork\bin\Release\netcoreapp3.0\PerformanceWork.dll</HintPath>
     </Reference>
   </ItemGroup>
 

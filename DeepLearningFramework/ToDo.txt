@@ -1,1 +1,3 @@
-﻿If there is no variable to be trained in a term expression, we should not dive into, waste of time.
+﻿1 - If there is no variable to be trained in a term expression, we should not dive into, waste of time.
+2 - Should we delete layer class? Continue with just terms? Then what happens to sequential processing layers like shifttime?
+3 - 
