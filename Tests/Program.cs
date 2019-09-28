@@ -15,7 +15,7 @@ namespace Tests
 
         public static void deneme()
         {
-            Hyperparameters.LearningRate = 2f;
+            Hyperparameters.LearningRate = 0.2f;
             Hyperparameters.Optimizer = new SGD();
 
             var x = new Input(2);
@@ -23,6 +23,7 @@ namespace Tests
             //var l1 = Layer.Dense(2, x, "sigmoid"); 
 
             var model = Layer.Dense(2, x, "sigmoid"); 
+            model = Layer.Dense(10, model, ""); 
             model = Layer.Dense(1, model, "sigmoid"); 
 
             var loss = Layer.SquaredError(model, y);
@@ -31,7 +32,7 @@ namespace Tests
             Stopwatch s = new Stopwatch();
             s.Start();
             Console.WriteLine("Pool.UnreturnedArrayCount: " + MMDerivative.Pool.UnreturnedArrayCount);
-            for (int epoch = 0; epoch < 15000; epoch++)
+            for (int epoch = 0; epoch < 1000; epoch++)
             {
                 x.SetSequenceLength(1);
                 y.SetSequenceLength(1);
@@ -316,7 +317,7 @@ namespace Tests
             LoadData();
             Stopwatch s = new Stopwatch();
             s.Start();
-            deneme();
+            deneme2();
             s.Stop();
             Console.WriteLine(s.ElapsedMilliseconds);
 

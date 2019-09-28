@@ -14,7 +14,7 @@ namespace DeepLearningFramework.Data.Operators.Layers
         {
             Random r = new Random();
             for (int i = 0; i < Length; i++)
-                a[i] = (float)(r.NextDouble() * 0.1 - 0.05f);
+                a[i] = (float)(r.NextDouble() * 2 - 1f);
             return a;
         }
     }
