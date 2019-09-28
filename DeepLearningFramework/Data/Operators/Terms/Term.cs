@@ -38,13 +38,13 @@ namespace DeepLearningFramework.Data.Operators.Terms
         //is variable ? 
         //how many times used
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal virtual Matrix CalculateResult()
         {
             throw new NotImplementedException();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual Matrix GetResult()
         {
             if(Result == null)
@@ -54,13 +54,13 @@ namespace DeepLearningFramework.Data.Operators.Terms
             return Result;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual void CalculateDerivate(MMDerivative s)
         {
             throw new NotImplementedException();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual void Minimize()
         {
             this.DeleteResults();
@@ -71,7 +71,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
         }
 
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual void Maximize()
         {
             this.DeleteResults();
@@ -82,7 +82,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
             I.Dispose();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Derivate(MMDerivative m)
         {
             if (Used <= 0)
@@ -105,7 +105,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
             //Console.WriteLine(Type.ToString() + " -> " + Used);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private void AddDerivative(MMDerivative m)
         {
             if (SumOfDerivative == null)
@@ -124,13 +124,13 @@ namespace DeepLearningFramework.Data.Operators.Terms
             //}
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual void CalculateHowManyTimesUsed()
         {
             throw new NotImplementedException();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual void DeleteResults()
         {
             if (SumOfDerivative != null)

@@ -30,7 +30,7 @@ namespace DeepLearningFramework.Data.Operators.Layers
         }
 
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override Term CreateTerm(int time)
         {
             return res.GetTerm(time);

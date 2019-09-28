@@ -21,7 +21,7 @@ namespace DeepLearningFramework.Data.Operators.Layers
             this.SequenceLength = L1.SequenceLength;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override Term CreateTerm(int time)
         {
             if (!this.L1.SequenceLength.HardEquals(this.L2.SequenceLength))

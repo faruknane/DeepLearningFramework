@@ -22,7 +22,7 @@ namespace DeepLearningFramework.Data.Operators.Layers
             this.Shift = shift;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override Terms.Term CreateTerm(int time)
         {
             if(time >= this.SequenceLength - Shift || time < -Shift)

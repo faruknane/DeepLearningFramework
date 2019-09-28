@@ -18,7 +18,7 @@ namespace DeepLearningFramework.Data.Operators.Layers
         public virtual Dimension SequenceLength { get; internal set; }
 
         public List<Term> Terms = new List<Term>();
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual Term GetTerm(int time)
         {
             while (Terms.Count <= time && Terms.Count < SequenceLength)
@@ -32,7 +32,7 @@ namespace DeepLearningFramework.Data.Operators.Layers
 
         public abstract Term CreateTerm(int time);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual void DeleteTerms()
         {
             for (int i = 0; i < Terms.Count; i++)
@@ -43,7 +43,7 @@ namespace DeepLearningFramework.Data.Operators.Layers
             Terms.Clear();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual void Minimize()
         {
             //first deleteresults of all terms of the layer

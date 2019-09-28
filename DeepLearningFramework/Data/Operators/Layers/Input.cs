@@ -21,14 +21,14 @@ namespace DeepLearningFramework.Data.Operators.Layers
             this.SequenceLength = new Dimension();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override Term CreateTerm(int time)
         {
             return new PlaceHolder(D1);
         }
 
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void SetInput(int time, Matrix inp)
         {
             PlaceHolder h = (PlaceHolder)GetTerm(time);

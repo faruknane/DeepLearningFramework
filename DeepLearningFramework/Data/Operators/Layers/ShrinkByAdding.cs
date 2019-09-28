@@ -45,7 +45,7 @@ namespace DeepLearningFramework.Data.Operators.Layers
             this.SequenceLength = 1;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override Term CreateTerm(int time)
         {
             Term t = null;
@@ -78,7 +78,7 @@ namespace DeepLearningFramework.Data.Operators.Layers
             this.SequenceLength = this.L.SequenceLength;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override Term CreateTerm(int time)
         {
             Term t = L.GetTerm(time);

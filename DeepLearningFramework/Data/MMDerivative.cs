@@ -19,7 +19,7 @@ namespace DeepLearningFramework.Data
         private int Length;
         public static ArrayPool<float> Pool = ArrayPool<float>.Create(2, 1350);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public MMDerivative(int d1, int d2, int d3, int d4)
         {
             D1 = d1;
@@ -29,19 +29,22 @@ namespace DeepLearningFramework.Data
             Derivatives = (float*)Pool.Rent(d1 * d2 * d3 * d4, out Length);
             Vectorization.ElementWiseSetValueAVX(Derivatives, 0, d1 * d2 * d3 * d4);
         }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             Pool.Return(Derivatives, Length);
         }
+
         public float this[int x1, int x2, int x3, int x4]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get
             {
                 return Derivatives[x1 * D2 * D3 * D4 + x2 * D3 * D4 + x3 * D4 + x4];
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set
             {
                 Derivatives[x1 * D2 * D3 * D4 + x2 * D3 * D4 + x3 * D4 + x4] = value;
@@ -66,7 +69,7 @@ namespace DeepLearningFramework.Data
             return res;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void MultiplyBy(float x)
         {
             Vectorization.ElementWiseMultiplyAVX(this.Derivatives, x, this.Derivatives, D1 * D2 * D3 * D4);
@@ -85,13 +88,13 @@ namespace DeepLearningFramework.Data
             return n;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void DivideBy(float x)
         {
             Vectorization.ElementWiseMultiplyAVX(this.Derivatives, 1/x, this.Derivatives, D1 * D2 * D3 * D4);
         }
 
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         //public MMDerivative CombineWith(MMDerivative m)
         //{
         //    if (D3 != m.D1 || D4 != m.D2)

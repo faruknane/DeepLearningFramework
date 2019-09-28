@@ -9,7 +9,7 @@ namespace DeepLearningFramework.Data.Operators.Layers
     public class Randomiz
     {
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static unsafe float* Randomize(float* a, int Length)
         {
             Random r = new Random();

@@ -32,7 +32,7 @@ namespace Tests
             Stopwatch s = new Stopwatch();
             s.Start();
             Console.WriteLine("Pool.UnreturnedArrayCount: " + MMDerivative.Pool.UnreturnedArrayCount);
-            for (int epoch = 0; epoch < 1000; epoch++)
+            for (int epoch = 0; epoch < 100000; epoch++)
             {
                 x.SetSequenceLength(1);
                 y.SetSequenceLength(1);
@@ -317,7 +317,7 @@ namespace Tests
             LoadData();
             Stopwatch s = new Stopwatch();
             s.Start();
-            deneme2();
+            deneme();
             s.Stop();
             Console.WriteLine(s.ElapsedMilliseconds);
 
