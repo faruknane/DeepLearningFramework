@@ -20,9 +20,11 @@ namespace DeepLearningFramework.Data.Operators.Terms
         Sigmoid,
         SoftMax,
         Variable,
-        Experimental
+        Experimental,
+        Embedding
     }
-    public class Term
+
+    public abstract class Term
     {
         public virtual Dimension D1 { get; internal set; } //Assign in in initializer.
         public virtual Dimension D2 { get; internal set; }
@@ -39,10 +41,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
         //how many times used
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal virtual Matrix CalculateResult()
-        {
-            throw new NotImplementedException();
-        }
+        internal abstract Matrix CalculateResult();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual Matrix GetResult()
@@ -55,10 +54,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public virtual void CalculateDerivate(MMDerivative s)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void CalculateDerivate(MMDerivative s);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual void Minimize()
@@ -125,10 +121,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public virtual void CalculateHowManyTimesUsed()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void CalculateHowManyTimesUsed();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual void DeleteResults()
@@ -148,5 +141,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
                 Result = null;
             }
         }
+
+        
     }
 }

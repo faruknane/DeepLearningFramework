@@ -23,7 +23,8 @@ namespace DeepLearningFramework.Data.Operators.Terms
             if(v1 != null)
             {
                 Variable v11 = (Variable)v1;
-                v11.Weights.Dispose();
+                if(!v11.Weights.Returned)
+                    v11.Weights.Dispose();
                 v11 = null;
                 v1 = null;
             }

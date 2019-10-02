@@ -1,6 +1,7 @@
 ﻿using DeepLearningFramework.Data;
 using PerformanceWork.OptimizedNumerics;
 using System;
+using System.Threading.Tasks;
 
 namespace DeepLearningFramework.Data.Operators.Terms
 {

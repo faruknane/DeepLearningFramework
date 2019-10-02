@@ -31,7 +31,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
             if (!D1.HardEquals(D1) || !D2.HardEquals(D2))
                 throw new Exception("Terms should have an exact value!");
 
-            MMDerivative combined = new MMDerivative(s.D1, s.D2, v1.D1, v1.D2);
+            MMDerivative combined = new MMDerivative(s.D1, s.D2, v1.D1, v1.D2, true);
             for (int i1 = 0; i1 < s.D1; i1++)
                 for (int i2 = 0; i2 < s.D2; i2++)
                     for (int i3 = 0; i3 < v1.D1; i3++)

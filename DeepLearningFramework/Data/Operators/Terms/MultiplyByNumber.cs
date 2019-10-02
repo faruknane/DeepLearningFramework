@@ -35,6 +35,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
                 throw new Exception("Terms should have an exact value!");
             return v1.GetResult() * v2;
         }
+
         public override void CalculateHowManyTimesUsed()
         {
             if (Used == 0)
@@ -43,6 +44,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
             }
             Used++;
         }
+        
         public override void DeleteResults()
         {
             base.DeleteResults();

@@ -39,6 +39,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
                 throw new Exception("Terms to be sum should have the same dimensions!");
             return v1.GetResult() - v2.GetResult();
         }
+
         public override void CalculateHowManyTimesUsed()
         {
             if (Used == 0)

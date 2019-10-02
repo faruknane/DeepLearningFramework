@@ -2,11 +2,12 @@
 using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace DeepLearningFramework.Data.Operators.Terms
 {
-    public class Variable : Term
+    public class Variable : Term, Trainable
     {
         private Matrix m;
         public String Name { get; set; }

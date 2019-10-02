@@ -3,6 +3,7 @@ using DeepLearningFramework.Data.Operators.Terms;
 using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace DeepLearningFramework.Core
@@ -14,15 +15,14 @@ namespace DeepLearningFramework.Core
             
         }
 
-        public unsafe void UpdateWeights(Variable v, MMDerivative m)
+        public unsafe void UpdateWeights(Trainable v, MMDerivative m)
         {
+
             //Console.WriteLine("Updating The Variable with ID " + v.UniqueId);
-            if (m.D3 != v.D1 || m.D4 != v.D2)
+            if (m.D3 != v.Weights.D1 || m.D4 != v.Weights.D2)
                 throw new Exception("Dimensions!");
 
             int neg = (m.Negative ? -1 : 1);
-            m.MultiplyBy(neg * v.LearningRateMultiplier * Hyperparameters.LearningRate);
-
             float* ptr_v = v.Weights.GetPointer();
             float* ptr_m = m.Derivatives;
 
@@ -30,9 +30,8 @@ namespace DeepLearningFramework.Core
                 for (int i2 = 0; i2 < m.D2; i2++)
                 {
                     int loc_m = i1 * m.D2 * m.D3 * m.D4 + i2 * m.D3 * m.D4;
-                    Vectorization.ElementWiseSubtractAVX(ptr_v, ptr_m + loc_m, ptr_v, v.D1.Value * v.D2.Value);
+                    Vectorization.ElementWiseSubtractAVXBetaB(ptr_v, ptr_m + loc_m, ptr_v, v.Weights.D1 * v.Weights.D2, neg * v.LearningRateMultiplier * Hyperparameters.LearningRate);
                 }
-            m.DivideBy(neg * v.LearningRateMultiplier * Hyperparameters.LearningRate);
         }
     }
 }

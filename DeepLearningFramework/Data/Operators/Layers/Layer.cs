@@ -53,6 +53,30 @@ namespace DeepLearningFramework.Data.Operators.Layers
             for (int i = 0; i < SequenceLength; i++)
                 GetTerm(i).Minimize();
         }
+
+        #region Operators * + - / 
+
+        public static Layer operator +(Layer x, Layer y)
+        {
+            return new Plus(x, y);
+        }
+
+        public static Layer operator *(Layer x, Layer y)
+        {
+            return new MatrixMultiply(x, y);
+        }
+
+        //public static Layer operator +(Layer x, float y)
+        //{
+        //    return new MultiplyByNumber(x, y); //add it's layer version !
+        //}
+
+        public static Layer operator -(Layer x, Layer y)
+        {
+            return new Minus(x, y);
+        }
+
+        #endregion
     }
 
     public partial class Layer

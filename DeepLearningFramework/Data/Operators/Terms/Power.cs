@@ -24,31 +24,47 @@ namespace DeepLearningFramework.Data.Operators.Terms
             D2 = this.v1.D2;
         }
 
-        public override void CalculateDerivate(MMDerivative s)
+        public override unsafe void CalculateDerivate(MMDerivative s)
         {
             if (!D1.HardEquals(D1) || !D2.HardEquals(D2))
                 throw new Exception("Terms should have an exact value!");
 
             Matrix res = v1.GetResult();
+            MMDerivative combined = new MMDerivative(s.D1, s.D2, D1, D2, false);
 
-            Matrix pow = Matrix.CreateCopy(res);//Res ^ 1
+            if (PowerOf == 2)
+            {
+                for (int x1 = 0; x1 < s.D1; x1++)
+                    for (int x2 = 0; x2 < s.D2; x2++)
+                    {
+                        float* ptr_combined = combined.Derivatives + x1 * combined.D2 * combined.D3 * combined.D4 + x2 * combined.D3 * combined.D4;
+                        float* ptr_s = s.Derivatives + x1 * s.D2 * s.D3 * s.D4 + x2 * s.D3 * s.D4;
+                        Vectorization.ElementWise_A_MultipliedBy_B_MultipliedBy_C(res.Array, ptr_s, PowerOf, ptr_combined, res.D1 * res.D2);
+                    }
+                combined.Negative = s.Negative;
+                v1.Derivate(combined);
+                combined.Dispose();
+            }
+            else
+            {
+                Matrix pow = Matrix.CreateCopy(res);//Res ^ 1
 
-            for (int n = 0; n < PowerOf - 2; n++)
-                pow.ElementWiseMultiply(res);
-            //pow = res^ (powerof - 1)
+                for (int n = 0; n < PowerOf - 2; n++)
+                    pow.ElementWiseMultiply(res);
 
-            //MMDerivative m = new MMDerivative(D1, D2, D1, D2);
-            MMDerivative combined = new MMDerivative(s.D1, s.D2, D1, D2);
+                for (int x1 = 0; x1 < s.D1; x1++)
+                    for (int x2 = 0; x2 < s.D2; x2++)
+                    {
+                        float* ptr_combined = combined.Derivatives + x1 * combined.D2 * combined.D3 * combined.D4 + x2 * combined.D3 * combined.D4;
+                        float* ptr_s = s.Derivatives + x1 * s.D2 * s.D3 * s.D4 + x2 * s.D3 * s.D4;
+                        Vectorization.ElementWise_A_MultipliedBy_B_MultipliedBy_C(pow.Array, ptr_s, PowerOf, ptr_combined, pow.D1 * pow.D2);
+                    }
 
-            for (int x1 = 0; x1 < s.D1; x1++)
-                for (int x2 = 0; x2 < s.D2; x2++)
-                    for (int i1 = 0; i1 < D1; i1++)
-                        for (int i2 = 0; i2 < D2; i2++)
-                            combined[x1, x2, i1, i2] = s[x1, x2, i1, i2] * PowerOf * pow[i1, i2];//m[i1, i2, i1, i2] = PowerOf * pow[i1, i2];
-            combined.Negative = s.Negative;
-            v1.Derivate(combined);
-            pow.Dispose();
-            combined.Dispose();
+                combined.Negative = s.Negative;
+                v1.Derivate(combined);
+                pow.Dispose();
+                combined.Dispose();
+            }
         }
 
         internal override Matrix CalculateResult()

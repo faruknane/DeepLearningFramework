@@ -26,7 +26,7 @@ namespace DeepLearningFramework.Data.Operators.Layers
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override Term CreateTerm(int time)
         {
-            return new Terms.ExpandWithSame(L.GetTerm(time), RowMultiplier,ColumnMultiplier);
+            return new Terms.ExpandWithSame(L.GetTerm(time), RowMultiplier, ColumnMultiplier);
         }
 
         public override void DeleteTerms()
