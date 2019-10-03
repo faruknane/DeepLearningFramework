@@ -8,6 +8,7 @@ using System.Text;
 
 namespace DeepLearningFramework.Core
 {
+
     public class SGD : VariableOptimizer
     {
         public SGD()
@@ -15,10 +16,11 @@ namespace DeepLearningFramework.Core
             
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public unsafe void UpdateWeights(Trainable v, MMDerivative m)
         {
+            //Console.WriteLine("Updating The Variable with ID " + v.UniqueId); trainable should have uniqueID
 
-            //Console.WriteLine("Updating The Variable with ID " + v.UniqueId);
             if (m.D3 != v.Weights.D1 || m.D4 != v.Weights.D2)
                 throw new Exception("Dimensions!");
 

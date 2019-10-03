@@ -13,7 +13,6 @@ namespace Tests
 {
     class Program
     {
-
         public static void deneme()
         {
             Hyperparameters.LearningRate = 1f;
@@ -30,7 +29,7 @@ namespace Tests
             Stopwatch s = new Stopwatch();
             s.Start();
             Console.WriteLine("Pool.UnreturnedArrayCount: " + MMDerivative.Pool2.UnreturnedArrayCount);
-            for (int epoch = 0; epoch < 20000; epoch++)
+            for (int epoch = 0; epoch < 2000; epoch++)
             {
                 x.SetSequenceLength(1);
                 y.SetSequenceLength(1);
@@ -56,6 +55,7 @@ namespace Tests
             var l1 = Layer.Dense(500, x, "sigmoid");
             var model = Layer.Dense(10, l1, "");
             var softmax = new SoftMax(model);
+
             var loss = Layer.SquaredError(softmax, y);
 
 
@@ -211,7 +211,7 @@ namespace Tests
             Console.WriteLine("Loss: " + loss.GetTerm(0).GetResult()[0]);
 
 
-            while (true)
+            while (false)
             {
                 x.SetSequenceLength(seqlength);
                 y.SetSequenceLength(seqlength);
@@ -309,7 +309,7 @@ namespace Tests
                 x.SetSequenceLength(seqlength);
                 Console.Write("\nReal Results: ");
                 float sum = 0;
-                for (int i = 0; i < seqlength; i++)
+                for (int i = 0; i < seqlength; i++) 
                 {
                     float num = (float)r.NextDouble() * 1;
                     x.SetInput(i, new float[1, 1]
@@ -350,7 +350,7 @@ namespace Tests
             LoadData();
             Stopwatch s = new Stopwatch();
             s.Start();
-            deneme2();
+            deneme();
             s.Stop();
             Console.WriteLine(s.ElapsedMilliseconds);
             Console.WriteLine("Hello World!");
