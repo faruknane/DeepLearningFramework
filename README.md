@@ -50,7 +50,7 @@ Console.WriteLine("Results: " + result[0] + ", " + result[1] + ", " + result[2] 
 var l1 = new Recurrent(1, x, 
     (Layer h, Layer x) => 
     {
-        return new Plus(h, x);
+        return h + x;
     }
 );
 ```
@@ -58,8 +58,8 @@ var l1 = new Recurrent(1, x,
 var l1 = new Recurrent(10, x,
     (Layer h, Layer x) =>
     {
-        var WH = new Variable(h.D1, h.D1, x.SequenceLength, true);
-        return new Plus(new MatrixMultiply(WH, h), Layer.Dense(h.D1, x, ""));
+        var WH = new Variable(h.D1, h.D1, x.SequenceLength, setzero: true);
+        return WH * h + Layer.Dense(h.D1, x, "");
     }
 );
 ```
