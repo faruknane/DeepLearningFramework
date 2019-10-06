@@ -33,6 +33,7 @@ namespace DeepLearningFramework.Core
                 {
                     int loc_m = i1 * m.D2 * m.D3 * m.D4 + i2 * m.D3 * m.D4;
                     Vectorization.ElementWiseSubtractAVXBetaB(ptr_v, ptr_m + loc_m, ptr_v, v.Weights.D1 * v.Weights.D2, neg * v.LearningRateMultiplier * Hyperparameters.LearningRate);
+                    //- koy add yap fma multply add
                 }
         }
     }

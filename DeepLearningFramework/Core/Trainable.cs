@@ -11,6 +11,7 @@ namespace DeepLearningFramework.Core
         public bool Trainable { get; }
         public float LearningRateMultiplier { get; }
         public Matrix Weights { get;  }
-
+        public int UniqueId { get; }
+        
     }
 }

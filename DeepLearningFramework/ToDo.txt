@@ -1,6 +1,6 @@
 ﻿1 - If there is no variable to be trained in a term expression, we should not dive into, waste of time. (Terms.Used should be equal to 0)
 2 - Should we delete layer class? Continue with just terms? Then what happens to sequential processing layers like shifttime?
-3 - Training Interface instead of manually assigning each input of the network.
+3 - Training Interface is needed / instead of manually assigning each input of the network.
 4 - Dimension -> turn the class to struct containing a pointer which indicates the Value of the dimension. (first 5. item below, then check if dimension needs optimizing, impact -> %7-8)
 5 - Optimize expand and shrink terms
 6 - Each variable has to have an unique ID for VariableOptimizers.

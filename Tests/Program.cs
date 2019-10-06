@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Tests
 {
@@ -350,7 +351,7 @@ namespace Tests
             LoadData();
             Stopwatch s = new Stopwatch();
             s.Start();
-            deneme();
+            deneme2();
             s.Stop();
             Console.WriteLine(s.ElapsedMilliseconds);
             Console.WriteLine("Hello World!");

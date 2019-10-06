@@ -20,6 +20,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
         public Matrix Vocabulary { get; set; }
 
+        public int UniqueId { get; set; }
 
         public Embedding(Term v1, int VectorSize, int VocabSize)
         {
@@ -36,6 +37,8 @@ namespace DeepLearningFramework.Data.Operators.Terms
             {
                 Layers.Randomiz.Randomize(Vocabulary.Array, Vocabulary.D1 * Vocabulary.D2);
             }
+            UniqueId = Variable.UniqueIdAssigner;
+            Variable.UniqueIdAssigner++;
         }
 
         public override void CalculateDerivate(MMDerivative s)
