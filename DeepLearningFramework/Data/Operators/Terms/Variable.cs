@@ -58,7 +58,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
         public void SetValue(Matrix n)
         {
-            if(this.D1 != n.D1 || this.D2 != n.D2)
+            if (this.D1 != n.D1 || this.D2 != n.D2)
                 throw new Exception("The Matrix should have the same dimensions with the Variable!");
             Weights = n;
         }
@@ -76,7 +76,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
         public override void CalculateDerivate(MMDerivative s)
         {
-            if(Trainable)
+            if (Trainable)
             {
                 Hyperparameters.Optimizer.UpdateWeights(this, s);
             }

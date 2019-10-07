@@ -46,7 +46,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual Matrix GetResult()
         {
-            if(Result == null)
+            if (Result == null)
             {
                 return Result = CalculateResult();
             }
@@ -136,12 +136,12 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
             if (Result != null)
             {
-                if(Type != TermType.Variable && Type != TermType.PlaceHolder)
+                if (Type != TermType.Variable && Type != TermType.PlaceHolder)
                     Result.Dispose();
                 Result = null;
             }
         }
 
-        
+
     }
 }

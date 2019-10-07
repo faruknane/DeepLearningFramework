@@ -39,7 +39,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
             for (int i1 = 0; i1 < s.D1; i1++)
                 for (int i2 = 0; i2 < s.D2; i2++)
                 {
-                    Vectorization.ElementWise_A_MultipliedBy_1_Minus_A_MultipliedByB(sigmo.Array, s.Derivatives + i1 * s.D2 * s.D3 * s.D4 + i2 * s.D3 * s.D4, combined.Derivatives + i1*s.D2*s.D3*s.D4 + i2*s.D3*s.D4,sigmo.D1*sigmo.D2);
+                    Vectorization.ElementWise_A_MultipliedBy_1_Minus_A_MultipliedByB(sigmo.Array, s.Derivatives + i1 * s.D2 * s.D3 * s.D4 + i2 * s.D3 * s.D4, combined.Derivatives + i1 * s.D2 * s.D3 * s.D4 + i2 * s.D3 * s.D4, sigmo.D1 * sigmo.D2);
                     //for (int i3 = 0; i3 < thisD1; i3++)
                     //    for (int i4 = 0; i4 < thisD2; i4++)
                     //        combined[i1, i2, i3, i4] = s[i1, i2, i3, i4] * (sigmo[i3, i4] * (1 - sigmo[i3, i4]));

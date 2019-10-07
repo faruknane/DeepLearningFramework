@@ -61,12 +61,12 @@ namespace Tests
 
 
             int batchsize = 100;
-            Console.WriteLine("Pool.UnreturnedArrayCount: " + Matrix.Pool.UnreturnedArrayCount);
+            Console.WriteLine("Pool.UnreturnedArrayCount:  " + Matrix.Pool.UnreturnedArrayCount);
             Console.WriteLine("MMPool.UnreturnedArrayCount: " + MMDerivative.Pool2.UnreturnedArrayCount);
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            int run = 10;
+            int run = 1;
             for (int ss = 0; ss < run; ss++)
             {
                 float err = 0;
@@ -345,6 +345,8 @@ namespace Tests
 
             a.Minimize();
         }
+
+       
 
         static void Main(string[] args)
         {

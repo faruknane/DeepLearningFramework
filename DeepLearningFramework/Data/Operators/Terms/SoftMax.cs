@@ -69,7 +69,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
 
             combined.Negative = s.Negative;
-
+            sum.Dispose();
             v1.Derivate(combined);
             combined.Dispose();
         }

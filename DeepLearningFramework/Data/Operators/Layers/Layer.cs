@@ -89,7 +89,7 @@ namespace DeepLearningFramework.Data.Operators.Layers
             return l;
         }
 
-        
+
         public static Layer Dense(int size, Layer prev, string act)
         {
             Variable W = new Variable(size, prev.D1, prev.SequenceLength);
@@ -100,12 +100,6 @@ namespace DeepLearningFramework.Data.Operators.Layers
             return res;
         }
 
-        public static Layer SimpleRNNDemo(int size, Layer prev)
-        {
-            return new SimpleRNNDemo(size, prev);
-        }
-
-    
     }
 
 }
