@@ -1,21 +1,21 @@
 ﻿using DeepLearningFramework.Data;
 using PerformanceWork.OptimizedNumerics;
 using System;
+using DeepLearningFramework.Core;
 
 namespace DeepLearningFramework.Data.Operators.Terms
 {
     public class SoftMax : Term
     {
-        Term v1;
         public override Dimension D1 { get; internal set; }
         public override Dimension D2 { get; internal set; }
 
         public SoftMax(Term v1)
         {
             Type = TermType.SoftMax;
-            this.v1 = v1;
-            D1 = this.v1.D1;
-            D2 = this.v1.D2;
+            Terms = new Term[1] { v1 };
+            D1 = this.Terms[0].D1;
+            D2 = this.Terms[0].D2;
         }
 
         public override unsafe void CalculateDerivate(MMDerivative s)
@@ -70,7 +70,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
             combined.Negative = s.Negative;
             sum.Dispose();
-            v1.Derivate(combined);
+            Terms[0].Derivate(combined);
             combined.Dispose();
         }
 
@@ -82,43 +82,26 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
             Matrix sm = new Matrix(D1, D2);
             Matrix sum = new Matrix(1, D2);
-            sum.SetZero();
-            Matrix v = v1.GetResult();
+
+            Matrix v = Terms[0].GetResult();
             int thisD1 = D1.Value;
             int thisD2 = D2.Value;
 
             unsafe
             {
                 Vectorization.Exponential(v.Array, sm.Array, sm.D1 * sm.D2);
+                Vectorization.SumOfPerColumn(sm.Array, sum.Array, D1, D2);
 
-                for (int j = 0; j < thisD2; j++)
+                for (int i = 0; i < D1; i++)
                 {
-                    for (int i = 0; i < thisD1; i++)
-                    {
-                        //sm[i, j] = MathF.Exp(v[i, j]);
-                        sum[0, j] += sm[i, j];
-                    }
-                    for (int i = 0; i < D1; i++)
-                        sm[i, j] = sm[i, j] / sum[0, j];
+                    Vectorization.ElementWiseDivideAVX(sm.Array + i * D2, sum.Array, sm.Array + i * D2, D2);
                 }
             }
 
             sum.Dispose();
             return sm;
         }
-        public override void CalculateHowManyTimesUsed()
-        {
-            if (Used == 0)
-            {
-                v1.CalculateHowManyTimesUsed();
-            }
-            Used++;
-        }
-        public override void DeleteResults()
-        {
-            base.DeleteResults();
-            v1.DeleteResults();
-        }
+      
     }
 
 }

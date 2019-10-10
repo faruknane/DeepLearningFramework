@@ -43,7 +43,9 @@ namespace DeepLearningFramework.Data.Operators.Terms
             m = new Matrix(D1, D2);
             UniqueId = UniqueIdAssigner;
             UniqueIdAssigner++;
+            Terms = new Term[0];
         }
+
         public Variable(Matrix m) // add initializer
         {
             Type = TermType.Variable;
@@ -54,6 +56,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
             this.m = m;
             UniqueId = UniqueIdAssigner;
             UniqueIdAssigner++;
+            Terms = new Term[0];
         }
 
         public void SetValue(Matrix n)
@@ -82,14 +85,6 @@ namespace DeepLearningFramework.Data.Operators.Terms
             }
         }
 
-        public override void CalculateHowManyTimesUsed()
-        {
-            Used++;
-        }
-
-        public override void DeleteResults()
-        {
-            base.DeleteResults();
-        }
+     
     }
 }

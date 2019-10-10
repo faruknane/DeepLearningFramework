@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using DeepLearningFramework.Core;
 using PerformanceWork.OptimizedNumerics;
+using DeepLearningFramework.Core;
 
 namespace DeepLearningFramework.Data.Operators.Terms
 {
     public class Embedding : Term, Trainable
     {
-        Term v1;
         public override Dimension D1 { get; internal set; }
         public override Dimension D2 { get; internal set; }
         public int VocabSize { get; private set; }
@@ -25,12 +25,12 @@ namespace DeepLearningFramework.Data.Operators.Terms
         public Embedding(Term v1, int VectorSize, int VocabSize)
         {
             Type = TermType.Embedding;
-            this.v1 = v1;
+            Terms = new Term[1] { v1 };
             this.VectorSize = VectorSize;
             D1 = VectorSize;
-            if (this.v1.D1.Value != 1)
+            if (this.Terms[0].D1.Value != 1)
                 throw new Exception("Embedding Term takes (1) number indicating a word, and gives a vector");
-            D2 = this.v1.D2;
+            D2 = this.Terms[0].D2;
             this.VocabSize = VocabSize;
             Vocabulary = new Matrix(VectorSize, VocabSize);
             unsafe
@@ -48,7 +48,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
             //S.D1 = 1, S.D2 = 1 && S.D3 = this.D1, S.D4 = this.D2
 
-            Matrix wordindices = v1.GetResult();
+            Matrix wordindices = Terms[0].GetResult();
 
             MMDerivative combined = new MMDerivative(s.D1, s.D2, Vocabulary.D1, Vocabulary.D2, true);
             combined.Negative = s.Negative;
@@ -75,21 +75,12 @@ namespace DeepLearningFramework.Data.Operators.Terms
             }
         }
 
-        public override void CalculateHowManyTimesUsed()
-        {
-            if (Used == 0)
-            {
-                v1.CalculateHowManyTimesUsed();
-            }
-            Used++;
-        }
-
         internal override Matrix CalculateResult()
         {
             if (!D1.HardEquals(D1) || !D2.HardEquals(D2))
                 throw new Exception("Terms should have an exact value!");
 
-            Matrix wordindices = v1.GetResult();
+            Matrix wordindices = Terms[0].GetResult();
 
             Matrix res = new Matrix(VectorSize, D2);
             for(int i = 0; i < wordindices.D2; i++)
@@ -100,12 +91,6 @@ namespace DeepLearningFramework.Data.Operators.Terms
             }
 
             return res;
-        }
-
-        public override void DeleteResults()
-        {
-            base.DeleteResults();
-            v1.DeleteResults();
         }
     }
 }

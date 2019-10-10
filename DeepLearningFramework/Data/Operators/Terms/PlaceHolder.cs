@@ -2,13 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using DeepLearningFramework.Core;
 
 namespace DeepLearningFramework.Data.Operators.Terms
 {
     public class PlaceHolder : Term
     {
-        Term v1;
-
         public override Dimension D1 { get; internal set; }
         public override Dimension D2 { get; internal set; }
 
@@ -17,20 +16,22 @@ namespace DeepLearningFramework.Data.Operators.Terms
             Type = TermType.PlaceHolder;
             D1 = Size;
             D2 = new Dimension();
+            Terms = new Term[1];
         }
+
         public void SetVariable(Variable v)
         {
-            if(v1 != null)
+            if (Terms[0] != null)
             {
-                Variable v11 = (Variable)v1;
-                if(!v11.Weights.Returned)
+                Variable v11 = (Variable)Terms[0];
+                if (!v11.Weights.Returned)
                     v11.Weights.Dispose();
                 v11 = null;
-                v1 = null;
+                Terms[0] = null;
             }
-            v1 = v;
-            if (!D1.HardEquals(v1.D1))
-                throw new Exception("Placeholder!");
+            Terms[0] = v;
+            if (!D1.HardEquals(Terms[0].D1))
+                throw new Exception("Placeholder dimension!");
             D2.Value = v.D2.Value;
         }
 
@@ -38,29 +39,15 @@ namespace DeepLearningFramework.Data.Operators.Terms
         {
             if (!D1.HardEquals(D1) || !D2.HardEquals(D2))
                 throw new Exception("Terms should have an exact value!");
-            v1.Derivate(s);
+            Terms[0].Derivate(s);
         }
 
         internal override Matrix CalculateResult()
         {
             if (!D1.HardEquals(D1) || !D2.HardEquals(D2))
                 throw new Exception("Terms should have an exact value!");
-            return v1.GetResult();
+            return Terms[0].GetResult();
         }
 
-        public override void CalculateHowManyTimesUsed()
-        {
-            if (Used == 0)
-            {
-                v1.CalculateHowManyTimesUsed();
-            }
-            Used++;
-        }
-
-        public override void DeleteResults()
-        {
-            base.DeleteResults();
-            v1.DeleteResults();
-        }
     }
 }

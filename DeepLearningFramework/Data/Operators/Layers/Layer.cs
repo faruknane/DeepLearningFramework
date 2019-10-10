@@ -3,8 +3,10 @@ using DeepLearningFramework.Data.Operators.Terms;
 using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
+using DeepLearningFramework.Core;
 
 namespace DeepLearningFramework.Data.Operators.Layers
 {
@@ -66,7 +68,7 @@ namespace DeepLearningFramework.Data.Operators.Layers
             return new MatrixMultiply(x, y);
         }
 
-        //public static Layer operator +(Layer x, float y)
+        //public static Layer operator *(Layer x, float y)
         //{
         //    return new MultiplyByNumber(x, y); //add it's layer version !
         //}
@@ -89,14 +91,22 @@ namespace DeepLearningFramework.Data.Operators.Layers
             return l;
         }
 
+        public static Func<Layer,Layer> GetActivationFunction(string name)
+        {
+            name = name.ToLower(CultureInfo.GetCultureInfoByIetfLanguageTag("en"));
+            if (name == "sigmoid")
+                return (Layer x) => new Sigmoid(x);
+            else if(name == "softmax")
+                return (Layer x) => new SoftMax(x);
+            return (Layer x) => x;
+        }
 
         public static Layer Dense(int size, Layer prev, string act)
         {
             Variable W = new Variable(size, prev.D1, prev.SequenceLength);
             Variable B = new Variable(size, 1, prev.SequenceLength);
             Layer res = new Plus(new MatrixMultiply(W, prev), new ExpandWithSame(B, 1, prev.D2));
-            if (act == "sigmoid")//Remove soon to the layer class.
-                return new Sigmoid(res);
+            res = GetActivationFunction(act)(res);
             return res;
         }
 

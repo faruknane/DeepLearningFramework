@@ -1,4 +1,5 @@
 ﻿using DeepLearningFramework.Core;
+using DeepLearningFramework.Core.Optimizers;
 using DeepLearningFramework.Data;
 using DeepLearningFramework.Data.Operators.Layers;
 using PerformanceWork.OptimizedNumerics;
@@ -51,14 +52,14 @@ namespace Tests
         public static unsafe void deneme2()
         {
             Hyperparameters.LearningRate = 0.001f;
+
             var x = new Input(784);
             var y = new Input(10);
+            
             var l1 = Layer.Dense(500, x, "sigmoid");
-            var model = Layer.Dense(10, l1, "");
-            var softmax = new SoftMax(model);
+            var model = Layer.Dense(10, l1, "softmax");
 
-            var loss = Layer.SquaredError(softmax, y);
-
+            var loss = Layer.SquaredError(model, y);
 
             int batchsize = 100;
             Console.WriteLine("Pool.UnreturnedArrayCount:  " + Matrix.Pool.UnreturnedArrayCount);
@@ -66,7 +67,7 @@ namespace Tests
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            int run = 1;
+            int run = 10;
             for (int ss = 0; ss < run; ss++)
             {
                 float err = 0;
@@ -75,7 +76,7 @@ namespace Tests
                     sw.Stop();
                     Matrix f = new Matrix(784, batchsize);
                     Matrix l = new Matrix(10, batchsize);
-
+                    
                     for (int j = 0; j < batchsize; j++)
                     {
                         for (int k = 0; k < 784; k++)
@@ -99,6 +100,7 @@ namespace Tests
                     l.Dispose();
                 }
 
+                Console.WriteLine($"Hyperparameters.LearningRate -> {Hyperparameters.LearningRate}");
                 Console.WriteLine(err / (d.Length / batchsize * batchsize));
             }
             sw.Stop();
@@ -121,8 +123,8 @@ namespace Tests
                     features[j, 0] = float.Parse(data[j]);
                 x.SetSequenceLength(1);
                 x.SetInput(0, features);
-                softmax.DeleteTerms();
-                Matrix res = softmax.GetTerm(0).GetResult();
+                model.DeleteTerms();
+                Matrix res = model.GetTerm(0).GetResult();
                 float max = -1;
                 int index = -1;
                 for (int i = 0; i < res.D1; i++)
@@ -170,7 +172,7 @@ namespace Tests
 
         public static void deneme3()
         {
-            Hyperparameters.LearningRate = 0.001f;
+            Hyperparameters.LearningRate = 0.0001f;
             Hyperparameters.Optimizer = new SGD();
 
             var x = new Input(1);
@@ -181,6 +183,7 @@ namespace Tests
                 (Layer h, Layer x) =>
                 {
                     var WH = new Variable(h.D1, h.D1, x.SequenceLength, setzero: true); // bu bir kere işleniyor bende, terms ile yaparsam her defasında işlenen bir sistem ile daha manuellik sağlayabilirim.
+
                     return WH * h + Layer.Dense(h.D1, x, "");
                 }
             );
@@ -188,6 +191,8 @@ namespace Tests
 
             var model = Layer.Dense(1, l1, "");
             var loss = Layer.SquaredError(model, y);
+
+
             int seqlength = 10;
             Random r = new Random();
 
@@ -212,7 +217,7 @@ namespace Tests
             Console.WriteLine("Loss: " + loss.GetTerm(0).GetResult()[0]);
 
 
-            while (false)
+            while (true)
             {
                 x.SetSequenceLength(seqlength);
                 y.SetSequenceLength(seqlength);
@@ -349,7 +354,8 @@ namespace Tests
        
 
         static void Main(string[] args)
-        {
+        { 
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
             LoadData();
             Stopwatch s = new Stopwatch();
             s.Start();

@@ -3,12 +3,12 @@ using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using DeepLearningFramework.Core;
 
 namespace DeepLearningFramework.Data.Operators.Terms
 {
     public class Power : Term
     {
-        Term v1;
         public override Dimension D1 { get; internal set; }
         public override Dimension D2 { get; internal set; }
         public int PowerOf { get; private set; }
@@ -16,12 +16,12 @@ namespace DeepLearningFramework.Data.Operators.Terms
         public Power(Term v1, int pow)
         {
             Type = TermType.Power;
-            this.v1 = v1;
+            Terms = new Term[1] { v1 };
             this.PowerOf = pow;
             if (PowerOf <= 1)
                 throw new Exception("Power cannot less than two!");
-            D1 = this.v1.D1;
-            D2 = this.v1.D2;
+            D1 = this.Terms[0].D1;
+            D2 = this.Terms[0].D2;
         }
 
         public override unsafe void CalculateDerivate(MMDerivative s)
@@ -29,7 +29,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
             if (!D1.HardEquals(D1) || !D2.HardEquals(D2))
                 throw new Exception("Terms should have an exact value!");
 
-            Matrix res = v1.GetResult();
+            Matrix res = Terms[0].GetResult();
             MMDerivative combined = new MMDerivative(s.D1, s.D2, D1, D2, false);
 
             if (PowerOf == 2)
@@ -42,7 +42,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
                         Vectorization.ElementWise_A_MultipliedBy_B_MultipliedBy_C(res.Array, ptr_s, PowerOf, ptr_combined, res.D1 * res.D2);
                     }
                 combined.Negative = s.Negative;
-                v1.Derivate(combined);
+                Terms[0].Derivate(combined);
                 combined.Dispose();
             }
             else
@@ -61,7 +61,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
                     }
 
                 combined.Negative = s.Negative;
-                v1.Derivate(combined);
+                Terms[0].Derivate(combined);
                 pow.Dispose();
                 combined.Dispose();
             }
@@ -72,24 +72,12 @@ namespace DeepLearningFramework.Data.Operators.Terms
             if (!D1.HardEquals(D1) || !D2.HardEquals(D2))
                 throw new Exception("Terms should have an exact value!");
 
-            Matrix res = v1.GetResult();
+            Matrix res = Terms[0].GetResult();
             Matrix m = Matrix.CreateCopy(res);
             for (int n = 0; n < PowerOf - 1; n++)
                 m.ElementWiseMultiply(res);
             return m;
         }
-        public override void CalculateHowManyTimesUsed()
-        {
-            if (Used == 0)
-            {
-                v1.CalculateHowManyTimesUsed();
-            }
-            Used++;
-        }
-        public override void DeleteResults()
-        {
-            base.DeleteResults();
-            v1.DeleteResults();
-        }
+       
     }
 }

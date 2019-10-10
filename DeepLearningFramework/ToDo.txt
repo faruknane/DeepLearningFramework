@@ -6,3 +6,4 @@
 6 - Each variable has to have an unique ID for VariableOptimizers.
 7 - Disable Throw exceptions in Release mode? So that methods can be inlined;
 8 - ExpanWithSame "make warning system!"
+9 - Create an array that holds terms in all term classes! remove v1 v2 etc and some functions since we wont need it those who recursively calling their childeren.

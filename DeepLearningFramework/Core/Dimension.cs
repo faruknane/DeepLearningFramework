@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace DeepLearningFramework.Data
+namespace DeepLearningFramework.Core
 {
     public class Dimension
     {

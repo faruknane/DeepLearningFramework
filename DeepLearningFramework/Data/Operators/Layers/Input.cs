@@ -6,6 +6,7 @@ using DeepLearningFramework.Data;
 using DeepLearningFramework.Data.Operators.Layers;
 using DeepLearningFramework.Data.Operators.Terms;
 using PerformanceWork.OptimizedNumerics;
+using DeepLearningFramework.Core;
 
 namespace DeepLearningFramework.Data.Operators.Layers
 {

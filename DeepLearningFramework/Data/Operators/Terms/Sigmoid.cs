@@ -1,5 +1,6 @@
 ﻿using DeepLearningFramework.Data;
 using PerformanceWork.OptimizedNumerics;
+using DeepLearningFramework.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,16 +10,15 @@ namespace DeepLearningFramework.Data.Operators.Terms
 {
     public class Sigmoid : Term
     {
-        Term v1;
         public override Dimension D1 { get; internal set; }
         public override Dimension D2 { get; internal set; }
 
         public Sigmoid(Term v1)
         {
             Type = TermType.Sigmoid;
-            this.v1 = v1;
-            D1 = this.v1.D1;
-            D2 = this.v1.D2;
+            Terms = new Term[1] { v1 };
+            D1 = this.Terms[0].D1;
+            D2 = this.Terms[0].D2;
         }
 
         public override unsafe void CalculateDerivate(MMDerivative s)
@@ -46,7 +46,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
                 }
             combined.Negative = s.Negative;
 
-            v1.Derivate(combined);
+            Terms[0].Derivate(combined);
             combined.Dispose();
         }
 
@@ -57,25 +57,12 @@ namespace DeepLearningFramework.Data.Operators.Terms
                 throw new Exception("Terms should have an exact value!");
 
             Matrix sigmo = new Matrix(D1, D2);
-            Matrix v = v1.GetResult();
+            Matrix v = Terms[0].GetResult();
             unsafe
             {
                 Vectorization.Sigmoid(v.Array, sigmo.Array, sigmo.D1 * sigmo.D2);
             }
             return sigmo;
-        }
-        public override void CalculateHowManyTimesUsed()
-        {
-            if (Used == 0)
-            {
-                v1.CalculateHowManyTimesUsed();
-            }
-            Used++;
-        }
-        public override void DeleteResults()
-        {
-            base.DeleteResults();
-            v1.DeleteResults();
         }
     }
 }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using DeepLearningFramework.Core;
 
 namespace DeepLearningFramework.Data.Operators.Terms
 {
@@ -28,6 +29,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
     {
         public virtual Dimension D1 { get; internal set; } //Assign in in initializer.
         public virtual Dimension D2 { get; internal set; }
+        public Term[] Terms;
         public Matrix Result { get; internal set; }
         public TermType Type { get; internal set; }
 
@@ -57,7 +59,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
         public abstract void CalculateDerivate(MMDerivative s);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public virtual void Minimize()
+        public void Minimize()
         {
             this.DeleteResults();
             this.CalculateHowManyTimesUsed();
@@ -68,7 +70,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public virtual void Maximize()
+        public void Maximize()
         {
             this.DeleteResults();
             this.CalculateHowManyTimesUsed();
@@ -121,10 +123,18 @@ namespace DeepLearningFramework.Data.Operators.Terms
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public abstract void CalculateHowManyTimesUsed();
+        public void CalculateHowManyTimesUsed()
+        {
+            if (Used == 0)
+            {
+                for (int i = 0; i < Terms.Length; i++)
+                        Terms[i].CalculateHowManyTimesUsed();
+            }
+            Used++;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public virtual void DeleteResults()
+        public void DeleteResults()
         {
             if (SumOfDerivative != null)
             {
@@ -140,6 +150,9 @@ namespace DeepLearningFramework.Data.Operators.Terms
                     Result.Dispose();
                 Result = null;
             }
+
+            for (int i = 0; i < Terms.Length; i++)
+                Terms[i].DeleteResults();
         }
 
 
