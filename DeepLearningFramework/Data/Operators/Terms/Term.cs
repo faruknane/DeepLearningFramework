@@ -128,7 +128,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
             if (Used == 0)
             {
                 for (int i = 0; i < Terms.Length; i++)
-                        Terms[i].CalculateHowManyTimesUsed();
+                    Terms[i].CalculateHowManyTimesUsed();
             }
             Used++;
         }
@@ -136,13 +136,13 @@ namespace DeepLearningFramework.Data.Operators.Terms
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void DeleteResults()
         {
+            Used = 0;
+
             if (SumOfDerivative != null)
             {
                 SumOfDerivative.Dispose();
                 SumOfDerivative = null;
             }
-
-            Used = 0;
 
             if (Result != null)
             {

@@ -10,6 +10,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Terms = DeepLearningFramework.Data.Operators.Terms;
 
 namespace Tests
 {
@@ -51,6 +52,9 @@ namespace Tests
 
         public static unsafe void deneme2()
         {
+            LoadData();
+            //Load training data.
+
             Hyperparameters.LearningRate = 0.001f;
 
             var x = new Input(784);
@@ -179,7 +183,7 @@ namespace Tests
             var y = new Input(1);
 
 
-            var l1 = new Recurrent(10, x,
+            Layer l1 = new StaticRecurrent(10, x,
                 (Layer h, Layer x) =>
                 {
                     var WH = new Variable(h.D1, h.D1, x.SequenceLength, setzero: true); // bu bir kere işleniyor bende, terms ile yaparsam her defasında işlenen bir sistem ile daha manuellik sağlayabilirim.
@@ -188,6 +192,7 @@ namespace Tests
                 }
             );
 
+            
 
             var model = Layer.Dense(1, l1, "");
             var loss = Layer.SquaredError(model, y);
@@ -277,7 +282,7 @@ namespace Tests
         }
         public static void TestSoftMax()
         {
-            DeepLearningFramework.Data.Operators.Terms.Variable v1 = new DeepLearningFramework.Data.Operators.Terms.Variable(3, 2)
+            Terms.Variable v1 = new Terms.Variable(3, 2)
             {
                 Weights = new float[3, 2] {
                 { 1, 1 },
@@ -286,7 +291,7 @@ namespace Tests
             };
 
 
-            var s = new DeepLearningFramework.Data.Operators.Terms.SoftMax(v1);
+            var s = new Terms.SoftMax(v1);
             var softres = s.GetResult();
 
             Console.WriteLine(softres[0, 0]);
@@ -302,12 +307,29 @@ namespace Tests
         {
             var x = new Input(1);
 
-            var l1 = new Recurrent(1, x,
+            Layer l1 = new StaticRecurrent(1, x,
                 (Layer h, Layer x) =>
                 {
                     return h + x;
                 }
             );
+
+            if (true)
+            {
+                l1 = new DynamicRecurrent(1, x,
+                    (Layer h, Layer x, int t) =>
+                    {
+                        //dont use foreign layer inside dynamicrecurrent. beacuse the terms of all layers connected to model has to be deleted.
+                        //bunun içinde termlerle ilgili istediğin operasyonu yapabilirsin çünkü o termler erişilemeyince CLR direk siliniyor.
+
+                        if (t % 2 == 0)
+                            return new Terms.Plus(h.GetTerm(t - 1), x.GetTerm(t));
+                        else
+                            return h.GetTerm(t - 1);
+                    }
+                );
+
+            }
 
             int seqlength = 10;
             Random r = new Random();
@@ -336,9 +358,9 @@ namespace Tests
 
         public static void TestEmbeddings()
         {
-            DeepLearningFramework.Data.Operators.Terms.PlaceHolder x = new DeepLearningFramework.Data.Operators.Terms.PlaceHolder(1);
-            DeepLearningFramework.Data.Operators.Terms.Embedding a = new DeepLearningFramework.Data.Operators.Terms.Embedding(x, 10, 3);
-            x.SetVariable(new DeepLearningFramework.Data.Operators.Terms.Variable(new float[1, 6] { { 0, 1, 2, 1, 0, 2 } }));
+            Terms.PlaceHolder x = new Terms.PlaceHolder(1);
+            Terms.Embedding a = new Terms.Embedding(x, 10, 3);
+            x.SetVariable(new Terms.Variable(new float[1, 6] { { 0, 1, 2, 1, 0, 2 } }));
             Matrix res = a.GetResult();
 
             for (int j = 0; j < res.D2; j++)
@@ -356,7 +378,6 @@ namespace Tests
         static void Main(string[] args)
         { 
             Thread.CurrentThread.Priority = ThreadPriority.Highest;
-            LoadData();
             Stopwatch s = new Stopwatch();
             s.Start();
             deneme2();

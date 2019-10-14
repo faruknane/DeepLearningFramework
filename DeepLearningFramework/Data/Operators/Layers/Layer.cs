@@ -20,9 +20,23 @@ namespace DeepLearningFramework.Data.Operators.Layers
         public virtual Dimension SequenceLength { get; internal set; }
 
         public List<Term> Terms = new List<Term>();
+        
+        private Terms.Variable EmptyVariable;
+
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual Term GetTerm(int time)
         {
+            if (time < 0 || time > SequenceLength.Value)
+            {
+                if (EmptyVariable == null)
+                {
+                    EmptyVariable = new Terms.Variable(D1, D2) { Trainable = false };
+                    EmptyVariable.Weights.SetZero();
+                }
+
+                return EmptyVariable;
+            }
+
             while (Terms.Count <= time && Terms.Count < SequenceLength)
                 Terms.Add(null);
 

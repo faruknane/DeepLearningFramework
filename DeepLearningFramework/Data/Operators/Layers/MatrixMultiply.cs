@@ -22,16 +22,7 @@ namespace DeepLearningFramework.Data.Operators.Layers
             D2 = x2.D2;
             this.SequenceLength = L1.SequenceLength;
         }
-        //public MatrixMultiply(Variable x1, Layer x2)
-        //{
-        //    this.L1 = x1;
-        //    this.L2 = x2;
-        //    D1 = x1.D1;
-        //    D2 = x2.D2;
-        //    //auto dimension ?
-        //    this.SequenceLength = L1.SequenceLength;
-        //}
-
+    
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override Term CreateTerm(int time)
         {
