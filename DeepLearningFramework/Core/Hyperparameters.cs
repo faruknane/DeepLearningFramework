@@ -9,6 +9,5 @@ namespace DeepLearningFramework.Core
     {
         public static float LearningRate = 0.2f;
         public static VariableOptimizer Optimizer = new SGD();
-
     }
 }

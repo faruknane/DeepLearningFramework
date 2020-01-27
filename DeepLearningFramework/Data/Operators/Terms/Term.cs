@@ -25,17 +25,19 @@ namespace DeepLearningFramework.Data.Operators.Terms
         Embedding
     }
 
-    public abstract class Term
+    public abstract class Term : IDisposable
     {
-        public virtual Dimension D1 { get; internal set; } //Assign in in initializer.
-        public virtual Dimension D2 { get; internal set; }
+        public Shape Shape { get; internal set; } 
+
         public Term[] Terms;
-        public Matrix Result { get; internal set; }
+        public Tensor<float> Result { get; internal set; }
         public TermType Type { get; internal set; }
 
-        internal MMDerivative SumOfDerivative;
+        public Tensor<float> SumOfDerivatives;
 
         internal int Used = 0;
+
+        public bool IsDisposed = false;
 
         //add
         //contains trainable variable ? 
@@ -43,10 +45,10 @@ namespace DeepLearningFramework.Data.Operators.Terms
         //how many times used
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal abstract Matrix CalculateResult();
+        public abstract Tensor<float> CalculateResult();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public virtual Matrix GetResult()
+        public virtual Tensor<float> GetResult()
         {
             if (Result == null)
             {
@@ -56,14 +58,15 @@ namespace DeepLearningFramework.Data.Operators.Terms
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public abstract void CalculateDerivate(MMDerivative s);
+        public abstract void CalculateDerivate(Tensor<float> s);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Minimize()
         {
             this.DeleteResults();
             this.CalculateHowManyTimesUsed();
-            MMDerivative I = MMDerivative.I(D1, D2);
+            this.GetResult();
+            Tensor<float> I = Tensor<float>.DerivativeIdentity(this.Shape);
             this.Derivate(I);
             I.Dispose();
         }
@@ -74,21 +77,22 @@ namespace DeepLearningFramework.Data.Operators.Terms
         {
             this.DeleteResults();
             this.CalculateHowManyTimesUsed();
-            MMDerivative I = MMDerivative.I(D1, D2);
-            I.Negative = true;
+            this.GetResult();
+            Tensor<float> I = Tensor<float>.DerivativeIdentity(this.Shape);
+            I.MakeNegative();
             this.Derivate(I);
             I.Dispose();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public void Derivate(MMDerivative m)
+        public void Derivate(Tensor<float> m)
         {
             if (Used <= 0)
                 throw new Exception("Impossible case!");
 
             Used--;
 
-            if (Used == 0 && SumOfDerivative == null)
+            if (Used == 0 && SumOfDerivatives == null)
             {
                 CalculateDerivate(m);
                 return;
@@ -98,28 +102,21 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
             if (Used == 0)
             {
-                CalculateDerivate(SumOfDerivative);
+                CalculateDerivate(SumOfDerivatives);
             }
-            //Console.WriteLine(Type.ToString() + " -> " + Used);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        private void AddDerivative(MMDerivative m)
+        private void AddDerivative(Tensor<float> m)
         {
-            if (SumOfDerivative == null)
+            if (SumOfDerivatives == null)
             {
-                SumOfDerivative = MMDerivative.Clone(m);
+                SumOfDerivatives = Tensor<float>.Clone(m);
             }
             else
             {
-                SumOfDerivative.Add(m);
+                SumOfDerivatives.Add(m);
             }
-
-            //if (Type == TermType.Minus)
-            //{
-            //    Console.WriteLine("SumOfDerivative -> " + SumOfDerivative.Derivatives[0] + ", " + SumOfDerivative.Derivatives[1] + ", " + SumOfDerivative.Derivatives[2]);
-            //    Console.WriteLine("m -> " + m.Derivatives[0] + ", " + m.Derivatives[1] + ", " + m.Derivatives[2]);
-            //}
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -136,12 +133,14 @@ namespace DeepLearningFramework.Data.Operators.Terms
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void DeleteResults()
         {
+            if (Result == null) return;
+
             Used = 0;
 
-            if (SumOfDerivative != null)
+            if (SumOfDerivatives != null)
             {
-                SumOfDerivative.Dispose();
-                SumOfDerivative = null;
+                SumOfDerivatives.Dispose();
+                SumOfDerivatives = null;
             }
 
             if (Result != null)
@@ -155,6 +154,19 @@ namespace DeepLearningFramework.Data.Operators.Terms
                 Terms[i].DeleteResults();
         }
 
+        public virtual void Dispose()
+        {
+            if (IsDisposed) return;
+            IsDisposed = true;
+            DeleteResults();
+            Shape.Return(this.Shape);
+
+            for (int i = 0; i < Terms.Length; i++)
+                if (Terms[i].Type != TermType.Variable && Terms[i].Type != TermType.PlaceHolder)
+                    Terms[i].Dispose();
+
+            GC.SuppressFinalize(this);
+        }
 
     }
 }

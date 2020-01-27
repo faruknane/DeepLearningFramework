@@ -8,10 +8,9 @@ namespace DeepLearningFramework.Core
 {
     public interface Trainable
     {
-        public bool Trainable { get; }
-        public float LearningRateMultiplier { get; }
-        public Matrix Weights { get;  }
-        public int UniqueId { get; }
-        
+        bool Trainable { get; }
+        float LearningRateMultiplier { get; }
+        Tensor<float> Weights { get;  }
+        int UniqueId { get; }
     }
 }

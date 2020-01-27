@@ -11,72 +11,60 @@ namespace DeepLearningFramework.Data.Operators.Terms
 {
     public class MatrixMultiply : Term
     {
-        public override Dimension D1 { get; internal set; }
-        public override Dimension D2 { get; internal set; }
-
         public MatrixMultiply(Term v1, Term v2)
         {
             Type = TermType.MatrixMultiply;
             Terms = new Term[2] { v1, v2 };
-            if (!this.Terms[0].D2.SoftEquals(this.Terms[1].D1))
+            if (v1.Shape.N != 2 || v2.Shape.N != 2 || this.Terms[0].Shape[1] != this.Terms[1].Shape[0])
                 throw new Exception("the same dimensions should match correctly!");
-            D1 = this.Terms[0].D1;
-            D2 = this.Terms[1].D2;
+            this.Shape = Shape.NewShape(this.Terms[0].Shape[0], this.Terms[1].Shape[1]);
         }
 
-        public override unsafe void CalculateDerivate(MMDerivative s)
+        public override unsafe void CalculateDerivate(Tensor<float> s)
         {
-            if (!this.Terms[0].D2.HardEquals(this.Terms[1].D1))
-                throw new Exception("the same dimensions should match correctly!");
-            if (!D1.HardEquals(D1) || !D2.HardEquals(D2))
-                throw new Exception("Terms should have an exact value!");
-
-
             {
-                Matrix B = Terms[1].GetResult();
-                var combinedleft = new MMDerivative(s.D1, s.D2, Terms[0].D1, Terms[0].D2, false);
-                float* ptr_left = combinedleft.Derivatives, ptr_s = s.Derivatives, ptr_b = B.Array;
-                for (int i1 = 0; i1 < s.D1; i1++)
-                    for (int i2 = 0; i2 < s.D2; i2++)
-                    {
-                        int loc_left = i1 * combinedleft.D2 * combinedleft.D3 * combinedleft.D4 + i2 * combinedleft.D3 * combinedleft.D4;
-                        int loc_s = i1 * s.D2 * s.D3 * s.D4 + i2 * s.D3 * s.D4;
-                        Vectorization.TransposeBandMatrixMultiply(ptr_s + loc_s, s.D3, s.D4, ptr_b, B.D1, B.D2, ptr_left + loc_left);
-                    }
-                combinedleft.Negative = s.Negative;
+                Tensor<float> B = Terms[1].GetResult();
+                var combinedleft = new Tensor<float>(Shape.SwapTail(s.Shape, this.Shape, Terms[0].Shape));
+                float* ptr_left = (float*)combinedleft.Array, ptr_s = (float*)s.Array, ptr_b = (float*)B.Array;
+
+                int loc_left = 0;
+                int loc_s = 0;
+                int go = combinedleft.Shape.TotalSize / Terms[0].Shape.TotalSize;
+
+                for(int i = 0; i < go; i++)
+                {
+                    Vectorization.TransposeBandMatrixMultiply(ptr_s + loc_s, this.Shape[0], this.Shape[1], ptr_b, B.Shape[0], B.Shape[1], ptr_left + loc_left);
+                    loc_s += this.Shape.TotalSize;
+                    loc_left += Terms[0].Shape.TotalSize;
+                }
+             
                 Terms[0].Derivate(combinedleft);
                 combinedleft.Dispose();
             }
 
             {
-                Matrix A = Terms[0].GetResult();
-                var combinedright = new MMDerivative(s.D1, s.D2, Terms[1].D1, Terms[1].D2, false);
-                float* ptr_right = combinedright.Derivatives, ptr_a = A.Array, ptr_s = s.Derivatives;
-                for (int i1 = 0; i1 < s.D1; i1++)
-                    for (int i2 = 0; i2 < s.D2; i2++)
-                    {
-                        int loc_right = i1 * combinedright.D2 * combinedright.D3 * combinedright.D4 + i2 * combinedright.D3 * combinedright.D4;
-                        int loc_s = i1 * s.D2 * s.D3 * s.D4 + i2 * s.D3 * s.D4;
-                        Vectorization.TransposeAandMatrixMultiply(ptr_a, A.D1, A.D2, ptr_s + loc_s, s.D3, s.D4, ptr_right + loc_right);
-                    }
-                combinedright.Negative = s.Negative;
+                Tensor<float> A = Terms[0].GetResult();
+                var combinedright = new Tensor<float>(Shape.SwapTail(s.Shape, this.Shape, Terms[1].Shape));
+                float* ptr_right = (float*)combinedright.Array, ptr_a = (float*)A.Array, ptr_s = (float*)s.Array;
+                int go = combinedright.Shape.TotalSize / Terms[1].Shape.TotalSize;
+                int loc_right = 0;
+                int loc_s = 0;
+                for (int i = 0; i < go; i++)
+                {
+                    Vectorization.TransposeAandMatrixMultiply(ptr_a, A.Shape[0], A.Shape[1], ptr_s + loc_s, this.Shape[0], this.Shape[1], ptr_right + loc_right);
+                    loc_s += this.Shape.TotalSize;
+                    loc_right += Terms[1].Shape.TotalSize;
+                }
+
                 Terms[1].Derivate(combinedright);
                 combinedright.Dispose();
             }
         }
 
-        internal override Matrix CalculateResult()
+        public override Tensor<float> CalculateResult()
         {
-            if (!this.Terms[0].D2.HardEquals(this.Terms[1].D1))
-                throw new Exception("the same dimensions should match correctly!");
-            if (!D1.HardEquals(D1) || !D2.HardEquals(D2))
-                throw new Exception("Terms should have an exact value!");
-
-            Matrix a = Terms[0].GetResult();
-            Matrix b = Terms[1].GetResult();
-            Matrix res = Matrix.MatrixMultiply(a, b);
-            return res;
+            return Tensor<float>.MatrixMultiply(Terms[0].GetResult(), Terms[1].GetResult());
         }
-      
+
     }
 }

@@ -10,6 +10,6 @@ namespace DeepLearningFramework.Core.Optimizers
 {
     public interface VariableOptimizer
     {
-        public void UpdateWeights(Trainable x, MMDerivative derivatives);
+        void UpdateWeights(Trainable x, Tensor<float> derivatives);
     }
 }

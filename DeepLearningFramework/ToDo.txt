@@ -1,9 +1,5 @@
 ﻿1 - If there is no variable to be trained in a term expression, we should not dive into, waste of time. (Terms.Used should be equal to 0, shouldnt dive for Terms.Used as well)
-2 - Should we delete layer class? Continue with just terms? Then what happens to sequential processing layers like shifttime?
-3 - Training Interface is needed / instead of manually assigning each input of the network.
-4 - Dimension -> turn the class to struct containing a pointer which indicates the Value of the dimension. (first 5. item below, then check if dimension needs optimizing, impact -> %7-8)
 5 - Optimize expand and shrink terms
-6 - Each variable has to have an unique ID for VariableOptimizers.
 7 - Disable Throw exceptions in Release mode? So that methods can be inlined;
 8 - ExpanWithSame "make warning system!" where the code is unoptimized!
 9 - Create an array that holds terms in all term classes! remove v1 v2 etc and some functions since we wont need it those who recursively calling their childeren.
@@ -14,3 +10,14 @@
 11 - ShrinkBySumming Etc classes are not optimized. Term.Plus should take a variable size of Terms.
 12 - Termler sadece 2 boyutta mı çalışacak? özel conv layerlar ne olacak? onlar da terimlerden mi oluşmalı? eğer sadece 2 boyutlu olamayacksa gelecek olan türev arrayi ne olacak? Hocaya danış?
 13 - Termler her seferinde silinip tekrar oluşturulduğundan dolayı Dimensionlar sabit olacak update edilmesine ihtiyaç yok. Dimension classını silebilirsin. Layerlar dimensiona sahip olsun, termler ise integer olsun.
+14-
+{
+
+public void Dispose()
+{
+GC.SuppressFinalize(this);
+} 
+
+}
+
+

@@ -9,6 +9,17 @@ namespace DeepLearningFramework.Core
     public class Dimension
     {
         public virtual int Value { [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)] get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]  set; } = -1;
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public Dimension()
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public Dimension(int val)
+        {
+            this.Value = val;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public bool SoftEquals(Dimension other)
@@ -21,7 +32,7 @@ namespace DeepLearningFramework.Core
         public bool HardEquals(Dimension other)
         {
             if (other.Value == -1 || this.Value == -1)
-                throw new Exception("Terms should have an exact value!");
+                return false;
             return other.Value == this.Value;
         }
 

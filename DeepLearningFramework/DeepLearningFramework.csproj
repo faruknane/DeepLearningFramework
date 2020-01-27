@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <ApplicationIcon />
     <StartupObject />
   </PropertyGroup>
@@ -16,7 +16,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <Prefer32Bit>false</Prefer32Bit>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <PlatformTarget>x64</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
@@ -30,7 +30,7 @@
 
   <ItemGroup>
     <Reference Include="PerformanceWork">
-      <HintPath>..\..\Performance-Work\PerformanceWork\bin\Release\netcoreapp3.0\PerformanceWork.dll</HintPath>
+      <HintPath>..\..\Performance-Work\PerformanceWork\bin\Release\netcoreapp3.1\PerformanceWork.dll</HintPath>
     </Reference>
   </ItemGroup>
 

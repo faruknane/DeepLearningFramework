@@ -13,27 +13,34 @@ namespace DeepLearningFramework.Core.Optimizers
     {
         public SGD()
         {
-            
+
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public unsafe void UpdateWeights(Trainable v, MMDerivative m)
+        public unsafe void UpdateWeights(Trainable v, Tensor<float> m)
         {
             //Console.WriteLine("Updating The Variable with ID " + v.UniqueId); trainable should have uniqueID
 
-            if (m.D3 != v.Weights.D1 || m.D4 != v.Weights.D2)
+            bool suit = true;
+            
+            if (m.Shape.N > v.Weights.Shape.N)
+                for (int i = 0; i < v.Weights.Shape.N; i++)
+                    suit &= v.Weights.Shape[i] == m.Shape[m.Shape.N - (v.Weights.Shape.N - i)];
+            else
+                suit = false;
+
+            if (!suit)
                 throw new Exception("Dimensions!");
 
-            int neg = (m.Negative ? -1 : 1);
-            float* ptr_v = v.Weights.GetPointer();
-            float* ptr_m = m.Derivatives;
+            float* ptr_v = (float*)v.Weights.Array;
+            float* ptr_m = (float*)m.Array;
 
-            for (int i1 = 0; i1 < m.D1; i1++)
-                for (int i2 = 0; i2 < m.D2; i2++)
-                {
-                    int loc_m = i1 * m.D2 * m.D3 * m.D4 + i2 * m.D3 * m.D4;
-                    Vectorization.ElementWiseAddAVXBetaB(ptr_v, ptr_m + loc_m, ptr_v, v.Weights.D1 * v.Weights.D2, -neg * v.LearningRateMultiplier * Hyperparameters.LearningRate);
-                }
+            int travel = m.Shape.TotalSize / v.Weights.Shape.TotalSize;
+            for (int i = 0; i < travel; i++)
+            {
+                int loc_m = i * v.Weights.Shape.TotalSize;
+                Vectorization.ElementWiseAddAVXBetaB(ptr_v, ptr_m + loc_m, ptr_v, v.Weights.Shape.TotalSize, -v.LearningRateMultiplier * Hyperparameters.LearningRate);
+            }
         }
     }
 }

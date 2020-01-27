@@ -9,7 +9,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
 {
     public class Variable : Term, Trainable
     {
-        private Matrix m;
+        private Tensor<float> m;
         public String Name { get; set; }
 
         public int UniqueId { get; set; }
@@ -18,66 +18,89 @@ namespace DeepLearningFramework.Data.Operators.Terms
         public bool Trainable { get; set; } = true;
         public float LearningRateMultiplier { get; set; } = 1;
 
-        public Matrix Weights
+        public Tensor<float> Weights
         {
             get { return m; }
             set
             {
-                if (value.D1 != m.D1 || value.D2 != m.D2)
-                    throw new Exception("The Matrix should have the same dimensions with the Variable!");
+                if(this.Shape.N != value.Shape.N)
+                    throw new Exception("The Tensor should have the same dimensions with the Variable!");
+
+                for(int i = 0; i < this.Shape.N; i++)
+                    if (this.Shape[i] != value.Shape[i])
+                        throw new Exception("The Matrix should have the same dimensions with the Variable!");
 
                 m = value;
             }
         }
 
-        public override Dimension D1 { get; internal set; }
-        public override Dimension D2 { get; internal set; }
 
-        public Variable(int D1, int D2) // add initializer
+        public Variable(Shape s) // add initializer
         {
             Type = TermType.Variable;
-            this.D1 = D1;
-            this.D2 = D2;
-            if (!this.D1.HardEquals(this.D1) || !this.D2.HardEquals(this.D2))
-                throw new Exception("Terms should have an exact value!");
-            m = new Matrix(D1, D2);
+            this.Shape = s;
+            m = new Tensor<float>(s.Clone());
             UniqueId = UniqueIdAssigner;
             UniqueIdAssigner++;
-            Terms = new Term[0];
+            Terms = Array.Empty<Term>();
         }
 
-        public Variable(Matrix m) // add initializer
+        public Variable(Tensor<float> m) // add initializer
         {
             Type = TermType.Variable;
-            this.D1 = m.D1;
-            this.D2 = m.D2;
-            if (!this.D1.HardEquals(this.D1) || !this.D2.HardEquals(this.D2))
-                throw new Exception("Terms should have an exact value!");
+            this.Shape = m.Shape.Clone();
             this.m = m;
             UniqueId = UniqueIdAssigner;
             UniqueIdAssigner++;
-            Terms = new Term[0];
+            Terms = Array.Empty<Term>();
         }
 
-        public void SetValue(Matrix n)
+        public void SetValue(Tensor<float> n)
         {
-            if (this.D1 != n.D1 || this.D2 != n.D2)
-                throw new Exception("The Matrix should have the same dimensions with the Variable!");
-            Weights = n;
-        }
-        public void SetValue(float[,] n)
-        {
-            if (this.D1 != n.GetLength(0) || this.D2 != n.GetLength(1))
-                throw new Exception("The Matrix should have the same dimensions with the Variable!");
             Weights = n;
         }
 
-        internal override Matrix CalculateResult()
+        public unsafe void SetValue(float[] n)
+        {
+            for (int i = 0; i < this.Shape.N; i++)
+                if (this.Shape[i] != n.GetLength(i))
+                    throw new Exception("The Matrix should have the same dimensions with the Variable!");
+
+            fixed (float* ptr = n)
+            {
+                Vectorization.ElementWiseAssignAVX((float*)this.Weights.Array, ptr, this.Shape.TotalSize);
+            }
+        }
+        public unsafe void SetValue(float[,] n)
+        {
+            for (int i = 0; i < this.Shape.N; i++)
+                if (this.Shape[i] != n.GetLength(i))
+                    throw new Exception("The Matrix should have the same dimensions with the Variable!");
+
+            fixed (float* ptr = n)
+            {
+                Vectorization.ElementWiseAssignAVX((float*)this.Weights.Array, ptr, this.Shape.TotalSize);
+            }
+        }
+
+        public unsafe void SetValue(float[,,] n)
+        {
+            for (int i = 0; i < this.Shape.N; i++)
+                if (this.Shape[i] != n.GetLength(i))
+                    throw new Exception("The Matrix should have the same dimensions with the Variable!");
+
+            fixed (float* ptr = n)
+            {
+                Vectorization.ElementWiseAssignAVX((float*)this.Weights.Array, ptr, this.Shape.TotalSize);
+            }
+        }
+
+        public override Tensor<float> CalculateResult()
         {
             return Weights;
         }
 
-        public override void CalculateDerivate(MMDerivative s)
+        public override void CalculateDerivate(Tensor<float> s)
         {
             if (Trainable)
             {
@@ -85,6 +108,26 @@ namespace DeepLearningFramework.Data.Operators.Terms
             }
         }
 
-     
+
+        public void Clean()
+        {
+            Used = 0;
+            if(Weights != null)
+            {
+                Weights.Dispose();
+            }
+            if (SumOfDerivatives != null)
+            {
+                SumOfDerivatives.Dispose();
+                SumOfDerivatives = null;
+            }
+        }
+
+        //public override void Dispose()
+        //{
+        //    Clean();
+        //    base.Dispose();
+        //}
+
     }
 }

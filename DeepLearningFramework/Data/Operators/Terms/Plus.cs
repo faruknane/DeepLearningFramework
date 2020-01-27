@@ -8,35 +8,36 @@ namespace DeepLearningFramework.Data.Operators.Terms
 {
     public class Plus : Term
     {
-
-        public override Dimension D1 { get; internal set; }
-        public override Dimension D2 { get; internal set; }
-
-        public Plus(Term v1, Term v2) // make args
+        public Plus(params Term[] v) // make args
         {
+            if (v.Length < 2)
+                throw new Exception("length < 2!");
             Type = TermType.Plus;
-            Terms = new Term[2] { v1, v2 };
-            if (!this.Terms[0].D1.SoftEquals(this.Terms[1].D1) || !this.Terms[0].D2.SoftEquals(this.Terms[1].D2))
-                throw new Exception("Terms to be sum should have the same dimensions!");
-            D1 = this.Terms[0].D1;
-            D2 = this.Terms[0].D2;
+            Terms = v;
+            for (int i = 0; i < Terms.Length - 1; i++)
+                if (!this.Terms[i].Shape.EqualShape(this.Terms[i + 1].Shape)) //will be shape, not d1 or d2
+                {
+                    throw new Exception("Terms to be sum should have the same dimensions!");
+                }
+            this.Shape = v[0].Shape.Clone();
         }
 
-        public override void CalculateDerivate(MMDerivative s)
+        public override void CalculateDerivate(Tensor<float> s)
         {
-            if (!this.Terms[0].D1.HardEquals(this.Terms[1].D1) || !this.Terms[0].D2.HardEquals(this.Terms[1].D2))
-                throw new Exception("Terms to be sum should have the same dimensions!");
-            for(int i = 0; i < Terms.Length; i++)
+            for (int i = 0; i < Terms.Length; i++)
                 Terms[i].Derivate(s);
         }
 
-        internal override Matrix CalculateResult()
+        public unsafe override Tensor<float> CalculateResult()
         {
-            if (!this.Terms[0].D1.HardEquals(this.Terms[1].D1) || !this.Terms[0].D2.HardEquals(this.Terms[1].D2))
-                throw new Exception("Terms to be sum should have the same dimensions!");
+            Tensor<float> res = new Tensor<float>(this.Shape.Clone());
+            Vectorization.ElementWiseAddAVX((float*)Terms[0].GetResult().Array, (float*)Terms[1].GetResult().Array, (float*)res.Array, this.Shape.TotalSize);
 
-            return Terms[0].GetResult() + Terms[1].GetResult();
+            for (int i = 2; i < Terms.Length; i++) //Optimize here. 
+                Vectorization.ElementWiseAddAVX((float*)res.Array, (float*)Terms[i].GetResult().Array, (float*)res.Array, this.Shape.TotalSize);
+
+            return res;
         }
-      
+
     }
 }

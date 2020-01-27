@@ -7,33 +7,28 @@ namespace DeepLearningFramework.Data.Operators.Terms
 {
     public class MultiplyByNumber : Term
     {
-        float v2;
-        public override Dimension D1 { get; internal set; }
-        public override Dimension D2 { get; internal set; }
+        public float Multiplier { get; set; }
 
-        public MultiplyByNumber(Term v1, float v2)
+        public MultiplyByNumber(Term v1, float mult)
         {
             Type = TermType.MultiplyByNumber;
             Terms = new Term[1] { v1 };
-            this.v2 = v2;
-            D1 = this.Terms[0].D1;
-            D2 = this.Terms[0].D2;
+            this.Multiplier = mult;
+            this.Shape = v1.Shape.Clone();
         }
 
-        public override void CalculateDerivate(MMDerivative s)
+        public override void CalculateDerivate(Tensor<float> s)
         {
-            if (!D1.HardEquals(D1) || !D2.HardEquals(D2))
-                throw new Exception("Terms should have an exact value!");
-            s.MultiplyBy(v2);
+            s.MultiplyBy(Multiplier);
             Terms[0].Derivate(s);
-            s.DivideBy(v2);
+            s.DivideBy(Multiplier);
         }
 
-        internal override Matrix CalculateResult()
+        public override Tensor<float> CalculateResult()
         {
-            if (!D1.HardEquals(D1) || !D2.HardEquals(D2))
-                throw new Exception("Terms should have an exact value!");
-            return Terms[0].GetResult() * v2;
+            Tensor<float> res = Tensor<float>.Clone(Terms[0].GetResult());
+            res.MultiplyBy(Multiplier);
+            return res;
         }
 
     }
