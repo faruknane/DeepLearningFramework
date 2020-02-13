@@ -97,7 +97,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
         public override Tensor<float> CalculateResult()
         {
-            return Weights;
+            return Tensor<float>.Clone(Weights);
         }
 
         public override void CalculateDerivate(Tensor<float> s)
@@ -111,23 +111,10 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
         public void Clean()
         {
-            Used = 0;
             if(Weights != null)
-            {
                 Weights.Dispose();
-            }
-            if (SumOfDerivatives != null)
-            {
-                SumOfDerivatives.Dispose();
-                SumOfDerivatives = null;
-            }
+            DeleteResults();
         }
-
-        //public override void Dispose()
-        //{
-        //    Clean();
-        //    base.Dispose();
-        //}
 
     }
 }

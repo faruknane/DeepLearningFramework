@@ -21,3 +21,5 @@ GC.SuppressFinalize(this);
 }
 
 
+15- minimize yaparken variableların sonucu da değişiyor. her variableın ne kadar değişeceğini bir yere kaydetmek gerek veya variable kendi clonunu döndürmesi gerek.
+16- Minimize yapmadan önce dropout = true yaptıktan sonra dropout = false gibi bir şey yapmak lazım test ve training time'ı ayırabilmek için. veya direk training = true yapılabilir.

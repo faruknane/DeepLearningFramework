@@ -145,8 +145,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
             if (Result != null)
             {
-                if (Type != TermType.Variable && Type != TermType.PlaceHolder)
-                    Result.Dispose();
+                Result.Dispose();
                 Result = null;
             }
 

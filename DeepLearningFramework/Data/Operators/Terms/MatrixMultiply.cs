@@ -24,38 +24,19 @@ namespace DeepLearningFramework.Data.Operators.Terms
         {
             {
                 Tensor<float> B = Terms[1].GetResult();
-                var combinedleft = new Tensor<float>(Shape.SwapTail(s.Shape, this.Shape, Terms[0].Shape));
+                var combinedleft = new Tensor<float>(Terms[0].Shape.Clone());
                 float* ptr_left = (float*)combinedleft.Array, ptr_s = (float*)s.Array, ptr_b = (float*)B.Array;
+                Vectorization.TransposeBandMatrixMultiply(ptr_s, this.Shape[0], this.Shape[1], ptr_b, B.Shape[0], B.Shape[1], ptr_left);
 
-                int loc_left = 0;
-                int loc_s = 0;
-                int go = combinedleft.Shape.TotalSize / Terms[0].Shape.TotalSize;
-
-                for(int i = 0; i < go; i++)
-                {
-                    Vectorization.TransposeBandMatrixMultiply(ptr_s + loc_s, this.Shape[0], this.Shape[1], ptr_b, B.Shape[0], B.Shape[1], ptr_left + loc_left);
-                    loc_s += this.Shape.TotalSize;
-                    loc_left += Terms[0].Shape.TotalSize;
-                }
-             
                 Terms[0].Derivate(combinedleft);
                 combinedleft.Dispose();
             }
 
             {
                 Tensor<float> A = Terms[0].GetResult();
-                var combinedright = new Tensor<float>(Shape.SwapTail(s.Shape, this.Shape, Terms[1].Shape));
+                var combinedright = new Tensor<float>(Terms[1].Shape.Clone());
                 float* ptr_right = (float*)combinedright.Array, ptr_a = (float*)A.Array, ptr_s = (float*)s.Array;
-                int go = combinedright.Shape.TotalSize / Terms[1].Shape.TotalSize;
-                int loc_right = 0;
-                int loc_s = 0;
-                for (int i = 0; i < go; i++)
-                {
-                    Vectorization.TransposeAandMatrixMultiply(ptr_a, A.Shape[0], A.Shape[1], ptr_s + loc_s, this.Shape[0], this.Shape[1], ptr_right + loc_right);
-                    loc_s += this.Shape.TotalSize;
-                    loc_right += Terms[1].Shape.TotalSize;
-                }
-
+                Vectorization.TransposeAandMatrixMultiply(ptr_a, A.Shape[0], A.Shape[1], ptr_s, this.Shape[0], this.Shape[1], ptr_right);
                 Terms[1].Derivate(combinedright);
                 combinedright.Dispose();
             }

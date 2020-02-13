@@ -32,24 +32,9 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
             if (PowerOf == 2)
             {
-                int go = s.Shape.TotalSize / this.Shape.TotalSize;
-                int ek = 0;
-                for(int i = 0; i < go;i ++)
-                {
-                    float* ptr_combined = (float*)combined.Array + ek;
-                    float* ptr_s = (float*)s.Array + ek;
-                    Vectorization.ElementWise_A_MultipliedBy_B_MultipliedBy_C((float*)res.Array, ptr_s, PowerOf, ptr_combined, res.Shape.TotalSize);
-                    ek += this.Shape.TotalSize;
-                }
-
-
-                //for (int x1 = 0; x1 < s.D1; x1++)
-                //    for (int x2 = 0; x2 < s.D2; x2++)
-                //    {
-                //        float* ptr_combined = combined.Derivatives + x1 * combined.D2 * combined.D3 * combined.D4 + x2 * combined.D3 * combined.D4;
-                //        float* ptr_s = s.Derivatives + x1 * s.D2 * s.D3 * s.D4 + x2 * s.D3 * s.D4;
-                //        Vectorization.ElementWise_A_MultipliedBy_B_MultipliedBy_C(res.Array, ptr_s, PowerOf, ptr_combined, res.D1 * res.D2);
-                //    }
+                float* ptr_combined = (float*)combined.Array;
+                float* ptr_s = (float*)s.Array;
+                Vectorization.ElementWise_A_MultipliedBy_B_MultipliedBy_C((float*)res.Array, ptr_s, PowerOf, ptr_combined, res.Shape.TotalSize);
                 Terms[0].Derivate(combined);
                 combined.Dispose();
             }
@@ -73,6 +58,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
                 //Terms[0].Derivate(combined);
                 //pow.Dispose();
                 //combined.Dispose();
+                //not done 
             }
         }
 

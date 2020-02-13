@@ -427,33 +427,32 @@ namespace Tests
 
         public static unsafe void bb()
         {
-            Variable v1 = new Variable(Shape.NewShape(2, 3));
-            v1.SetValue(new float[2, 3] {
-                    { 1, 2, 3 },
-                    { 4, 5, 6 }
+            Variable w = new Variable(Shape.NewShape(2, 3));
+            w.SetValue(new float[2, 3] {
+                    { 2, 3, 1 },
+                    { 7, 5, 2 }
                 });
 
-            Variable v2 = new Variable(Shape.NewShape(3, 2));
-            v2.Trainable = false;
-            v2.SetValue(new float[3, 2] {
-                    { 1, 0 },
-                    { 0, 1 },
-                    { 0, 0 }
-                });
+            ExpandWithSame s = new ExpandWithSame(w, Shape.NewShape(5,4));
+            Hyperparameters.LearningRate = 1/20f;
+            Console.WriteLine(s.GetResult());
+            for (int i = 0; i < 1; i++)
+            {
+                s.Minimize();
+            }
+            s.DeleteResults();
+            Console.WriteLine(s.GetResult());
+            Console.WriteLine(w.GetResult());
 
-            MatrixMultiply m = new MatrixMultiply(v1,v2);
-            m.GetResult();
-            v1.Clean();
-            v2.Clean();
-            v1.Dispose();
-            v2.Dispose();
+            w.Clean();
+            s.Dispose();
             //Variables should be cleaned manually and disposed manually! All other terms should call dispose method. 
-
-            m.Dispose();
         }
 
+      
         public static unsafe void Main(string[] args)
         {
+
             int s1 = Shape.ShapePool.UnreturnedArrayCount;
 
             for (int i = 0; i < 1; i++)

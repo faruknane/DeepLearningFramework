@@ -22,58 +22,49 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
         public unsafe override void CalculateDerivate(Tensor<float> s)
         {
-            Tensor<float> combined = new Tensor<float>(Shape.SwapTail(s.Shape, this.Shape, Terms[0].Shape));
+            Tensor<float> combined = new Tensor<float>(Terms[0].Shape.Clone());
 
-            int go = s.Shape.TotalSize / this.Shape.TotalSize;
 
             float* ptrcombined = (float*)combined.Array;
             float* ptrs = (float*)s.Array;
 
             Index iterator = Index.NewIndex(this.Terms[0].Shape);
 
-            int ek = 0;
-            int ek2 = 0;
-            for (int j = 0; j < go; j++)
+
+            for (int i = 0; i < iterator.N; i++)
+                iterator.Indexes[i] = 0;
+
+            for (int h = 0; h < this.Terms[0].Shape.TotalSize; h++)
             {
-                for (int i = 0; i < iterator.N; i++)
-                    iterator.Indexes[i] = 0;
 
-                for (int h = 0; h < this.Terms[0].Shape.TotalSize; h++)
+                int indexs = 0;
+
+                for (int i = iterator.N - 1; i >= 0; i--)
                 {
-
-                    int indexs = 0;
-
-                    for (int i = iterator.N - 1; i >= 0; i--)
+                    if (iterator.Indexes[i] == this.Terms[0].Shape[i])
                     {
-                        if (iterator.Indexes[i] == this.Terms[0].Shape[i])
-                        {
-                            iterator.Indexes[i] = 0;
-                            iterator.Indexes[i - 1]++;
-                        }
-                        if (i + 1 < this.Shape.N)
-                            indexs += (iterator.Indexes[i] / Divisor[i]) * this.Shape.Multiplied[i + 1];
-                        else
-                            indexs += (iterator.Indexes[i] / Divisor[i]);
+                        iterator.Indexes[i] = 0;
+                        iterator.Indexes[i - 1]++;
                     }
-
-                    ptrcombined[ek + h] = ptrs[ek2 + indexs];
-                    iterator.Indexes[iterator.N - 1]++;
+                    indexs += (iterator.Indexes[i] / Divisor[i]) * this.Shape.Multiplied[i + 1];
                 }
 
-                ek += this.Terms[0].Shape.TotalSize;
-                ek2 += this.Shape.TotalSize;
+                ptrcombined[h] = ptrs[indexs];
+                iterator.Indexes[iterator.N - 1]++;
             }
+            Index.Return(iterator);
+
+
             //for (int i1 = 0; i1 < s.D1; i1++)
             //    for (int i2 = 0; i2 < s.D2; i2++)
             //        for (int i3 = 0; i3 < v1d1; i3++)
             //            for (int i4 = 0; i4 < v1d2; i4++)
             //                combined[i1, i2, i3, i4] += s[i1, i2, i3 / RowDivider, i4 / ColumnDivider];// * (m[i3 / RowDivider, i4 / ColumnDivider, i3, i4] = 1);
-            
+
             Terms[0].Derivate(combined);
-            Index.Return(iterator);
             combined.Dispose();
         }
-     
+
         public unsafe override Tensor<float> CalculateResult()
         {
             Tensor<float> res = new Tensor<float>(this.Shape.Clone());
@@ -100,10 +91,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
                         iterator.Indexes[i] = 0;
                         iterator.Indexes[i - 1]++;
                     }
-                    if (i + 1 < this.Shape.N)
-                        indexs += (iterator.Indexes[i] / Divisor[i]) * this.Shape.Multiplied[i + 1];
-                    else
-                        indexs += (iterator.Indexes[i] / Divisor[i]);
+                    indexs += (iterator.Indexes[i] / Divisor[i]) * this.Shape.Multiplied[i + 1];
                 }
                 ptrres[indexs] += ptrv[h];
                 iterator.Indexes[iterator.N - 1]++;
