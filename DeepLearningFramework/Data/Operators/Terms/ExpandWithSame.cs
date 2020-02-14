@@ -30,8 +30,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
             Index iterator = Index.NewIndex(this.Shape);
 
-            for (int i = 0; i < iterator.N; i++)
-                iterator.Indexes[i] = 0;
+            iterator.SetZero();
 
             for (int h = 0; h < this.Shape.TotalSize; h++)
             {
@@ -40,16 +39,16 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
                 for (int i = iterator.N - 1; i >= 0; i--)
                 {
-                    if (iterator.Indexes[i] == this.Shape[i])
+                    if (iterator.Indices[i] == this.Shape[i])
                     {
-                        iterator.Indexes[i] = 0;
-                        iterator.Indexes[i - 1]++;
+                        iterator.Indices[i] = 0;
+                        iterator.Indices[i - 1]++;
                     }
-                    indexs += (iterator.Indexes[i] / Multiplier[i]) * this.Terms[0].Shape.Multiplied[i + 1];
+                    indexs += (iterator.Indices[i] / Multiplier[i]) * this.Terms[0].Shape.Multiplied[i + 1];
                 }
 
                 ptrcombined[indexs] += ptrs[h];
-                iterator.Indexes[iterator.N - 1]++;
+                iterator.Indices[iterator.N - 1]++;
             }
             Index.Return(iterator);
 
@@ -70,7 +69,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
             Index iterator = Index.NewIndex(this.Shape);
 
             for (int i = 0; i < iterator.N; i++)
-                iterator.Indexes[i] = 0;
+                iterator.Indices[i] = 0;
 
             for (int h = 0; h < this.Shape.TotalSize; h++)
             {
@@ -78,15 +77,15 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
                 for (int i = iterator.N - 1; i >= 0; i--)
                 {
-                    if (iterator.Indexes[i] == this.Shape[i])
+                    if (iterator.Indices[i] == this.Shape[i])
                     {
-                        iterator.Indexes[i] = 0;
-                        iterator.Indexes[i - 1]++;
+                        iterator.Indices[i] = 0;
+                        iterator.Indices[i - 1]++;
                     }
-                    indexs += (iterator.Indexes[i] / Multiplier[i]) * this.Terms[0].Shape.Multiplied[i + 1];
+                    indexs += (iterator.Indices[i] / Multiplier[i]) * this.Terms[0].Shape.Multiplied[i + 1];
                 }
                 ptrres[h] = ptrv[indexs];
-                iterator.Indexes[iterator.N - 1]++;
+                iterator.Indices[iterator.N - 1]++;
             }
             Index.Return(iterator);
             //int v1d1 = Terms[0].D1;
