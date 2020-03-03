@@ -14,7 +14,6 @@ namespace DeepLearningFramework.Data.Operators.Terms
         MatrixMultiply,
         Minus,
         MultiplyByNumber,
-        PlaceHolder,
         Plus,
         Power,
         ShrinkByAdding,
@@ -161,7 +160,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
             Shape.Return(this.Shape);
 
             for (int i = 0; i < Terms.Length; i++)
-                if (Terms[i].Type != TermType.Variable && Terms[i].Type != TermType.PlaceHolder)
+                if (Terms[i].Type != TermType.Variable)
                     Terms[i].Dispose();
 
             GC.SuppressFinalize(this);

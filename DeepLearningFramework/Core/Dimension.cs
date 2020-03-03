@@ -116,14 +116,4 @@ namespace DeepLearningFramework.Core
         }
     }
 
-    public class ReflectDimension : Dimension
-    {
-        Dimension r;
-        public override int Value { [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)] get { return r.Value; } set { } }
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public ReflectDimension(Dimension r)
-        {
-            this.r = r;
-        }
-    }
 }

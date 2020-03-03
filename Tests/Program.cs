@@ -427,14 +427,19 @@ namespace Tests
 
         public static unsafe void bb()
         {
-            Variable w = new Variable(Shape.NewShape(2, 3));
-            w.SetValue(new float[2, 3] {
-                    { 2, 3, 1 },
-                    { 7, 5, 2 }
+            Variable w = new Variable(Shape.NewShape(1, 3));
+            w.SetValue(new float[1, 3] {
+                    { 2, 3, 1 }
                 });
 
-            ExpandWithSame s = new ExpandWithSame(w, Shape.NewShape(5,4));
-            Hyperparameters.LearningRate = 1/20f;
+            Variable w2 = new Variable(Shape.NewShape(1, 3));
+            w2.SetValue(new float[1, 3] {
+                    { 1, 1, 1 }
+                });
+
+            Plus s = new Plus(w, w2);
+
+            Hyperparameters.LearningRate = 1;
             Console.WriteLine(s.GetResult());
             for (int i = 0; i < 1; i++)
             {
@@ -445,6 +450,7 @@ namespace Tests
             Console.WriteLine(w.GetResult());
 
             w.Clean();
+            w2.Clean();
             s.Dispose();
             //Variables should be cleaned manually and disposed manually! All other terms should call dispose method. 
         }
@@ -452,6 +458,7 @@ namespace Tests
       
         public static unsafe void Main(string[] args)
         {
+            int a = 5;
 
             int s1 = Shape.ShapePool.UnreturnedArrayCount;
 
