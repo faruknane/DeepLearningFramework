@@ -1,34 +1,27 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Runtime.CompilerServices;
-//using System.Text;
-//using DeepLearningFramework.Core;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Text;
+using DeepLearningFramework.Core;
+using DeepLearningFramework.Data.Operators.Terms;
+using PerformanceWork.OptimizedNumerics;
 
-//namespace DeepLearningFramework.Data.Operators.Layers
-//{
-//    public class SoftMax : Layer
-//    {
-//        public Layer L { get; private set; }
-//        public override Dimension D1 { get; internal set; }
-//        public override Dimension BatchSize { get; internal set; }
-//        public SoftMax(Layer x)
-//        {
-//            this.L = x;
-//            D1 = x.D1;
-//            BatchSize = x.BatchSize;
-//            this.SequenceLength = L.SequenceLength;
-//        }
+namespace DeepLearningFramework.Data.Operators.Layers
+{
+    public class SoftMax : Layer
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public SoftMax(Layer x)
+        {
+            this.InputLayers.Add(x);
+            this.OuterShape = new Dimension[x.OuterShape.Length];
+            this.InnerShape = new Dimension[x.InnerShape.Length]; 
+        }
 
-//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-//        public override Terms.Term CreateTerm(int time)
-//        {
-//            var aa = new Terms.SoftMax(L.GetTerm(time));
-//            return aa;
-//        }
-//        public override void DeleteTerms()
-//        {
-//            base.DeleteTerms();
-//            L.DeleteTerms();
-//        }
-//    }
-//}
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public override Term CreateTerm(Index time)
+        {
+            return new Terms.SoftMax(InputLayers[0].GetTerm(time));
+        }
+
+    }
+}

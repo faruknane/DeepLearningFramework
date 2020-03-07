@@ -16,17 +16,20 @@ namespace DeepLearningFramework.Data.Operators.Layers
         public string Name { get; set; }
         public virtual Dimension[] OuterShape { get; internal set; }
         public virtual Dimension[] InnerShape { get; internal set; }
+        internal Shape OuterS { get; set; }
+        internal Shape InnerS { get; set; }
+
 
         public List<Term> Terms = new List<Term>();
+        public List<Layer> InputLayers = new List<Layer>();
 
         private Terms.Variable EmptyVariable;
+        private bool InRecursion = false;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual unsafe Term GetTerm(Index time)
         {
-            //TODO yes
-
-            if (time.N != OuterShape.Length)
+            if (time.N != OuterS.N)
                 throw new Exception("");
 
             int index = 0;
@@ -35,29 +38,22 @@ namespace DeepLearningFramework.Data.Operators.Layers
             for (int i = time.N - 1; i >= 0; i--)
             {
                 index += time[i] * mult;
-                int val = OuterShape[i].Value;
-                mult *= val;
-                if (time[i] < 0 || time[i] >= val)
+                mult *= OuterS[i];
+                if (time[i] < 0 || time[i] >= OuterS[i])
                 {
-                    Shape s = Shape.NewShapeN(InnerShape.Length);
-                    for (int a = 0; a < InnerShape.Length; a++)
-                        s.Dimensions[a] = InnerShape[a].Value;
-                    s.CalculateMultiplied();
 
                     if (EmptyVariable == null)
                     {
-                        EmptyVariable = new Terms.Variable(s) { Trainable = false };
+                        EmptyVariable = new Terms.Variable(InnerS.Clone()) { Trainable = false };
                         EmptyVariable.Weights.SetValue(0);
                     }
-                    else if (!EmptyVariable.Shape.EqualShape(s))
+                    else if (!EmptyVariable.Shape.EqualShape(InnerS))
                     {
                         EmptyVariable.Clean();
                         EmptyVariable.Dispose();
-                        EmptyVariable = new Terms.Variable(s) { Trainable = false };
+                        EmptyVariable = new Terms.Variable(InnerS.Clone()) { Trainable = false };
                         EmptyVariable.Weights.SetValue(0);
                     }
-                    else
-                        Shape.Return(s);
 
                     return EmptyVariable;
                 }
@@ -73,43 +69,156 @@ namespace DeepLearningFramework.Data.Operators.Layers
         }
 
         public abstract Term CreateTerm(Index time);
+        public void PreCheck()
+        {
+            if (InRecursion) return;
+            InRecursion = true;
+
+            foreach (var item in InputLayers)
+                item.PreCheck();
+
+            PreCheckOperation();
+
+            InRecursion = false;
+        }
+        
+        public virtual void InnerShapeCalculation()
+        {
+            //check for inner and outer shape.
+            for (int i = 0; i < InputLayers.Count - 1; i++)
+            {
+                var item = InputLayers[i];
+                var item2 = InputLayers[i + 1];
+
+                if (item.InnerShape.Length != item2.InnerShape.Length)
+                    throw new Exception("Inner Shape incompatilbiity!");
+
+                for (int j = 0; j < item.InnerShape.Length; j++)
+                {
+                    int val = item.InnerShape[i].Value;
+
+                    if (val <= 0 || val != item2.InnerShape[i].Value)
+                        throw new Exception("Inner Shape incompatilbiity!");
+                }
+            }
+
+            if (InputLayers.Count > 0)
+            {
+                if (InnerS == null)
+                {
+                    InnerS = Shape.NewShapeN(this.InnerShape.Length);
+                }
+
+                unsafe
+                {
+                    for (int j = 0; j < this.InnerShape.Length; j++)
+                    {
+                        this.InnerShape[j] = InputLayers[0].InnerShape[j];
+                        InnerS.Dimensions[j] = InputLayers[0].InnerShape[j].Value;
+                    }
+                }
+
+                InnerS.CalculateMultiplied();
+            }
+        }
+
+        public virtual void OuterShapeCalculation()
+        {
+            for (int i = 0; i < InputLayers.Count - 1; i++)
+            {
+                var item = InputLayers[i];
+                var item2 = InputLayers[i + 1];
+
+                if (item.OuterShape.Length != item2.OuterShape.Length)
+                    throw new Exception("Outer Shape incompatilbiity!");
+
+                for (int j = 0; j < item.OuterShape.Length; j++)
+                {
+                    int val = item.OuterShape[i].Value;
+
+                    if (val <= 0 || val != item2.OuterShape[i].Value)
+                        throw new Exception("Outer Shape incompatilbiity!");
+                }
+            }
+
+            if (InputLayers.Count > 0)
+            {
+                if (OuterS == null)
+                {
+                    OuterS = Shape.NewShapeN(this.OuterShape.Length);
+                }
+                unsafe
+                {
+                    for (int j = 0; j < this.OuterShape.Length; j++)
+                    {
+                        this.OuterShape[j] = InputLayers[0].OuterShape[j];
+                        OuterS.Dimensions[j] = InputLayers[0].OuterShape[j].Value;
+                    }
+                }
+                OuterS.CalculateMultiplied();
+            }
+        }
+
+
+        public virtual void PreCheckOperation()
+        {
+            InnerShapeCalculation();
+            OuterShapeCalculation();
+        }
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public virtual void DeleteTerms()
+        public void DeleteTerms()
+        {
+            if (InRecursion) return;
+            InRecursion = true;
+
+            DeleteTermsOperation();
+            
+            foreach (var item in InputLayers)
+                item.DeleteTerms();
+
+            InRecursion = false;
+        }
+
+        public virtual void DeleteTermsOperation()
         {
             for (int i = 0; i < Terms.Count; i++)
-            {
-                Terms[i].DeleteResults();
-            }
-            //call other layers' deleteterms() method automatically?
-            //if outershape is converted to shape class, store it and reuse it and delete it here.
+                if (Terms[i] != null && Terms[i].Type != TermType.Variable)
+                {
+                    Terms[i].DeleteResults();
+                    Terms[i].Dispose();
+                }
             Terms.Clear();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual unsafe void Minimize()
         {
-            //first deleteresults of all terms of the layer
-            //then delete terms of the layer
-            //then we are ready to minimize
             DeleteTerms();
-            
-            Shape s = Shape.NewShapeN(OuterShape.Length);
-            for (int i = 0; i < OuterShape.Length; i++)
-                s.Dimensions[i] = OuterShape[i].Value;
-            s.CalculateMultiplied();
 
+            PreCheck();
 
-            Index a = Index.NewIndex(s);
+            Index a = Index.NewIndex(OuterS);
             a.SetZero();
 
-            for (int i = 0; i < s.TotalSize; i++, a.Add(1))
-            {
-                GetTerm(a).Minimize();
-            }
+            for (int i = 0; i < OuterS.TotalSize; i++, a.Add(1))
+                GetTerm(a);
 
-            Shape.Return(s);
+            if(Terms.Count > 1)
+            {
+                Terms.Plus min = new Terms.Plus(Terms.ToArray());
+                min.Minimize();
+                min.Dispose();
+            }
+            else if(Terms.Count == 1)
+            {
+                Terms[0].Minimize();
+            }
+            
+
             Index.Return(a);
+            DeleteTerms();
         }
 
         #region Operators * + - / 

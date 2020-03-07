@@ -27,7 +27,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
     public abstract class Term : IDisposable
     {
         public Shape Shape { get; internal set; } 
-
+       
         public Term[] Terms;
         public Tensor<float> Result { get; internal set; }
         public TermType Type { get; internal set; }
@@ -37,6 +37,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
         internal int Used = 0;
 
         public bool IsDisposed = false;
+        public bool InRecursion = false;
 
         //add
         //contains trainable variable ? 
@@ -132,7 +133,8 @@ namespace DeepLearningFramework.Data.Operators.Terms
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void DeleteResults()
         {
-            if (Result == null) return;
+            if (InRecursion) return;
+            InRecursion = true;
 
             Used = 0;
 
@@ -150,6 +152,8 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
             for (int i = 0; i < Terms.Length; i++)
                 Terms[i].DeleteResults();
+
+            InRecursion = false;
         }
 
         public virtual void Dispose()

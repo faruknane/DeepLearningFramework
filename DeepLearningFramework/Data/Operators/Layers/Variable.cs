@@ -1,37 +1,57 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
-using DeepLearningFramework.Data.Operators.Terms;
+using DeepLearningFramework.Data.Operators;
 using DeepLearningFramework.Core;
+using PerformanceWork.OptimizedNumerics;
 
 namespace DeepLearningFramework.Data.Operators.Layers
 {
     public unsafe class Variable : Layer
     {
         public Terms.Variable W { get; private set; }
-        public Variable(int d1, int d2, Dimension Length, bool setzero = false, bool randomize = true, string RandMethod = "")
+        public Variable(Shape s, Dimension[] Length, bool setzero = false, bool randomize = true, string RandMethod = "")
         {
-            W = new Terms.Variable(d1, d2);
+            W = new Terms.Variable(s);
+            
             if (setzero)
-                W.Weights.SetZero();
+                W.Weights.SetValue(0);
             else if (randomize)
-                Randomiz.Randomize(W.Weights.Array, d1 * d2);
-            D1 = W.D1;
-            BatchSize = W.D2;
-            this.SequenceLength = Length;
+                Randomiz.Randomize((float*)W.Weights.Array, s.TotalSize);
+
+            this.InnerS = s;
+            this.InnerShape = new Dimension[s.N];
+            for (int i = 0; i < s.N; i++)
+                this.InnerShape[i] = s[i];
+
+            this.OuterShape = Length;
+        }
+
+        public override void PreCheckOperation()
+        {
+            if (OuterS == null)
+            {
+                OuterS = Shape.NewShapeN(this.OuterShape.Length);
+            }
+            unsafe
+            {
+                for (int j = 0; j < this.OuterShape.Length; j++)
+                    OuterS.Dimensions[j] = OuterShape[j].Value;
+            }
+            OuterS.CalculateMultiplied();
         }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public override Term CreateTerm(int time)
+        public override Terms.Term CreateTerm(Index time)
         {
             return W;
         }
 
-        public override void DeleteTerms()
+        public override void DeleteTermsOperation()
         {
-            base.DeleteTerms();
+            W.DeleteResults();
+            Terms.Clear();
         }
     }
 }

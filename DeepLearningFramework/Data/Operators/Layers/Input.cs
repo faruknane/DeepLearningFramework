@@ -7,25 +7,24 @@
 //using DeepLearningFramework.Data.Operators.Terms;
 //using PerformanceWork.OptimizedNumerics;
 //using DeepLearningFramework.Core;
+//using Index = PerformanceWork.OptimizedNumerics.Index;
 
 //namespace DeepLearningFramework.Data.Operators.Layers
 //{
 //    public class Input : Layer
 //    {
-//        public override Dimension D1 { get; internal set; }
-//        public override Dimension BatchSize { get; internal set; }
-
 //        public Input(int size)
 //        {
+//            //inner shape, outer shape
 //            D1 = size;
 //            BatchSize = new Dimension();
 //            this.SequenceLength = new Dimension();
 //        }
 
 //        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-//        public override Term CreateTerm(int time)
+//        public override Term CreateTerm(Index time)
 //        {
-//            return new PlaceHolder(D1);
+
 //        }
 
 
