@@ -2,7 +2,6 @@
 using DeepLearningFramework.Core.Optimizers;
 using DeepLearningFramework.Data;
 using DeepLearningFramework.Data.Operators.Layers;
-using DeepLearningFramework.Data.Operators.Terms;
 using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;
@@ -12,6 +11,7 @@ using System.Runtime;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Index = PerformanceWork.OptimizedNumerics.Index;
 using Terms = DeepLearningFramework.Data.Operators.Terms;
 
 namespace Tests
@@ -427,17 +427,18 @@ namespace Tests
 
         public static unsafe void bb()
         {
-            Variable w = new Variable(Shape.NewShape(1, 3));
+            Terms.Variable w = new Terms.Variable(Shape.NewShape(1, 3));
             w.SetValue(new float[1, 3] {
                     { 2, 3, 1 }
                 });
 
-            Variable w2 = new Variable(Shape.NewShape(1, 3));
+            Terms.Variable w2 = new Terms.Variable(Shape.NewShape(1, 3));
             w2.SetValue(new float[1, 3] {
                     { 1, 1, 1 }
                 });
 
-            Plus s = new Plus(w, w2);
+            Terms.Plus s = new Terms.Plus(w, w2);
+
 
             Hyperparameters.LearningRate = 1;
             Console.WriteLine(s.GetResult());
@@ -455,16 +456,65 @@ namespace Tests
             //Variables should be cleaned manually and disposed manually! All other terms should call dispose method. 
         }
 
-      
+        public static unsafe void bb2()
+        {
+            Variable w = new Variable(Shape.NewShape(2, 3), new Dimension[] { 1, 1 });
+            Variable w2 = new Variable(Shape.NewShape(2, 3), new Dimension[] { 1, 1 });
+            ExpandWithSame sum = new ExpandWithSame(new Plus(w, w2), new Dimension[] { 2, 3 });
+
+            Shape s = Shape.NewShape(1, 1);
+            Index a = Index.NewIndex(s);
+
+            sum.PreCheck();
+            a.SetZero();
+            Console.WriteLine("w: ");
+            for (int i = 0; i < s.TotalSize; i++, a.Add(1))
+                Console.WriteLine(w.GetTerm(a).GetResult());
+            
+            a.SetZero();
+            Console.WriteLine("w2: ");
+            for (int i = 0; i < s.TotalSize; i++, a.Add(1))
+                Console.WriteLine(w2.GetTerm(a).GetResult());
+
+            a.SetZero();
+            for (int i = 0; i < s.TotalSize; i++, a.Add(1))
+                Console.WriteLine(sum.GetTerm(a).GetResult());
+            
+            Hyperparameters.LearningRate = 0.02f;
+
+            for (int i = 0; i < 10000; i++)
+                sum.Minimize();
+
+            sum.PreCheck();
+            a.SetZero();
+            Console.WriteLine("w: ");
+            for (int i = 0; i < s.TotalSize; i++, a.Add(1))
+                Console.WriteLine(w.GetTerm(a).GetResult());
+
+            a.SetZero();
+            Console.WriteLine("w2: ");
+            for (int i = 0; i < s.TotalSize; i++, a.Add(1))
+                Console.WriteLine(w2.GetTerm(a).GetResult());
+
+            a.SetZero();
+            for (int i = 0; i < s.TotalSize; i++, a.Add(1))
+                Console.WriteLine(sum.GetTerm(a).GetResult());
+
+            Index.Return(a);
+            Shape.Return(s);
+        }
+
+
         public static unsafe void Main(string[] args)
         {
+
             int a = 5;
 
             int s1 = Shape.ShapePool.UnreturnedArrayCount;
 
             for (int i = 0; i < 1; i++)
             {
-                bb();
+                bb2();
             }
 
             s1 = Shape.ShapePool.UnreturnedArrayCount;

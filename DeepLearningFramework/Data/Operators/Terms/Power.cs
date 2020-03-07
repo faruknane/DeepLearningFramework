@@ -27,7 +27,7 @@ namespace DeepLearningFramework.Data.Operators.Terms
 
         public override unsafe void CalculateDerivate(Tensor<float> s)
         {
-            Tensor<float> res = Terms[0].GetResult();
+            Tensor<float> res = Terms[0].GetResult(); 
             Tensor<float> combined = new Tensor<float>(s.Shape.Clone()); // new MMDerivative(s.D1, s.D2, D1, D2, false);
 
             if (PowerOf == 2)
