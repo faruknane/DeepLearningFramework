@@ -1,5 +1,5 @@
-﻿using DeepLearningFramework.Data;
-using DeepLearningFramework.Data.Operators.Terms;
+﻿
+using DeepLearningFramework.Operators.Terms;
 using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Text;
 using DeepLearningFramework.Core;
 using Index = PerformanceWork.OptimizedNumerics.Index;
 
-namespace DeepLearningFramework.Data.Operators.Layers
+namespace DeepLearningFramework.Operators.Layers
 {
     public abstract partial class Layer
     {

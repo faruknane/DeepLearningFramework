@@ -4,7 +4,7 @@
 //using System.Text;
 //using DeepLearningFramework.Core;
 
-//namespace DeepLearningFramework.Data.Operators.Layers
+//namespace DeepLearningFramework.Operators.Layers
 //{
 
 //    public class ShiftTime : Layer

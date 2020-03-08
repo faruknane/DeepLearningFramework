@@ -1,7 +1,7 @@
 ﻿using DeepLearningFramework.Core;
 using DeepLearningFramework.Core.Optimizers;
-using DeepLearningFramework.Data;
-using DeepLearningFramework.Data.Operators.Layers;
+
+using DeepLearningFramework.Operators.Layers;
 using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Index = PerformanceWork.OptimizedNumerics.Index;
-using Terms = DeepLearningFramework.Data.Operators.Terms;
+using Terms = DeepLearningFramework.Operators.Terms;
 
 namespace Tests
 {

@@ -1,4 +1,4 @@
-﻿using DeepLearningFramework.Data;
+﻿
 using PerformanceWork.OptimizedNumerics;
 using DeepLearningFramework.Core;
 using System;
@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
-namespace DeepLearningFramework.Data.Operators.Terms
+namespace DeepLearningFramework.Operators.Terms
 {
     public class Sigmoid : Term
     {

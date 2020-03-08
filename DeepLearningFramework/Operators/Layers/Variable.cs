@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
-using DeepLearningFramework.Data.Operators;
+using DeepLearningFramework.Operators;
 using DeepLearningFramework.Core;
 using PerformanceWork.OptimizedNumerics;
 
-namespace DeepLearningFramework.Data.Operators.Layers
+namespace DeepLearningFramework.Operators.Layers
 {
     public unsafe class Variable : Layer
     {

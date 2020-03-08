@@ -2,10 +2,10 @@
 using System.Runtime.CompilerServices;
 using System.Text;
 using DeepLearningFramework.Core;
-using DeepLearningFramework.Data.Operators.Terms;
+using DeepLearningFramework.Operators.Terms;
 using PerformanceWork.OptimizedNumerics;
 
-namespace DeepLearningFramework.Data.Operators.Layers
+namespace DeepLearningFramework.Operators.Layers
 {
     public class SoftMax : Layer
     {

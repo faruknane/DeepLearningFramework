@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
-using DeepLearningFramework.Data.Operators.Terms;
+using DeepLearningFramework.Operators.Terms;
 using DeepLearningFramework.Core;
 using PerformanceWork.OptimizedNumerics;
 using Index = PerformanceWork.OptimizedNumerics.Index;
 
-namespace DeepLearningFramework.Data.Operators.Layers
+namespace DeepLearningFramework.Operators.Layers
 {
     public class Plus : Layer
     {

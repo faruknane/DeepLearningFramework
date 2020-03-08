@@ -1,4 +1,4 @@
-﻿using DeepLearningFramework.Data;
+﻿
 using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using DeepLearningFramework.Core;
 
-namespace DeepLearningFramework.Data.Operators.Terms
+namespace DeepLearningFramework.Operators.Terms
 {
     public enum TermType
     {

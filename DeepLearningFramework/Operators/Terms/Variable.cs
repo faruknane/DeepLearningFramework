@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace DeepLearningFramework.Data.Operators.Terms
+namespace DeepLearningFramework.Operators.Terms
 {
     public class Variable : Term, Trainable
     {

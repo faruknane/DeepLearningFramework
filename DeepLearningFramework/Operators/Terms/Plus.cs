@@ -1,10 +1,10 @@
-﻿using DeepLearningFramework.Data;
+﻿
 using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Threading.Tasks;
 using DeepLearningFramework.Core;
 
-namespace DeepLearningFramework.Data.Operators.Terms
+namespace DeepLearningFramework.Operators.Terms
 {
     public class Plus : Term
     {
