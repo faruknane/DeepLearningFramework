@@ -8,11 +8,11 @@ using Index = PerformanceWork.OptimizedNumerics.Index;
 
 namespace DeepLearningFramework.Operators.Terms
 {
-    public class ShrinkByAdding : Term
+    public class Shrink : Term
     {
         public Shape Divisor { get; set; }
 
-        public unsafe ShrinkByAdding(Term v1, Shape divisor)
+        public unsafe Shrink(Term v1, Shape divisor)
         {
             Type = TermType.ShrinkByAdding;
             Terms = new Term[1] { v1 };

@@ -1,42 +1,58 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Runtime.CompilerServices;
-//using System.Text;
-//using DeepLearningFramework.Operators.Terms;
-//using DeepLearningFramework.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Text;
+using DeepLearningFramework.Operators.Terms;
+using DeepLearningFramework.Core;
+using PerformanceWork.OptimizedNumerics;
+using Index = PerformanceWork.OptimizedNumerics.Index;
 
-//namespace DeepLearningFramework.Operators.Layers
-//{
-//    public class MatrixMultiply : Layer
-//    {
-//        public Layer L1 { get; private set; }
-//        public Layer L2 { get; private set; }
+namespace DeepLearningFramework.Operators.Layers
+{
+    public class MatrixMultiply : Layer
+    {
+        public MatrixMultiply(Layer x1, Layer x2)
+        {
+            this.InputLayers.Add(x1);
+            this.InputLayers.Add(x2);
 
-//        public override Dimension D1 { get; internal set; }
-//        public override Dimension BatchSize { get; internal set; }
-//        public MatrixMultiply(Layer x1, Layer x2)
-//        {
-//            this.L1 = x1;
-//            this.L2 = x2;
-//            D1 = x1.D1;
-//            BatchSize = x2.BatchSize;
-//            this.SequenceLength = L1.SequenceLength;
-//        }
-    
-//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-//        public override Term CreateTerm(int time)
-//        {
-//            if (!this.L1.SequenceLength.HardEquals(this.L2.SequenceLength))
-//                throw new Exception("Sequence Length should match!");
-//            Term aa = new Terms.MatrixMultiply(L1.GetTerm(time), L2.GetTerm(time));
-//            return aa;
-//        }
+            if (x1.InnerDimensions.Length != 2 || x2.InnerDimensions.Length != 2)
+                throw new Exception("Inner Dimension should be 2!");
 
-//        public override void DeleteTerms()
-//        {
-//            base.DeleteTerms();
-//            L1.DeleteTerms();
-//            L2.DeleteTerms();
-//        }
-//    }
-//}
+            InnerDimensionCalculation();
+            OuterDimensionCalculation();
+        }
+
+        public override void InnerDimensionCalculation()
+        {
+            if (InputLayers.Count > 0)
+            {
+                this.InnerDimensions = new Dimension[2];
+
+                this.InnerDimensions[0] = InputLayers[0].InnerDimensions[0];
+                this.InnerDimensions[1] = InputLayers[1].InnerDimensions[1];
+            }
+        }
+
+        public override void InnerDimensionCheck()
+        {
+            if (InputLayers.Count != 2)
+                throw new Exception("The number of layers should be 2");
+
+            var item = InputLayers[0];
+            var item2 = InputLayers[1];
+
+            if (item.InnerDimensions[0].Value <= 0 || item.InnerDimensions[1].Value <= 0 || item2.InnerDimensions[0].Value <= 0 || item2.InnerDimensions[1].Value <= 0
+                || item.InnerDimensions[1].Value != item2.InnerDimensions[0].Value)
+                throw new Exception("Inner dimension incompatilbiity!");
+        }
+       
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public override Term CreateTerm(Index time)
+        {
+            return new Terms.MatrixMultiply(InputLayers[0].GetTerm(time), InputLayers[1].GetTerm(time));
+        }
+
+    }
+}

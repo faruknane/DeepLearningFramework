@@ -17,8 +17,8 @@ namespace DeepLearningFramework.Operators.Layers
             this.InputLayers.Add(l);
             this.PowerOf = pow;
 
-            this.OuterShape = new Dimension[l.OuterShape.Length];
-            this.InnerShape = new Dimension[l.InnerShape.Length];
+            InnerDimensionCalculation();
+            OuterDimensionCalculation();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Index = PerformanceWork.OptimizedNumerics.Index;
 
 namespace DeepLearningFramework.Operators.Layers
 {
@@ -12,13 +13,13 @@ namespace DeepLearningFramework.Operators.Layers
         public Sigmoid(Layer x)
         {
             this.InputLayers.Add(x);
-            this.OuterShape = new Dimension[x.OuterShape.Length];
-            this.InnerShape = new Dimension[x.InnerShape.Length];
+            this.OuterDimensions = new Dimension[x.OuterDimensions.Length];
+            this.InnerDimensions = new Dimension[x.InnerDimensions.Length];
         }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public override Term CreateTerm(PerformanceWork.OptimizedNumerics.Index time)
+        public override Term CreateTerm(Index time)
         {
             return new Terms.Sigmoid(InputLayers[0].GetTerm(time));
         }

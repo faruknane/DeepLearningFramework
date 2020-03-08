@@ -19,28 +19,26 @@ namespace DeepLearningFramework.Operators.Layers
             else if (randomize)
                 Randomiz.Randomize((float*)W.Weights.Array, s.TotalSize);
 
-            this.InnerS = s;
-            this.InnerShape = new Dimension[s.N];
+            this.InnerShape = s;
+            this.InnerDimensions = new Dimension[s.N];
             for (int i = 0; i < s.N; i++)
-                this.InnerShape[i] = s[i];
+                this.InnerDimensions[i] = s[i];
 
-            this.OuterShape = Length;
+            this.OuterDimensions = Length;
         }
 
-        public override void PreCheckOperation()
+        public override void InnerDimensionCheck()
         {
-            if (OuterS == null)
-            {
-                OuterS = Shape.NewShapeN(this.OuterShape.Length);
-            }
-            unsafe
-            {
-                for (int j = 0; j < this.OuterShape.Length; j++)
-                    OuterS.Dimensions[j] = OuterShape[j].Value;
-            }
-            OuterS.CalculateMultiplied();
-        }
 
+        }
+        public override void OuterDimensionCheck()
+        {
+
+        }
+        public override void InnerShapeCalculation()
+        {
+
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override Terms.Term CreateTerm(Index time)

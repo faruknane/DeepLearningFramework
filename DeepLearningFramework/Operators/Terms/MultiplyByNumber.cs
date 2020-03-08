@@ -23,11 +23,6 @@ namespace DeepLearningFramework.Operators.Terms
             Terms[0].Derivate(s);
             s.DivideBy(Multiplier);
         }
-        
-        // F, S = A * 5 
-        // dF / dS = 10
-        // dS / dA = 5
-        // dF / dA = 50
 
         public override Tensor<float> CalculateResult()
         {

@@ -13,8 +13,9 @@ namespace DeepLearningFramework.Operators.Layers
         public SoftMax(Layer x)
         {
             this.InputLayers.Add(x);
-            this.OuterShape = new Dimension[x.OuterShape.Length];
-            this.InnerShape = new Dimension[x.InnerShape.Length]; 
+
+            InnerDimensionCalculation();
+            OuterDimensionCalculation();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

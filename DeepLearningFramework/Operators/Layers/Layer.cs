@@ -14,10 +14,10 @@ namespace DeepLearningFramework.Operators.Layers
     public abstract partial class Layer
     {
         public string Name { get; set; }
-        public virtual Dimension[] OuterShape { get; internal set; }
-        public virtual Dimension[] InnerShape { get; internal set; }
-        internal Shape OuterS { get; set; }
-        internal Shape InnerS { get; set; }
+        public virtual Dimension[] OuterDimensions { get; internal set; }
+        public virtual Dimension[] InnerDimensions { get; internal set; }
+        internal Shape OuterShape { get; set; }
+        internal Shape InnerShape { get; set; }
 
 
         public List<Term> Terms = new List<Term>();
@@ -29,7 +29,7 @@ namespace DeepLearningFramework.Operators.Layers
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual unsafe Term GetTerm(Index time)
         {
-            if (time.N != OuterS.N)
+            if (time.N != OuterShape.N)
                 throw new Exception("");
 
             int index = 0;
@@ -38,20 +38,20 @@ namespace DeepLearningFramework.Operators.Layers
             for (int i = time.N - 1; i >= 0; i--)
             {
                 index += time[i] * mult;
-                mult *= OuterS[i];
-                if (time[i] < 0 || time[i] >= OuterS[i])
+                mult *= OuterShape[i];
+                if (time[i] < 0 || time[i] >= OuterShape[i])
                 {
 
                     if (EmptyVariable == null)
                     {
-                        EmptyVariable = new Terms.Variable(InnerS.Clone()) { Trainable = false };
+                        EmptyVariable = new Terms.Variable(InnerShape.Clone()) { Trainable = false };
                         EmptyVariable.Weights.SetValue(0);
                     }
-                    else if (!EmptyVariable.Shape.EqualShape(InnerS))
+                    else if (!EmptyVariable.Shape.EqualShape(InnerShape))
                     {
                         EmptyVariable.Clean();
                         EmptyVariable.Dispose();
-                        EmptyVariable = new Terms.Variable(InnerS.Clone()) { Trainable = false };
+                        EmptyVariable = new Terms.Variable(InnerShape.Clone()) { Trainable = false };
                         EmptyVariable.Weights.SetValue(0);
                     }
 
@@ -81,91 +81,113 @@ namespace DeepLearningFramework.Operators.Layers
 
             InRecursion = false;
         }
-        
-        public virtual void InnerShapeCalculation()
-        {
-            //check for inner and outer shape.
-            for (int i = 0; i < InputLayers.Count - 1; i++)
-            {
-                var item = InputLayers[i];
-                var item2 = InputLayers[i + 1];
-
-                if (item.InnerShape.Length != item2.InnerShape.Length)
-                    throw new Exception("Inner Shape incompatilbiity!");
-
-                for (int j = 0; j < item.InnerShape.Length; j++)
-                {
-                    int val = item.InnerShape[i].Value;
-
-                    if (val <= 0 || val != item2.InnerShape[i].Value)
-                        throw new Exception("Inner Shape incompatilbiity!");
-                }
-            }
-
-            if (InputLayers.Count > 0)
-            {
-                if (InnerS == null)
-                {
-                    InnerS = Shape.NewShapeN(this.InnerShape.Length);
-                }
-
-                unsafe
-                {
-                    for (int j = 0; j < this.InnerShape.Length; j++)
-                    {
-                        this.InnerShape[j] = InputLayers[0].InnerShape[j];
-                        InnerS.Dimensions[j] = InputLayers[0].InnerShape[j].Value;
-                    }
-                }
-
-                InnerS.CalculateMultiplied();
-            }
-        }
-
-        public virtual void OuterShapeCalculation()
-        {
-            for (int i = 0; i < InputLayers.Count - 1; i++)
-            {
-                var item = InputLayers[i];
-                var item2 = InputLayers[i + 1];
-
-                if (item.OuterShape.Length != item2.OuterShape.Length)
-                    throw new Exception("Outer Shape incompatilbiity!");
-
-                for (int j = 0; j < item.OuterShape.Length; j++)
-                {
-                    int val = item.OuterShape[i].Value;
-
-                    if (val <= 0 || val != item2.OuterShape[i].Value)
-                        throw new Exception("Outer Shape incompatilbiity!");
-                }
-            }
-
-            if (InputLayers.Count > 0)
-            {
-                if (OuterS == null)
-                {
-                    OuterS = Shape.NewShapeN(this.OuterShape.Length);
-                }
-                unsafe
-                {
-                    for (int j = 0; j < this.OuterShape.Length; j++)
-                    {
-                        this.OuterShape[j] = InputLayers[0].OuterShape[j];
-                        OuterS.Dimensions[j] = InputLayers[0].OuterShape[j].Value;
-                    }
-                }
-                OuterS.CalculateMultiplied();
-            }
-        }
-
 
         public virtual void PreCheckOperation()
         {
+            InnerDimensionCheck();
+            OuterDimensionCheck();
             InnerShapeCalculation();
             OuterShapeCalculation();
         }
 
+        public virtual void OuterDimensionCheck()
+        {
+            //default check for outer dimensions
+            for (int i = 0; i < InputLayers.Count - 1; i++)
+            {
+                var item = InputLayers[i];
+                var item2 = InputLayers[i + 1];
+
+                if (item.OuterDimensions.Length != item2.OuterDimensions.Length)
+                    throw new Exception("Outer Shape incompatilbiity!");
+
+                for (int j = 0; j < item.OuterDimensions.Length; j++)
+                {
+                    int val = item.OuterDimensions[j].Value;
+
+                    if (val <= 0 || val != item2.OuterDimensions[j].Value)
+                        throw new Exception("Outer Shape incompatilbiity!");
+                }
+            }
+        }
+
+        public virtual void InnerDimensionCheck()
+        {
+            //default check for inner dimensions
+            for (int i = 0; i < InputLayers.Count - 1; i++)
+            {
+                var item = InputLayers[i];
+                var item2 = InputLayers[i + 1];
+
+                if (item.InnerDimensions.Length != item2.InnerDimensions.Length)
+                    throw new Exception("Inner Shape incompatilbiity!");
+
+                for (int j = 0; j < item.InnerDimensions.Length; j++)
+                {
+                    int val = item.InnerDimensions[j].Value;
+
+                    if (val <= 0 || val != item2.InnerDimensions[j].Value)
+                        throw new Exception("Inner Shape incompatilbiity!");
+                }
+            }
+        }
+
+        public virtual void InnerShapeCalculation()
+        {
+            //assign inner shape.
+            if (InnerShape == null)
+                InnerShape = Shape.NewShapeN(this.InnerDimensions.Length);
+
+            unsafe
+            {
+                for (int j = 0; j < this.InnerDimensions.Length; j++)
+                    InnerShape.Dimensions[j] = InnerDimensions[j].Value;
+            }
+            InnerShape.CalculateMultiplied();
+        }
+
+        public virtual void OuterShapeCalculation()
+        {
+            //assign outer shape.
+            if (OuterShape == null)
+                OuterShape = Shape.NewShapeN(this.OuterDimensions.Length);
+
+            unsafe
+            {
+                for (int j = 0; j < this.OuterDimensions.Length; j++)
+                    OuterShape.Dimensions[j] = this.OuterDimensions[j].Value;
+            }
+            OuterShape.CalculateMultiplied();
+        }
+        public virtual void InnerDimensionCalculation()
+        {
+            //assign inner dimensions
+            if (InputLayers.Count > 0)
+            {
+                if (InnerDimensions != null)
+                    throw new Exception("Outer Dimensions are already defined!");
+
+                InnerDimensions = new Dimension[InputLayers[0].InnerDimensions.Length];
+
+                for (int j = 0; j < this.InnerDimensions.Length; j++)
+                    this.InnerDimensions[j] = InputLayers[0].InnerDimensions[j];
+            }
+        }
+
+        public virtual void OuterDimensionCalculation()
+        {
+            //assign outer dimensions
+            if (InputLayers.Count > 0)
+            {
+                if (OuterDimensions != null)
+                    throw new Exception("Outer Dimensions are already defined!");
+
+                OuterDimensions = new Dimension[InputLayers[0].OuterDimensions.Length];
+
+                for (int j = 0; j < this.OuterDimensions.Length; j++)
+                    this.OuterDimensions[j] = InputLayers[0].OuterDimensions[j];
+            }
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void DeleteTerms()
@@ -199,10 +221,10 @@ namespace DeepLearningFramework.Operators.Layers
 
             PreCheck();
 
-            Index a = Index.NewIndex(OuterS);
+            Index a = Index.NewIndex(OuterShape);
             a.SetZero();
 
-            for (int i = 0; i < OuterS.TotalSize; i++, a.Add(1))
+            for (int i = 0; i < OuterShape.TotalSize; i++, a.Add(1))
                 GetTerm(a);
 
             if(Terms.Count > 1)

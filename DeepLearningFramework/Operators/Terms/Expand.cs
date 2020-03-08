@@ -9,10 +9,10 @@ using Index = PerformanceWork.OptimizedNumerics.Index;
 
 namespace DeepLearningFramework.Operators.Terms
 {
-    public class ExpandWithSame : Term
+    public class Expand : Term
     {
         public Shape Multiplier { get; set; }
-        public ExpandWithSame(Term v1, Shape multiplier)
+        public Expand(Term v1, Shape multiplier)
         {
             Type = TermType.ExpandWithSame;
             Terms = new Term[1] { v1 };

@@ -458,11 +458,11 @@ namespace Tests
 
         public static unsafe void bb2()
         {
-            Variable w = new Variable(Shape.NewShape(2, 3), new Dimension[] { 1, 1 });
-            Variable w2 = new Variable(Shape.NewShape(2, 3), new Dimension[] { 1, 1 });
-            ExpandWithSame sum = new ExpandWithSame(new Plus(w, w2), new Dimension[] { 2, 3 });
+            Variable w = new Variable(Shape.NewShape(2, 3), new Dimension[] { 2, 1 });
+            Variable w2 = new Variable(Shape.NewShape(3, 2), new Dimension[] { 2, 1 });
+            MatrixMultiply sum = new MatrixMultiply(w, w2);
 
-            Shape s = Shape.NewShape(1, 1);
+            Shape s = Shape.NewShape(2, 1);
             Index a = Index.NewIndex(s);
 
             sum.PreCheck();
@@ -477,13 +477,16 @@ namespace Tests
                 Console.WriteLine(w2.GetTerm(a).GetResult());
 
             a.SetZero();
+            Console.WriteLine("sum: ");
             for (int i = 0; i < s.TotalSize; i++, a.Add(1))
                 Console.WriteLine(sum.GetTerm(a).GetResult());
             
             Hyperparameters.LearningRate = 0.02f;
 
-            for (int i = 0; i < 10000; i++)
+            for (int i2 = 0; i2 < 100; i2++)
+            {
                 sum.Minimize();
+            }
 
             sum.PreCheck();
             a.SetZero();
@@ -497,6 +500,7 @@ namespace Tests
                 Console.WriteLine(w2.GetTerm(a).GetResult());
 
             a.SetZero();
+            Console.WriteLine("sum: ");
             for (int i = 0; i < s.TotalSize; i++, a.Add(1))
                 Console.WriteLine(sum.GetTerm(a).GetResult());
 

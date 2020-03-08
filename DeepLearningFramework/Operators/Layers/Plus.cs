@@ -16,12 +16,12 @@ namespace DeepLearningFramework.Operators.Layers
         public Plus(params Layer[] input)
         {
             terms = new Term[input.Length];
-            
-            InnerShape = new Dimension[input[0].InnerShape.Length];
-            OuterShape = new Dimension[input[0].OuterShape.Length];
-
+         
             foreach (var item in input)
                 InputLayers.Add(item);
+
+            InnerDimensionCalculation();
+            OuterDimensionCalculation();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

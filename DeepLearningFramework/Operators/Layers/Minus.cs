@@ -13,11 +13,11 @@ namespace DeepLearningFramework.Operators.Layers
     {
         public Minus(Layer l1, Layer l2)
         {
-            InnerShape = new Dimension[l1.InnerShape.Length];
-            OuterShape = new Dimension[l1.OuterShape.Length];
-
             InputLayers.Add(l1);
             InputLayers.Add(l2);
+
+            InnerDimensionCalculation();
+            OuterDimensionCalculation();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
