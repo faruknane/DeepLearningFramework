@@ -33,8 +33,9 @@ namespace DeepLearningFramework.Operators.Terms
         public TermType Type { get; internal set; }
 
         public Tensor<float> SumOfDerivatives;
+        public int UniqueId { get; set; } = Helper.Id.GetNewId();
 
-        internal int Used = 0;
+        volatile internal int Used = 0;
 
         public bool IsDisposed = false;
         public bool InRecursion = false;
@@ -50,11 +51,14 @@ namespace DeepLearningFramework.Operators.Terms
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual Tensor<float> GetResult()
         {
-            if (Result == null)
+            lock (Terms)
             {
-                return Result = CalculateResult();
+                if (Result == null)
+                {
+                    return Result = CalculateResult();
+                }
+                return Result;
             }
-            return Result;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -87,22 +91,26 @@ namespace DeepLearningFramework.Operators.Terms
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Derivate(Tensor<float> m)
         {
-            if (Used <= 0)
-                throw new Exception("Impossible case!");
-
-            Used--;
-
-            if (Used == 0 && SumOfDerivatives == null)
+            lock (Shape)
             {
-                CalculateDerivate(m);
-                return;
-            }
+                //Console.WriteLine(UniqueId + ", " + Type + ", " + Terms.Length +  " -> " + Used);
+                if (Used <= 0)
+                    throw new Exception("Impossible case a!");
 
-            AddDerivative(m);
+                Used--;
 
-            if (Used == 0)
-            {
-                CalculateDerivate(SumOfDerivatives);
+                if (Used == 0 && SumOfDerivatives == null)
+                {
+                    CalculateDerivate(m);
+                    return;
+                }
+
+                AddDerivative(m);
+
+                if (Used == 0)
+                {
+                    CalculateDerivate(SumOfDerivatives);
+                }
             }
         }
 

@@ -3,6 +3,7 @@ using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Threading.Tasks;
 using DeepLearningFramework.Core;
+using System.Threading;
 
 namespace DeepLearningFramework.Operators.Terms
 {
@@ -24,19 +25,62 @@ namespace DeepLearningFramework.Operators.Terms
 
         public override void CalculateDerivate(Tensor<float> s)
         {
-            for (int i = 0; i < Terms.Length; i++)
-                Terms[i].Derivate(s);
+            if(Terms.Length > 2)
+            {
+                Task[] l = new Task[Terms.Length - 1];
+                for (int i = 0; i < Terms.Length - 1; i++)
+                {
+                    l[i] = new Task(new Action<object>((object o) => { ((Term)o).Derivate(s); }), Terms[i]);
+                    l[i].Start();
+                }
+
+                Terms[Terms.Length - 1].Derivate(s);
+
+                for (int i = 0; i < Terms.Length - 1; i++)
+                    l[i].Wait();
+            }
+            else
+            {
+                for (int i = 0; i < Terms.Length; i++)
+                 Terms[i].Derivate(s);
+            }
+
         }
 
         public unsafe override Tensor<float> CalculateResult()
         {
-            Tensor<float> res = new Tensor<float>(this.Shape.Clone());
-            Vectorization.ElementWiseAddAVX((float*)Terms[0].GetResult().Array, (float*)Terms[1].GetResult().Array, (float*)res.Array, this.Shape.TotalSize);
+            if (Terms.Length > 2)
+            {
+                Task[] l = new Task[Terms.Length - 1];
+                for (int i = 0; i < Terms.Length - 1; i++)
+                {
+                    l[i] = new Task(new Action<object>((object o) => { ((Term)o).GetResult(); }), Terms[i]);
+                    l[i].Start();
+                }
 
-            for (int i = 2; i < Terms.Length; i++) //Optimize here. 
-                Vectorization.ElementWiseAddAVX((float*)res.Array, (float*)Terms[i].GetResult().Array, (float*)res.Array, this.Shape.TotalSize);
+                Terms[Terms.Length - 1].GetResult();
 
-            return res;
+                for (int i = 0; i < Terms.Length - 1; i++)
+                    l[i].Wait();
+
+                Tensor<float> res = new Tensor<float>(this.Shape.Clone());
+                Vectorization.ElementWiseAddAVX((float*)Terms[0].GetResult().Array, (float*)Terms[1].GetResult().Array, (float*)res.Array, this.Shape.TotalSize);
+
+                for (int i = 2; i < Terms.Length; i++) //Optimize here. 
+                    Vectorization.ElementWiseAddAVX((float*)res.Array, (float*)Terms[i].GetResult().Array, (float*)res.Array, this.Shape.TotalSize);
+                return res;
+            }
+            else
+            {
+                Tensor<float> res = new Tensor<float>(this.Shape.Clone());
+                Vectorization.ElementWiseAddAVX((float*)Terms[0].GetResult().Array, (float*)Terms[1].GetResult().Array, (float*)res.Array, this.Shape.TotalSize);
+
+                for (int i = 2; i < Terms.Length; i++) //Optimize here. 
+                    Vectorization.ElementWiseAddAVX((float*)res.Array, (float*)Terms[i].GetResult().Array, (float*)res.Array, this.Shape.TotalSize);
+                return res;
+
+            }
+
         }
 
     }

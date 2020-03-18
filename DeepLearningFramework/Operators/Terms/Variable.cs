@@ -11,10 +11,6 @@ namespace DeepLearningFramework.Operators.Terms
     {
         private Tensor<float> m;
         public String Name { get; set; }
-
-        public int UniqueId { get; set; }
-        public static int UniqueIdAssigner = 0;
-
         public bool Trainable { get; set; } = true;
         public float LearningRateMultiplier { get; set; } = 1;
 
@@ -40,8 +36,6 @@ namespace DeepLearningFramework.Operators.Terms
             Type = TermType.Variable;
             this.Shape = s;
             m = new Tensor<float>(s.Clone());
-            UniqueId = UniqueIdAssigner;
-            UniqueIdAssigner++;
             Terms = Array.Empty<Term>();
         }
 
@@ -50,8 +44,6 @@ namespace DeepLearningFramework.Operators.Terms
             Type = TermType.Variable;
             this.Shape = m.Shape.Clone();
             this.m = m;
-            UniqueId = UniqueIdAssigner;
-            UniqueIdAssigner++;
             Terms = Array.Empty<Term>();
         }
 
