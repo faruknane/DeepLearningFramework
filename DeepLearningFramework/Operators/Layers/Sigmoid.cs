@@ -13,8 +13,8 @@ namespace DeepLearningFramework.Operators.Layers
         public Sigmoid(Layer x)
         {
             this.InputLayers.Add(x);
-            this.OuterDimensions = new Dimension[x.OuterDimensions.Length];
-            this.InnerDimensions = new Dimension[x.InnerDimensions.Length];
+            InnerDimensionCalculation();
+            OuterDimensionCalculation();
         }
 
 

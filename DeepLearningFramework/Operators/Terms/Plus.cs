@@ -25,7 +25,7 @@ namespace DeepLearningFramework.Operators.Terms
 
         public override void CalculateDerivate(Tensor<float> s)
         {
-            if(Terms.Length > 2)
+            if(Terms.Length > 1)
             {
                 Task[] l = new Task[Terms.Length - 1];
                 for (int i = 0; i < Terms.Length - 1; i++)
@@ -49,7 +49,7 @@ namespace DeepLearningFramework.Operators.Terms
 
         public unsafe override Tensor<float> CalculateResult()
         {
-            if (Terms.Length > 2)
+            if (Terms.Length > 1)
             {
                 Task[] l = new Task[Terms.Length - 1];
                 for (int i = 0; i < Terms.Length - 1; i++)

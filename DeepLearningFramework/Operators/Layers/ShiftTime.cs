@@ -13,6 +13,7 @@
 //        public override Dimension D1 { get; internal set; }
 //        public override Dimension BatchSize { get; internal set; }
 //        public int Shift { get; internal set; }
+
 //        public ShiftTime(Layer l, int shift)
 //        {
 //            this.L = l;
@@ -27,6 +28,7 @@
 //        {
 //            return L.GetTerm(time + Shift);
 //        }
+
 //        public override void DeleteTerms()
 //        {
 //            base.DeleteTerms();

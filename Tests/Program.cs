@@ -460,12 +460,17 @@ namespace Tests
 
         public static unsafe void bb2()
         {
-            Variable w = new Variable(Shape.NewShape(500, 300), new Dimension[] { 100, 50 });
-            Variable w2 = new Variable(Shape.NewShape(500, 300), new Dimension[] { 100, 50 });
-            Minus sum = new Minus(w, w2);
+            Variable w1 = new Variable(Shape.NewShape(500, 300), new Dimension[] { 20, 10 }); w1.Name = "w1";
+            Variable w2 = new Variable(Shape.NewShape(500, 300), new Dimension[] { 20, 10 }); w2.Name = "w2";
+            Variable w3 = new Variable(Shape.NewShape(300, 400), new Dimension[] { 20, 10 }); w3.Name = "w3";
+            Variable w4 = new Variable(Shape.NewShape(500, 400), new Dimension[] { 20, 10 }); w4.Name = "w4";
 
-            Shape s = Shape.NewShape(2, 10);
-            Index a = Index.NewIndex(s);
+            var d1 = new Minus(w1, w2);d1.Name = "d1";
+            var d2 = new MatrixMultiply(d1, w3);d2.Name = "d2";
+            var sum = new Power(new Minus(d2,w4),2); sum.Name = "sum";
+
+            //Shape s = Shape.NewShape(2, 10);
+            //Index a = Index.NewIndex(s);
 
             sum.PreCheck();
             //a.SetZero();
@@ -486,13 +491,14 @@ namespace Tests
             Hyperparameters.LearningRate = 0.02f;
 
             Stopwatch c = new Stopwatch();
-            c.Start();
-            for (int i2 = 0; i2 < 1; i2++)
+            for (int i2 = 0; i2 < 10; i2++)
             {
-                sum.Minimize();
+                c.Restart();
+                sum.Minimize(); 
+                c.Stop();
+                Console.WriteLine($"{i2} took {c.ElapsedMilliseconds}ms");
             }
-            c.Stop();
-            Console.WriteLine(c.ElapsedMilliseconds);
+            
             //sum.PreCheck();
             //a.SetZero();
             //Console.WriteLine("w: ");
@@ -509,28 +515,59 @@ namespace Tests
             //for (int i = 0; i < s.TotalSize; i++, a.Add(1))
             //    Console.WriteLine(sum.GetTerm(a).GetResult());
 
-            Index.Return(a);
-            Shape.Return(s);
+            //Index.Return(a);
+            //Shape.Return(s);
+        }
+
+        public static unsafe void bb3()
+        {
+            Variable w1 = new Variable(Shape.NewShape(1000, 3000), new Dimension[] { 2, 10 }); w1.Name = "w1";
+            Variable w2 = new Variable(Shape.NewShape(1000, 3000), new Dimension[] { 2, 10 }); w2.Name = "w2";
+            Variable w4 = new Variable(Shape.NewShape(1000, 3000), new Dimension[] { 2, 10 }); w4.Name = "w4";
+
+            var d1 = new Plus(w1, w2); d1.Name = "d1";
+            var sum = new Power(new Plus(d1, w4), 2); sum.Name = "sum";
+
+
+            Hyperparameters.LearningRate = 0.00f;
+
+            Stopwatch c = new Stopwatch();
+            for (int i2 = 0; i2 < 10; i2++)
+            {
+                c.Restart();
+                sum.Minimize();
+                c.Stop();
+                Console.WriteLine($"{i2} took {c.ElapsedMilliseconds}ms");
+            }
         }
 
 
         public static unsafe void Main(string[] args)
         {
-            Thread t = new Thread(() => { while (true) { Console.WriteLine(Process.GetCurrentProcess().Threads.Count); Thread.Sleep(200); } });
+            Thread t = new Thread(() => 
+            { 
+                while (true)
+                { 
+                    Console.WriteLine(Process.GetCurrentProcess().Threads.Count); 
+                    Thread.Sleep(200);
+                } 
+            });
+
+
             t.IsBackground = true;
             t.Start();
             int a = 5;
 
             int s1 = Shape.ShapePool.UnreturnedArrayCount;
 
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 1; i++)
             {
-                bb2();
+                bb3();
             }
 
             s1 = Shape.ShapePool.UnreturnedArrayCount;
             Console.WriteLine(Shape.ObjectPool.Count);
-
+            //Thread.Sleep(10000);
             //Thread.CurrentThread.Priority = ThreadPriority.Highest;
             //Stopwatch s = new Stopwatch();
             //s.Start();
