@@ -1,4 +1,4 @@
-﻿using DeepLearningFramework.Data.Operators.Terms;
+﻿using DeepLearningFramework.Operators.Terms;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -6,7 +6,7 @@ using System.Text;
 using DeepLearningFramework.Core;
 using Index = PerformanceWork.OptimizedNumerics.Index;
 
-namespace DeepLearningFramework.Data.Operators.Layers
+namespace DeepLearningFramework.Operators.Layers
 {
     public class Power : Layer
     {
@@ -17,8 +17,8 @@ namespace DeepLearningFramework.Data.Operators.Layers
             this.InputLayers.Add(l);
             this.PowerOf = pow;
 
-            this.OuterShape = new Dimension[l.OuterShape.Length];
-            this.InnerShape = new Dimension[l.InnerShape.Length];
+            InnerDimensionCalculation();
+            OuterDimensionCalculation();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

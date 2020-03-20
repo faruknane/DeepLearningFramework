@@ -1,5 +1,4 @@
-﻿using DeepLearningFramework.Data;
-using DeepLearningFramework.Data.Operators.Terms;
+﻿using DeepLearningFramework.Operators.Terms;
 using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;

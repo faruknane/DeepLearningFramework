@@ -1,5 +1,5 @@
 ﻿using DeepLearningFramework.Core;
-using DeepLearningFramework.Data;
+
 using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DeepLearningFramework.Data.Operators.Terms
+namespace DeepLearningFramework.Operators.Terms
 {
     public class MatrixMultiply : Term
     {

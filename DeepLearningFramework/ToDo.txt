@@ -1,15 +1,9 @@
 ﻿1 - If there is no variable to be trained in a term expression, we should not dive into, waste of time. (Terms.Used should be equal to 0, shouldnt dive for Terms.Used as well)
 5 - Optimize expand and shrink terms
 7 - Disable Throw exceptions in Release mode? So that methods can be inlined;
-8 - ExpanWithSame "make warning system!" where the code is unoptimized!
+8 - ExpandWithSame "make warning system!" where the code is unoptimized!
 9 - Create an array that holds terms in all term classes! remove v1 v2 etc and some functions since we wont need it those who recursively calling their childeren.
-10 - Layer ve Term lerin Delete functionlarındaki recursiveness sorunu
-   - Layer.DeleteTerms runs Term.DeleteResults so it goes O(N^2)
-   - Add ResultsDeleted Field to Term Class
-   - Add TermsDeleted Field to Layer Class
-11 - ShrinkBySumming Etc classes are not optimized. Term.Plus should take a variable size of Terms.
-12 - Termler sadece 2 boyutta mı çalışacak? özel conv layerlar ne olacak? onlar da terimlerden mi oluşmalı? eğer sadece 2 boyutlu olamayacksa gelecek olan türev arrayi ne olacak? Hocaya danış?
-13 - Termler her seferinde silinip tekrar oluşturulduğundan dolayı Dimensionlar sabit olacak update edilmesine ihtiyaç yok. Dimension classını silebilirsin. Layerlar dimensiona sahip olsun, termler ise integer olsun.
+11 - ShrinkBySumming Etc classes are not optimized.
 14-
 {
 
@@ -20,6 +14,6 @@ GC.SuppressFinalize(this);
 
 }
 
-
 15- minimize yaparken variableların sonucu da değişiyor. her variableın ne kadar değişeceğini bir yere kaydetmek gerek veya variable kendi clonunu döndürmesi gerek.
 16- Minimize yapmadan önce dropout = true yaptıktan sonra dropout = false gibi bir şey yapmak lazım test ve training time'ı ayırabilmek için. veya direk training = true yapılabilir.
+17 - Dimension her seferinde yeniden hesaplanmalı mı? Yoksa bir kere define edilmeli mi? Bence bir kere düzgün define edilmeli.

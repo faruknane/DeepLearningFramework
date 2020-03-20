@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netcoreapp5.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
 
@@ -10,18 +10,27 @@
     <OutputType>Exe</OutputType>
 
     <StartupObject>Tests.Program</StartupObject>
+
+    <Configurations>Debug;Release;a</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>x64</PlatformTarget>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
+    <DefineConstants />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='a|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
+    <Optimize>true</Optimize>
   </PropertyGroup>
 
   <ItemGroup>
@@ -36,7 +45,7 @@
 
   <ItemGroup>
     <Reference Include="PerformanceWork">
-      <HintPath>..\..\Performance-Work\PerformanceWork\bin\Release\netcoreapp3.1\PerformanceWork.dll</HintPath>
+      <HintPath>..\..\Performance-Work\PerformanceWork\bin\Release\netcoreapp5.0\PerformanceWork.dll</HintPath>
     </Reference>
   </ItemGroup>
 

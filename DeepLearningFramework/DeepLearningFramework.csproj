@@ -2,13 +2,14 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netcoreapp5.0</TargetFramework>
     <ApplicationIcon />
     <StartupObject />
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>x64</PlatformTarget>
@@ -16,7 +17,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <Prefer32Bit>false</Prefer32Bit>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <PlatformTarget>x64</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
@@ -26,12 +27,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="PerformanceWork">
-      <HintPath>..\..\Performance-Work\PerformanceWork\bin\Release\netcoreapp3.1\PerformanceWork.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>
@@ -140,6 +135,16 @@
     <None Update="MKL\mkl_vml_mc3.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="PerformanceWork">
+      <HintPath>..\..\Performance-Work\PerformanceWork\bin\Release\netcoreapp5.0\PerformanceWork.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

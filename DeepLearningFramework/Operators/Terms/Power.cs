@@ -1,11 +1,11 @@
-﻿using DeepLearningFramework.Data;
+﻿
 using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using DeepLearningFramework.Core;
 
-namespace DeepLearningFramework.Data.Operators.Terms
+namespace DeepLearningFramework.Operators.Terms
 {
     public class Power : Term
     {

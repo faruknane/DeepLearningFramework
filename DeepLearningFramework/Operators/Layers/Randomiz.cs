@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using DeepLearningFramework.Data;
-using DeepLearningFramework.Data.Operators.Terms;
+
+using DeepLearningFramework.Operators.Terms;
 using PerformanceWork.OptimizedNumerics;
 
-namespace DeepLearningFramework.Data.Operators.Layers
+namespace DeepLearningFramework.Operators.Layers
 {
     public class Randomiz
     {

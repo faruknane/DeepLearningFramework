@@ -2,22 +2,22 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
-using DeepLearningFramework.Data.Operators.Terms;
+using DeepLearningFramework.Operators.Terms;
 using DeepLearningFramework.Core;
 using PerformanceWork.OptimizedNumerics;
 using Index = PerformanceWork.OptimizedNumerics.Index;
 
-namespace DeepLearningFramework.Data.Operators.Layers
+namespace DeepLearningFramework.Operators.Layers
 {
     public class Minus : Layer
     {
         public Minus(Layer l1, Layer l2)
         {
-            InnerShape = new Dimension[l1.InnerShape.Length];
-            OuterShape = new Dimension[l1.OuterShape.Length];
-
             InputLayers.Add(l1);
             InputLayers.Add(l2);
+
+            InnerDimensionCalculation();
+            OuterDimensionCalculation();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

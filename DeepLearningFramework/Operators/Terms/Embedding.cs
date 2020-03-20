@@ -5,7 +5,7 @@
 //using PerformanceWork.OptimizedNumerics;
 //using DeepLearningFramework.Core;
 
-//namespace DeepLearningFramework.Data.Operators.Terms
+//namespace DeepLearningFramework.Operators.Terms
 //{
 //    public class Embedding : Term, Trainable
 //    {

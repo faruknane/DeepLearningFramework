@@ -1,4 +1,4 @@
-﻿using DeepLearningFramework.Data;
+﻿
 using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;

@@ -2,10 +2,10 @@
 using System.Runtime.CompilerServices;
 using System.Text;
 using DeepLearningFramework.Core;
-using DeepLearningFramework.Data.Operators.Terms;
+using DeepLearningFramework.Operators.Terms;
 using PerformanceWork.OptimizedNumerics;
 
-namespace DeepLearningFramework.Data.Operators.Layers
+namespace DeepLearningFramework.Operators.Layers
 {
     public class SoftMax : Layer
     {
@@ -13,8 +13,9 @@ namespace DeepLearningFramework.Data.Operators.Layers
         public SoftMax(Layer x)
         {
             this.InputLayers.Add(x);
-            this.OuterShape = new Dimension[x.OuterShape.Length];
-            this.InnerShape = new Dimension[x.InnerShape.Length]; 
+
+            InnerDimensionCalculation();
+            OuterDimensionCalculation();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
