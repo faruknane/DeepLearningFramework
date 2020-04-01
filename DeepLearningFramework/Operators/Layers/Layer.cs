@@ -16,8 +16,8 @@ namespace DeepLearningFramework.Operators.Layers
         public string Name { get; set; }
         public virtual Dimension[] OuterDimensions { get; internal set; }
         public virtual Dimension[] InnerDimensions { get; internal set; }
-        internal Shape OuterShape { get; set; }
-        internal Shape InnerShape { get; set; }
+        public Shape OuterShape { get; set; }
+        public Shape InnerShape { get; set; }
 
 
         public List<Term> Terms = new List<Term>();
@@ -50,7 +50,6 @@ namespace DeepLearningFramework.Operators.Layers
                     else if (!EmptyVariable.Shape.EqualShape(InnerShape))
                     {
                         EmptyVariable.Clean();
-                        EmptyVariable.Dispose();
                         EmptyVariable = new Terms.Variable(InnerShape.Clone()) { Trainable = false };
                         EmptyVariable.Weights.SetValue(0);
                     }
@@ -196,7 +195,7 @@ namespace DeepLearningFramework.Operators.Layers
             InRecursion = true;
 
             DeleteTermsOperation();
-            
+
             foreach (var item in InputLayers)
                 item.DeleteTerms();
 
@@ -206,10 +205,11 @@ namespace DeepLearningFramework.Operators.Layers
         public virtual void DeleteTermsOperation()
         {
             for (int i = 0; i < Terms.Count; i++)
-                if (Terms[i] != null && Terms[i].Type != TermType.Variable)
+                if (Terms[i] != null)
                 {
                     Terms[i].DeleteResults();
-                    Terms[i].Dispose();
+                    //if(Terms[i].Type != TermType.Variable)
+                        Terms[i].Dispose(); //term.disposed doesnt work for Terms.Variable
                 }
             Terms.Clear();
         }
@@ -229,7 +229,7 @@ namespace DeepLearningFramework.Operators.Layers
 
             if(Terms.Count > 1)
             {
-                Terms.Plus min = new Terms.Plus(Terms.ToArray());
+                Terms.Add min = new Terms.Add(Terms.ToArray());
                 min.Minimize();
                 min.Dispose();
             }
@@ -268,35 +268,46 @@ namespace DeepLearningFramework.Operators.Layers
         #endregion
     }
 
-    //public partial class Layer
-    //{
-    //    public static Layer SquaredError(Layer x1, Layer x2)
-    //    {
-    //        Layer l = new Power(new Minus(x1, x2), 2);
-    //        l = new ShrinkSizeToOneByAdding(l); //D1 = 1 and D2 = 1
-    //        l = new SumSequenceToOneByAdding(l); // SequenceLength = 1
-    //        return l;
-    //    }
+    public partial class Layer
+    {
+        public static Layer SquaredError(Layer x1, Layer x2)
+        {
+            return new Power(new Subtract(x1, x2), 2);
+        }
 
-    //    public static Func<Layer, Layer> GetActivationFunction(string name)
-    //    {
-    //        name = name.ToLower(CultureInfo.GetCultureInfoByIetfLanguageTag("en"));
-    //        if (name == "sigmoid")
-    //            return (Layer x) => new Sigmoid(x);
-    //        else if (name == "softmax")
-    //            return (Layer x) => new SoftMax(x);
-    //        return (Layer x) => x;
-    //    }
+        public static Func<Layer, Layer> GetActivationFunction(string name)
+        {
+            name = name.ToLower(CultureInfo.GetCultureInfoByIetfLanguageTag("en"));
+            if (name == "sigmoid")
+                return (Layer x) => new Sigmoid(x);
+            else if (name == "softmax")
+                return (Layer x) => new SoftMax(x);
+            return (Layer x) => x;
+        }
 
-    //    public static Layer Dense(int size, Layer prev, string act)
-    //    {
-    //        Variable W = new Variable(size, prev.D1, prev.SequenceLength);
-    //        Variable B = new Variable(size, 1, prev.SequenceLength);
-    //        Layer res = new Plus(new MatrixMultiply(W, prev), new ExpandWithSame(B, 1, prev.BatchSize));
-    //        res = GetActivationFunction(act)(res);
-    //        return res;
-    //    }
+        public static Layer Dense(int size, Layer input, string act)
+        {
+            if (input.InnerDimensions.Length != 2)
+                throw new Exception("Inner shape of Input Layer must be 2");
 
-    //}
+            //X*W + B
+            //X = m*n   (m is batchsize, n is layer size)
+            //W =  (n, mysize)
+            // X*W  = (m, mysize)  + B
+            //B = (1, mysize)
+            Variable W = new Variable(input.OuterDimensions, Shape.NewShape(input.InnerDimensions[1], size));
+            Variable B = new Variable(input.OuterDimensions, Shape.NewShape(1, size));
+
+            Layer res = new Add(new MatrixMultiply(input, W), new Expand(B, new Dimension[] { input.InnerDimensions[0], 1  }));
+            res = GetActivationFunction(act)(res);
+            return res;
+        }
+
+    }
 
 }
+
+//Index         0        1
+//Input = (batchsize, mysize)
+
+

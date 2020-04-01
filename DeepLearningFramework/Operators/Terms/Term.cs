@@ -139,20 +139,22 @@ namespace DeepLearningFramework.Operators.Terms
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public void DeleteResults()
+        public virtual void DeleteResults()
         {
+            if (SumOfDerivatives == null && Result == null) return;
+
             if (InRecursion) return;
             InRecursion = true;
 
             Used = 0;
 
-            if (SumOfDerivatives != null)
+            if (SumOfDerivatives != null && !SumOfDerivatives.ArrayReturned)
             {
                 SumOfDerivatives.Dispose();
                 SumOfDerivatives = null;
             }
 
-            if (Result != null)
+            if (Result != null && !Result.ArrayReturned)
             {
                 Result.Dispose();
                 Result = null;
@@ -166,6 +168,7 @@ namespace DeepLearningFramework.Operators.Terms
 
         public virtual void Dispose()
         {
+            if (this.Type == TermType.Variable) return;
             if (IsDisposed) return;
             IsDisposed = true;
             DeleteResults();

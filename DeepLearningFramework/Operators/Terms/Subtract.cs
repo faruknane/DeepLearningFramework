@@ -5,9 +5,9 @@ using DeepLearningFramework.Core;
 
 namespace DeepLearningFramework.Operators.Terms
 {
-    public class Minus : Term
+    public class Subtract : Term
     {
-        public Minus(Term v1, Term v2)
+        public Subtract(Term v1, Term v2)
         {
             Type = TermType.Minus;
             Terms = new Term[2] { v1, v2 };

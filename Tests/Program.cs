@@ -20,39 +20,80 @@ namespace Tests
 {
     class Program
     {
-        //public static void deneme()
-        //{
-        //    Hyperparameters.LearningRate = 1f;
-        //    Hyperparameters.Optimizer = new SGD();
+        public static void PrintPools()
+        {
+            Console.WriteLine("ArrayPool.UnreturnedArrayCount: " + Tensor<float>.Host.UnreturnedArrayCount);
+            Console.WriteLine("ShapeArrayPool.UnreturnedArrayCount: " + Shape.ArrayPool.UnreturnedArrayCount);
+            Console.WriteLine("ShapeObjectPool.UnreturnedArrayCount: " + Shape.ObjectPool.UnreturnedCount);
+            Console.WriteLine("IndexArrayPool.UnreturnedArrayCount: " + Index.ArrayPool.UnreturnedArrayCount);
+            Console.WriteLine("IndexObjectPool.UnreturnedArrayCount: " + Index.ObjectPool.UnreturnedCount);
+        }
 
-        //    var x = new Input(2);
-        //    var y = new Input(1);
+        public unsafe static void deneme()
+        {
+            //Hyperparameters
+            Hyperparameters.LearningRate = 1f;
+            Hyperparameters.Optimizer = new SGD();
 
-        //    var model = Layer.Dense(2, x, "sigmoid");
-        //    model = Layer.Dense(1, model, "sigmoid");
+            //Model Creation
+            var x = new Input(2);
+            var model = Layer.Dense(2, x, "sigmoid");
+            model = Layer.Dense(1, model, "sigmoid");
 
-        //    var loss = Layer.SquaredError(model, y);
 
-        //    Stopwatch s = new Stopwatch();
-        //    s.Start();
-        //    //Console.WriteLine("Pool.UnreturnedArrayCount: " + MMDerivative.Pool2.UnreturnedArrayCount);
-        //    for (int epoch = 0; epoch < 2000; epoch++)
-        //    {
-        //        x.SetSequenceLength(1);
-        //        y.SetSequenceLength(1);
-        //        x.SetInput(0, new float[2, 4] { { 1, 1, 0, 0 }, { 1, 0, 1, 0 } });
-        //        y.SetInput(0, new float[1, 4] { { 0, 1, 1, 0 } });
+            //Loss Function Creation
+            var y = new Input(1);
+            var loss = Layer.SquaredError(model, y);
 
-        //        loss.Minimize();
-        //        //Console.WriteLine("loss: " + loss.GetTerm(0).GetResult()[0]);
-        //    }
-        //    model.DeleteTerms();
-        //    //Console.WriteLine("Pool.UnreturnedArrayCount: " + MMDerivative.Pool2.UnreturnedArrayCount);
-        //    var result = model.GetTerm(0).GetResult();
-        //    Console.WriteLine("Results: " + result[0] + ", " + result[1] + ", " + result[2] + ", " + result[3]);
-        //    s.Stop();
-        //    Console.WriteLine(s.ElapsedMilliseconds);
-        //}
+           
+            //Data preparation
+            Tensor<float> x_train = new Tensor<float>((1, 4, 2));
+            Tensor<float> y_train = new Tensor<float>((1, 4, 1));
+
+            float* xt = (float*)x_train.Array;
+            float* yt = (float*)y_train.Array;
+
+            // 1,1 = 0
+            // 1,0 = 1
+            // 0,1 = 1
+            // 0,0 = 0
+
+            xt[0] = 1; xt[1] = 1;
+            xt[2] = 1; xt[3] = 0;
+            xt[4] = 0; xt[5] = 1;
+            xt[6] = 0; xt[7] = 0;
+
+            yt[0] = 0;
+            yt[1] = 1;
+            yt[2] = 1;
+            yt[3] = 0;
+
+            //Give data to the model
+            x.SetInput(x_train);
+            y.SetInput(y_train);
+
+            Stopwatch s = new Stopwatch();
+            s.Start();
+            //Minimizing
+            loss.PreCheck();
+            for (int epoch = 0; epoch < 2000; epoch++)
+            {
+                loss.Minimize();
+                
+            }
+            s.Stop();
+            Console.WriteLine("Time Elapsed: " + s.ElapsedMilliseconds);
+
+            //Print Pools
+            PrintPools();
+
+            //Print the results
+            Index a = Index.NewIndex(model.OuterShape);
+            a.SetZero();
+            var result = model.GetTerm(a).GetResult();
+            Console.WriteLine("Results: " + result);
+
+        }
 
         //public static unsafe void deneme2()
         //{
@@ -439,12 +480,12 @@ namespace Tests
                     { 1, 1, 1 }
                 });
 
-            Terms.Plus s = new Terms.Plus(w, w2);
+            Terms.Add s = new Terms.Add(w, w2);
 
 
             Hyperparameters.LearningRate = 1;
             Console.WriteLine(s.GetResult());
-            for (int i = 0; i < 100000; i++)
+            for (int i = 0; i < 1000; i++)
             {
                 s.Minimize();
             }
@@ -460,14 +501,14 @@ namespace Tests
 
         public static unsafe void bb2()
         {
-            Variable w1 = new Variable(Shape.NewShape(500, 300), new Dimension[] { 20, 10 }); w1.Name = "w1";
-            Variable w2 = new Variable(Shape.NewShape(500, 300), new Dimension[] { 20, 10 }); w2.Name = "w2";
-            Variable w3 = new Variable(Shape.NewShape(300, 400), new Dimension[] { 20, 10 }); w3.Name = "w3";
-            Variable w4 = new Variable(Shape.NewShape(500, 400), new Dimension[] { 20, 10 }); w4.Name = "w4";
+            Variable w1 = new Variable(new Dimension[] { 20, 10 }, Shape.NewShape(500, 300)); w1.Name = "w1";
+            Variable w2 = new Variable(new Dimension[] { 20, 10 }, Shape.NewShape(500, 300)); w2.Name = "w2";
+            Variable w3 = new Variable(new Dimension[] { 20, 10 }, Shape.NewShape(300, 400)); w3.Name = "w3";
+            Variable w4 = new Variable(new Dimension[] { 20, 10 }, Shape.NewShape(500, 400)); w4.Name = "w4";
 
-            var d1 = new Minus(w1, w2);d1.Name = "d1";
+            var d1 = new Subtract(w1, w2);d1.Name = "d1";
             var d2 = new MatrixMultiply(d1, w3);d2.Name = "d2";
-            var sum = new Power(new Minus(d2,w4),2); sum.Name = "sum";
+            var sum = new Power(new Subtract(d2,w4),2); sum.Name = "sum";
 
             //Shape s = Shape.NewShape(2, 10);
             //Index a = Index.NewIndex(s);
@@ -521,12 +562,12 @@ namespace Tests
 
         public static unsafe void bb3()
         {
-            Variable w1 = new Variable(Shape.NewShape(1000, 3000), new Dimension[] { 2, 10 }); w1.Name = "w1";
-            Variable w2 = new Variable(Shape.NewShape(1000, 3000), new Dimension[] { 2, 10 }); w2.Name = "w2";
-            Variable w4 = new Variable(Shape.NewShape(1000, 3000), new Dimension[] { 2, 10 }); w4.Name = "w4";
+            Variable w1 = new Variable(new Dimension[] { 2, 10 }, Shape.NewShape(1000, 3000)); w1.Name = "w1";
+            Variable w2 = new Variable(new Dimension[] { 2, 10 }, Shape.NewShape(1000, 3000)); w2.Name = "w2";
+            Variable w4 = new Variable(new Dimension[] { 2, 10 }, Shape.NewShape(1000, 3000)); w4.Name = "w4";
 
-            var d1 = new Plus(w1, w2); d1.Name = "d1";
-            var sum = new Power(new Plus(d1, w4), 2); sum.Name = "sum";
+            var d1 = new Add(w1, w2); d1.Name = "d1";
+            var sum = new Power(new Add(d1, w4), 2); sum.Name = "sum";
 
 
             Hyperparameters.LearningRate = 0.00f;
@@ -540,33 +581,68 @@ namespace Tests
                 Console.WriteLine($"{i2} took {c.ElapsedMilliseconds}ms");
             }
         }
+        public static unsafe void bb4()
+        {
+            Input x = new Input(4, 2, 1);
+            Variable w1 = new Variable(new Dimension[] { 10 }, Shape.NewShape(3, 4)); w1.Name = "w1";
+
+            var sum = new Add(w1, x); sum.Name = "sum";
+            //sum.PreCheck();
+            //Index a = Index.NewIndex(x.OuterShape);
+            //a.SetZero();
+            //for (int i = 0; i < x.OuterShape.TotalSize; i++, a.Add(1))
+            //{
+            //    Console.WriteLine("Term " + i + ":" + x.GetTerm(a).GetResult());
+            //}
+            //sum.DeleteTerms();
+
+
+            Stopwatch c = new Stopwatch();
+            c.Start();
+
+            for (int i2 = 0; i2 < 100; i2++)
+            {
+                Tensor<float> data = new Tensor<float>((10, 3, 4));
+
+                for (int i = 0; i < data.Shape.TotalSize; i++)
+                    ((float*)data.Array)[i] = i / 12;
+                x.SetInput(data);
+
+                c.Restart();
+                sum.Minimize();
+                c.Stop();
+                data.Dispose();
+                //Console.WriteLine($"{i2} took {c.ElapsedMilliseconds}ms");
+            }
+        }
 
 
         public static unsafe void Main(string[] args)
         {
-            Thread t = new Thread(() => 
-            { 
-                while (true)
-                { 
-                    Console.WriteLine(Process.GetCurrentProcess().Threads.Count); 
-                    Thread.Sleep(200);
-                } 
-            });
+            deneme();
+            return;
+            //Thread t = new Thread(() => 
+            //{ 
+            //    while (true)
+            //    { 
+            //        Console.WriteLine(Process.GetCurrentProcess().Threads.Count); 
+            //        Thread.Sleep(200);
+            //    } 
+            //});
+            //t.IsBackground = true;
+            //t.Start();
 
 
-            t.IsBackground = true;
-            t.Start();
-            int a = 5;
-
-            int s1 = Shape.ShapePool.UnreturnedArrayCount;
+            int s1 = Shape.ArrayPool.UnreturnedArrayCount;
 
             for (int i = 0; i < 1; i++)
             {
-                bb3();
+                bb4();
             }
 
-            s1 = Shape.ShapePool.UnreturnedArrayCount;
-            Console.WriteLine(Shape.ObjectPool.Count);
+            s1 = Shape.ArrayPool.UnreturnedArrayCount;
+            Console.WriteLine(Shape.ObjectPool.UnreturnedCount);
+            Console.WriteLine(Tensor<float>.Host.UnreturnedArrayCount);
             //Thread.Sleep(10000);
             //Thread.CurrentThread.Priority = ThreadPriority.Highest;
             //Stopwatch s = new Stopwatch();

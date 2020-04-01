@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DeepLearningFramework</name>
+    </assembly>
+    <members>
+        <member name="T:DeepLearningFramework.Core.Dimension">
+            <summary>
+            Dynamic Dimension class holds a formula or a value for a dimension.
+            </summary>
+        </member>
+        <member name="P:DeepLearningFramework.Core.Dimension.Value">
+            <summary>
+            Dimension value initialized to -1.
+            </summary>
+        </member>
+        <member name="M:DeepLearningFramework.Core.Dimension.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:DeepLearningFramework.Core.Dimension.#ctor(System.Int32)">
+            <param name="val">Initial Value</param>
+        </member>
+        <member name="M:DeepLearningFramework.Core.Dimension.op_Implicit(System.Int32)~DeepLearningFramework.Core.Dimension">
+            <summary>
+            Integer to Dimension conversion.
+            </summary>
+            <param name="x">Integer Value</param>
+        </member>
+        <member name="M:DeepLearningFramework.Core.Dimension.op_Implicit(DeepLearningFramework.Core.Dimension)~System.Int32">
+            <summary>
+            Dimension to Integer conversion.
+            </summary>
+            <param name="x">Dimension object</param>
+        </member>
+        <member name="M:DeepLearningFramework.Core.Dimension.op_Addition(DeepLearningFramework.Core.Dimension,DeepLearningFramework.Core.Dimension)">
+            <summary>
+            Add Operator.
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns cref="T:DeepLearningFramework.Core.DimensionPlus">A DimensionPlus object that holds value of a + b</returns>
+        </member>
+        <member name="M:DeepLearningFramework.Core.Dimension.op_Multiply(DeepLearningFramework.Core.Dimension,DeepLearningFramework.Core.Dimension)">
+            <summary>
+            Multiply Operator.
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns cref="T:DeepLearningFramework.Core.DimensionPlus">A DimensionPlus object that holds value of a + b</returns>
+        </member>
+        <member name="T:DeepLearningFramework.Core.Optimizers.SGD">
+            <summary>
+            Stochastic Gradient Descent class is an optimizer method erived from VariableOptimizer Interface.
+            </summary>
+        </member>
+        <member name="M:DeepLearningFramework.Core.Optimizers.SGD.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:DeepLearningFramework.Core.Optimizers.SGD.UpdateWeights(DeepLearningFramework.Core.Trainable,PerformanceWork.OptimizedNumerics.Tensor{System.Single})">
+            <summary>
+            Updates the weights according to the derivative result.
+            </summary>
+            <param name="v">Trainable Variable</param>
+            <param name="g">Gradient Tensor</param>
+            <exception cref="T:DeepLearningFramework.Core.DimensionIncompability">Throws if the shapes of Variable and Gradient are different!</exception>
+        </member>
+        <member name="T:DeepLearningFramework.Core.Optimizers.VariableOptimizer">
+            <summary>
+            Optimizer Interface.
+            </summary>
+        </member>
+        <member name="M:DeepLearningFramework.Core.Optimizers.VariableOptimizer.UpdateWeights(DeepLearningFramework.Core.Trainable,PerformanceWork.OptimizedNumerics.Tensor{System.Single})">
+            <summary>
+            Weight updating method.
+            </summary>
+            <param name="v">Trainable Variable</param>
+            <param name="g">Gradient Tensor</param>
+            <exception cref="T:DeepLearningFramework.Core.DimensionIncompability">Throws if the shapes of Variable and Gradient are different!</exception>
+        </member>
+        <member name="M:DeepLearningFramework.Operators.Layers.Input.SetInput(PerformanceWork.OptimizedNumerics.Tensor{System.Single})">
+            <summary>
+            <br>the new data will be assigned.</br>
+            </summary>
+            
+            
+            <code>
+            var x = new Input(size);
+            Tensor&lt;float&gt; data = new Tensor&lt;float&gt;((.....));
+            x.SetInput(data);
+            </code>
+            <param name="inp">The new input data</param>
+        </member>
+        <member name="M:DeepLearningFramework.Operators.Terms.Expand.#ctor(DeepLearningFramework.Operators.Terms.Term,PerformanceWork.OptimizedNumerics.Shape)">
+            <summary>
+            Shape object wont be returned to the pool
+            </summary>
+        </member>
+    </members>
+</doc>

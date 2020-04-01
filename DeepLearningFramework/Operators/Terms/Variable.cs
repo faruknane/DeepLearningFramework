@@ -31,7 +31,7 @@ namespace DeepLearningFramework.Operators.Terms
         }
 
 
-        public Variable(Shape s) // add initializer
+        public Variable(Shape s)
         {
             Type = TermType.Variable;
             this.Shape = s;
@@ -39,7 +39,7 @@ namespace DeepLearningFramework.Operators.Terms
             Terms = Array.Empty<Term>();
         }
 
-        public Variable(Tensor<float> m) // add initializer
+        public Variable(Tensor<float> m)
         {
             Type = TermType.Variable;
             this.Shape = m.Shape.Clone();
@@ -89,7 +89,10 @@ namespace DeepLearningFramework.Operators.Terms
 
         public override Tensor<float> CalculateResult()
         {
-            return Tensor<float>.Clone(Weights);
+            if(Trainable)
+                return Tensor<float>.Clone(Weights);
+            else
+                return Weights;
         }
 
         public override void CalculateDerivate(Tensor<float> s)
@@ -100,12 +103,45 @@ namespace DeepLearningFramework.Operators.Terms
             }
         }
 
+        public override void DeleteResults()
+        {
+            if (InRecursion) return;
+            InRecursion = true;
+
+            Used = 0;
+
+            if (SumOfDerivatives != null && !SumOfDerivatives.ArrayReturned)
+            {
+                SumOfDerivatives.Dispose();
+                SumOfDerivatives = null;
+            }
+
+            if (Result != null && !Result.ArrayReturned && Result != Weights)
+            {
+                Result.Dispose();
+                Result = null;
+            }
+
+            for (int i = 0; i < Terms.Length; i++)
+                Terms[i].DeleteResults();
+
+            InRecursion = false;
+        }
+
 
         public void Clean()
         {
-            if(Weights != null)
-                Weights.Dispose();
+            if (IsDisposed) return;
+            IsDisposed = true;
+
+            if (Weights != null && !Weights.ArrayReturned)
+            {
+                m.Dispose();
+                m = null;
+            }
             DeleteResults();
+            Shape.Return(this.Shape);
+            GC.SuppressFinalize(this);
         }
 
     }

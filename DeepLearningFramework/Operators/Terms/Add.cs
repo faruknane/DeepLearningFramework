@@ -7,9 +7,9 @@ using System.Threading;
 
 namespace DeepLearningFramework.Operators.Terms
 {
-    public class Plus : Term
+    public class Add : Term
     {
-        public Plus(params Term[] v) // make args
+        public Add(params Term[] v) // make args
         {
             if (v.Length < 2)
                 throw new Exception("length < 2!");
@@ -25,7 +25,7 @@ namespace DeepLearningFramework.Operators.Terms
 
         public override void CalculateDerivate(Tensor<float> s)
         {
-            if(Terms.Length > 1)
+            if(Terms.Length < 1)
             {
                 Task[] l = new Task[Terms.Length - 1];
                 for (int i = 0; i < Terms.Length - 1; i++)
@@ -49,7 +49,7 @@ namespace DeepLearningFramework.Operators.Terms
 
         public unsafe override Tensor<float> CalculateResult()
         {
-            if (Terms.Length > 1)
+            if (Terms.Length < 1)
             {
                 Task[] l = new Task[Terms.Length - 1];
                 for (int i = 0; i < Terms.Length - 1; i++)
