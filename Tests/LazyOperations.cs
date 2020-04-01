@@ -32,7 +32,7 @@ namespace Tests
                 });
 
 
-                Plus s = new Plus(v1, v2);
+                Add s = new Add(v1, v2);
 
 
                 Tensor<float> c = s.GetResult();

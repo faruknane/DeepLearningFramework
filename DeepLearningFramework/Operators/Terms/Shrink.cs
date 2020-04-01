@@ -106,7 +106,7 @@ namespace DeepLearningFramework.Operators.Terms
 
         public override void Dispose()
         {
-            Shape.Return(Divisor);
+            //Shape.Return(Divisor);
             base.Dispose();
         }
 

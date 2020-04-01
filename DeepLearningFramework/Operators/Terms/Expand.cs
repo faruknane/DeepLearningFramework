@@ -12,6 +12,10 @@ namespace DeepLearningFramework.Operators.Terms
     public class Expand : Term
     {
         public Shape Multiplier { get; set; }
+
+        /// <summary>
+        /// Shape object wont be returned to the pool
+        /// </summary>
         public Expand(Term v1, Shape multiplier)
         {
             Type = TermType.ExpandWithSame;
@@ -99,7 +103,7 @@ namespace DeepLearningFramework.Operators.Terms
 
         public override void Dispose()
         {
-            Shape.Return(Multiplier);
+            //Shape.Return(Multiplier);
             base.Dispose();
         }
 

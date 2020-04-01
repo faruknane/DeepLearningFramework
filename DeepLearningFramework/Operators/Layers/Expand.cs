@@ -26,6 +26,18 @@ namespace DeepLearningFramework.Operators.Layers
             for (int i = 0; i < InnerDimensions.Length; i++)
                 this.InnerDimensions[i] = new DimensionMultiply(InputLayers[0].InnerDimensions[i], MultiplierDimensions[i]);
         }
+        public unsafe override void InnerShapeCalculation()
+        {
+            base.InnerShapeCalculation();
+
+            if (MultiplierShape != null)
+                Shape.Return(MultiplierShape);
+
+            MultiplierShape = Shape.NewShapeN(MultiplierDimensions.Length);
+
+            for (int i = 0; i < MultiplierShape.N; i++)
+                MultiplierShape.Dimensions[i] = MultiplierDimensions[i];
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override Term CreateTerm(Index time)

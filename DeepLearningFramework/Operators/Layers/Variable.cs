@@ -10,7 +10,7 @@ namespace DeepLearningFramework.Operators.Layers
     public unsafe class Variable : Layer
     {
         public Terms.Variable W { get; private set; }
-        public Variable(Shape s, Dimension[] Length, bool setzero = false, bool randomize = true, string RandMethod = "")
+        public Variable(Dimension[] Length, Shape s , bool setzero = false, bool randomize = true, string RandMethod = "") //add initializers etc
         {
             W = new Terms.Variable(s);
             

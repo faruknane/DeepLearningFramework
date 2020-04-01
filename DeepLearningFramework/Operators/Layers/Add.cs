@@ -9,12 +9,16 @@ using Index = PerformanceWork.OptimizedNumerics.Index;
 
 namespace DeepLearningFramework.Operators.Layers
 {
-    public class Minus : Layer
+    public class Add : Layer
     {
-        public Minus(Layer l1, Layer l2)
+        private Term[] terms;
+
+        public Add(params Layer[] input)
         {
-            InputLayers.Add(l1);
-            InputLayers.Add(l2);
+            terms = new Term[input.Length];
+         
+            foreach (var item in input)
+                InputLayers.Add(item);
 
             InnerDimensionCalculation();
             OuterDimensionCalculation();
@@ -23,7 +27,9 @@ namespace DeepLearningFramework.Operators.Layers
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override Term CreateTerm(Index time)
         {
-            return new Terms.Minus(InputLayers[0].GetTerm(time), InputLayers[1].GetTerm(time));
+            for (int i = 0; i < terms.Length; i++)
+                terms[i] = InputLayers[i].GetTerm(time);
+            return new Terms.Add(terms);
         }
     }
 }

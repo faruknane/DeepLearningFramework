@@ -44,7 +44,7 @@ namespace DeepLearningFramework.Operators.Layers
 
             if (item.InnerDimensions[0].Value <= 0 || item.InnerDimensions[1].Value <= 0 || item2.InnerDimensions[0].Value <= 0 || item2.InnerDimensions[1].Value <= 0
                 || item.InnerDimensions[1].Value != item2.InnerDimensions[0].Value)
-                throw new Exception("Inner dimension incompatilbiity!");
+                throw new Exception("Inner dimension incompatibility!");
         }
        
 
