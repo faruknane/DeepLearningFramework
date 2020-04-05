@@ -15,7 +15,7 @@ namespace DeepLearningFramework.Operators.Layers
             W = new Terms.Variable(s);
             
             if (setzero)
-                W.Weights.SetValue(0);
+                W.Weights.SetFloat(0);
             else if (randomize)
                 Randomiz.Randomize((float*)W.Weights.Array, s.TotalSize);
 

@@ -23,7 +23,7 @@ namespace DeepLearningFramework.Operators.Terms
             this.Shape = v[0].Shape.Clone();
         }
 
-        public override void CalculateDerivate(Tensor<float> s)
+        public override void CalculateDerivate(Tensor s)
         {
             if(Terms.Length < 1)
             {
@@ -47,7 +47,7 @@ namespace DeepLearningFramework.Operators.Terms
 
         }
 
-        public unsafe override Tensor<float> CalculateResult()
+        public unsafe override Tensor CalculateResult()
         {
             if (Terms.Length < 1)
             {
@@ -63,20 +63,20 @@ namespace DeepLearningFramework.Operators.Terms
                 for (int i = 0; i < Terms.Length - 1; i++)
                     l[i].Wait();
 
-                Tensor<float> res = new Tensor<float>(this.Shape.Clone());
-                Vectorization.ElementWiseAddAVX((float*)Terms[0].GetResult().Array, (float*)Terms[1].GetResult().Array, (float*)res.Array, this.Shape.TotalSize);
+                Tensor res = new Tensor(this.Shape.Clone(), Data.Type.Float, DeviceIndicator.Host());
+                VectorizationFloat.ElementWiseAddAVX((float*)Terms[0].GetResult().Array, (float*)Terms[1].GetResult().Array, (float*)res.Array, this.Shape.TotalSize);
 
                 for (int i = 2; i < Terms.Length; i++) //Optimize here. 
-                    Vectorization.ElementWiseAddAVX((float*)res.Array, (float*)Terms[i].GetResult().Array, (float*)res.Array, this.Shape.TotalSize);
+                    VectorizationFloat.ElementWiseAddAVX((float*)res.Array, (float*)Terms[i].GetResult().Array, (float*)res.Array, this.Shape.TotalSize);
                 return res;
             }
             else
             {
-                Tensor<float> res = new Tensor<float>(this.Shape.Clone());
-                Vectorization.ElementWiseAddAVX((float*)Terms[0].GetResult().Array, (float*)Terms[1].GetResult().Array, (float*)res.Array, this.Shape.TotalSize);
+                Tensor res = new Tensor(this.Shape.Clone(), Data.Type.Float, DeviceIndicator.Host());
+                VectorizationFloat.ElementWiseAddAVX((float*)Terms[0].GetResult().Array, (float*)Terms[1].GetResult().Array, (float*)res.Array, this.Shape.TotalSize);
 
                 for (int i = 2; i < Terms.Length; i++) //Optimize here. 
-                    Vectorization.ElementWiseAddAVX((float*)res.Array, (float*)Terms[i].GetResult().Array, (float*)res.Array, this.Shape.TotalSize);
+                    VectorizationFloat.ElementWiseAddAVX((float*)res.Array, (float*)Terms[i].GetResult().Array, (float*)res.Array, this.Shape.TotalSize);
                 return res;
 
             }

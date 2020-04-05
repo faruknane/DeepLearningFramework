@@ -9,12 +9,12 @@ namespace DeepLearningFramework.Operators.Terms
 {
     public class Variable : Term, Trainable
     {
-        private Tensor<float> m;
+        private Tensor m;
         public String Name { get; set; }
         public bool Trainable { get; set; } = true;
         public float LearningRateMultiplier { get; set; } = 1;
 
-        public Tensor<float> Weights
+        public Tensor Weights
         {
             get { return m; }
             set
@@ -35,11 +35,11 @@ namespace DeepLearningFramework.Operators.Terms
         {
             Type = TermType.Variable;
             this.Shape = s;
-            m = new Tensor<float>(s.Clone());
+            m = new Tensor(s.Clone(), Data.Type.Float, DeviceIndicator.Host());
             Terms = Array.Empty<Term>();
         }
 
-        public Variable(Tensor<float> m)
+        public Variable(Tensor m)
         {
             Type = TermType.Variable;
             this.Shape = m.Shape.Clone();
@@ -47,7 +47,7 @@ namespace DeepLearningFramework.Operators.Terms
             Terms = Array.Empty<Term>();
         }
 
-        public void SetValue(Tensor<float> n)
+        public void SetValue(Tensor n)
         {
             Weights = n;
         }
@@ -60,7 +60,7 @@ namespace DeepLearningFramework.Operators.Terms
 
             fixed (float* ptr = n)
             {
-                Vectorization.ElementWiseAssignAVX((float*)this.Weights.Array, ptr, this.Shape.TotalSize);
+                VectorizationFloat.ElementWiseAssignAVX((float*)this.Weights.Array, ptr, this.Shape.TotalSize);
             }
         }
         public unsafe void SetValue(float[,] n)
@@ -71,7 +71,7 @@ namespace DeepLearningFramework.Operators.Terms
 
             fixed (float* ptr = n)
             {
-                Vectorization.ElementWiseAssignAVX((float*)this.Weights.Array, ptr, this.Shape.TotalSize);
+                VectorizationFloat.ElementWiseAssignAVX((float*)this.Weights.Array, ptr, this.Shape.TotalSize);
             }
         }
 
@@ -83,19 +83,19 @@ namespace DeepLearningFramework.Operators.Terms
 
             fixed (float* ptr = n)
             {
-                Vectorization.ElementWiseAssignAVX((float*)this.Weights.Array, ptr, this.Shape.TotalSize);
+                VectorizationFloat.ElementWiseAssignAVX((float*)this.Weights.Array, ptr, this.Shape.TotalSize);
             }
         }
 
-        public override Tensor<float> CalculateResult()
+        public override Tensor CalculateResult()
         {
             if(Trainable)
-                return Tensor<float>.Clone(Weights);
+                return Tensor.Clone(Weights);
             else
                 return Weights;
         }
 
-        public override void CalculateDerivate(Tensor<float> s)
+        public override void CalculateDerivate(Tensor s)
         {
             if (Trainable)
             {

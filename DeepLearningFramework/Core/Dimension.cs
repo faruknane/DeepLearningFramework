@@ -11,6 +11,8 @@ namespace DeepLearningFramework.Core
     /// </summary>
     public class Dimension
     {
+        //todo make a pass value for outer dimension for variable variables
+
         /// <summary>
         /// Dimension value initialized to -1.
         /// </summary>

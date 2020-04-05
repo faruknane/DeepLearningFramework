@@ -35,7 +35,7 @@ namespace Tests
                 Add s = new Add(v1, v2);
 
 
-                Tensor<float> c = s.GetResult();
+                Tensor c = s.GetResult();
                 float[] res = new float[6] { 1, 3, 5, 7, 9, 11 };
 
                 for (int i = 0; i < c.Shape.TotalSize; i++)

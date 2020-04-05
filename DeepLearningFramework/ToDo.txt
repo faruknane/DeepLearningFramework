@@ -2,7 +2,6 @@
 5 - Optimize expand and shrink terms
 7 - Disable Throw exceptions in Release mode? So that methods can be inlined;
 8 - ExpandWithSame "make warning system!" where the code is unoptimized!
-9 - Create an array that holds terms in all term classes! remove v1 v2 etc and some functions since we wont need it those who recursively calling their childeren.
 11 - ShrinkBySumming Etc classes are not optimized.
 14-
 {
@@ -14,6 +13,5 @@ GC.SuppressFinalize(this);
 
 }
 
-15- minimize yaparken variableların sonucu da değişiyor. her variableın ne kadar değişeceğini bir yere kaydetmek gerek veya variable kendi clonunu döndürmesi gerek.
-16- Minimize yapmadan önce dropout = true yaptıktan sonra dropout = false gibi bir şey yapmak lazım test ve training time'ı ayırabilmek için. veya direk training = true yapılabilir.
+16- Minimize yapmadan önce dropout = true yaptıktan sonra dropout = false gibi bir şey yapmak lazım test ve training time'ı ayırabilmek için. veya direk training = true yapılabilir. Model classı içinde yapılmalı bu
 17 - Dimension her seferinde yeniden hesaplanmalı mı? Yoksa bir kere define edilmeli mi? Bence bir kere düzgün define edilmeli.

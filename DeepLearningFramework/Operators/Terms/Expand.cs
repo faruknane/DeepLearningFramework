@@ -24,10 +24,10 @@ namespace DeepLearningFramework.Operators.Terms
             Shape = Shape.Multiply(Terms[0].Shape, Multiplier);
         }
 
-        public override unsafe void CalculateDerivate(Tensor<float> s)
+        public override unsafe void CalculateDerivate(Tensor s)
         {
-            Tensor<float> combined = new Tensor<float>(Terms[0].Shape.Clone());
-            combined.SetValue(0);
+            Tensor combined = new Tensor(Terms[0].Shape.Clone(), Data.Type.Float, DeviceIndicator.Host());
+            combined.SetFloat(0);
 
             float* ptrcombined = (float*)combined.Array;
             float* ptrs = (float*)s.Array;
@@ -61,11 +61,11 @@ namespace DeepLearningFramework.Operators.Terms
 
         }
 
-        public unsafe override Tensor<float> CalculateResult()
+        public unsafe override Tensor CalculateResult()
         {
-            Tensor<float> res = new Tensor<float>(this.Shape.Clone());
+            Tensor res = new Tensor(this.Shape.Clone(), Data.Type.Float, DeviceIndicator.Host());
 
-            Tensor<float> v = Terms[0].GetResult();
+            Tensor v = Terms[0].GetResult();
 
             float* ptrres = (float*)res.Array;
             float* ptrv = (float*)v.Array;

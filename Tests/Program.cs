@@ -22,7 +22,7 @@ namespace Tests
     {
         public static void PrintPools()
         {
-            Console.WriteLine("ArrayPool.UnreturnedArrayCount: " + Tensor<float>.Host.UnreturnedArrayCount);
+            Console.WriteLine("ArrayPool.UnreturnedArrayCount: " + TensorPool.Host.UnreturnedArrayCount);
             Console.WriteLine("ShapeArrayPool.UnreturnedArrayCount: " + Shape.ArrayPool.UnreturnedArrayCount);
             Console.WriteLine("ShapeObjectPool.UnreturnedArrayCount: " + Shape.ObjectPool.UnreturnedCount);
             Console.WriteLine("IndexArrayPool.UnreturnedArrayCount: " + Index.ArrayPool.UnreturnedArrayCount);
@@ -32,12 +32,12 @@ namespace Tests
         public unsafe static void deneme()
         {
             //Hyperparameters
-            Hyperparameters.LearningRate = 1f;
+            Hyperparameters.LearningRate = 0.01f;
             Hyperparameters.Optimizer = new SGD();
 
             //Model Creation
             var x = new Input(2);
-            var model = Layer.Dense(2, x, "sigmoid");
+            var model = Layer.Dense(150, x, "sigmoid");
             model = Layer.Dense(1, model, "sigmoid");
 
 
@@ -47,8 +47,8 @@ namespace Tests
 
            
             //Data preparation
-            Tensor<float> x_train = new Tensor<float>((1, 4, 2));
-            Tensor<float> y_train = new Tensor<float>((1, 4, 1));
+            Tensor x_train = new Tensor((1, 4, 2), Data.Type.Float, DeviceIndicator.Host());
+            Tensor y_train = new Tensor((1, 4, 1), Data.Type.Float, DeviceIndicator.Host());
 
             float* xt = (float*)x_train.Array;
             float* yt = (float*)y_train.Array;
@@ -76,10 +76,20 @@ namespace Tests
             s.Start();
             //Minimizing
             loss.PreCheck();
-            for (int epoch = 0; epoch < 2000; epoch++)
+            Index a = Index.NewIndex(model.OuterShape);
+            a.SetZero();
+
+            for (int epoch = 0; epoch < 100000; epoch++)
             {
                 loss.Minimize();
-                
+                if (epoch % 5000 == 0)
+                {
+                    float res = ((float*)loss.GetTerm(a).GetResult().Array)[0];
+                    res += ((float*)loss.GetTerm(a).GetResult().Array)[1];
+                    res += ((float*)loss.GetTerm(a).GetResult().Array)[2];
+                    res += ((float*)loss.GetTerm(a).GetResult().Array)[3];
+                    Console.WriteLine(res);
+                }
             }
             s.Stop();
             Console.WriteLine("Time Elapsed: " + s.ElapsedMilliseconds);
@@ -88,8 +98,7 @@ namespace Tests
             PrintPools();
 
             //Print the results
-            Index a = Index.NewIndex(model.OuterShape);
-            a.SetZero();
+           
             var result = model.GetTerm(a).GetResult();
             Console.WriteLine("Results: " + result);
 
@@ -460,7 +469,7 @@ namespace Tests
         //}
 
 
-        public static unsafe void Print(Tensor<float> x)
+        public static unsafe void Print(Tensor x)
         {
             float* ptr = (float*)x.Array;
             for (int i = 0; i < x.Shape.TotalSize; i++)
@@ -602,7 +611,7 @@ namespace Tests
 
             for (int i2 = 0; i2 < 100; i2++)
             {
-                Tensor<float> data = new Tensor<float>((10, 3, 4));
+                Tensor data = new Tensor((10, 3, 4), Data.Type.Float, DeviceIndicator.Host());
 
                 for (int i = 0; i < data.Shape.TotalSize; i++)
                     ((float*)data.Array)[i] = i / 12;
@@ -615,7 +624,7 @@ namespace Tests
                 //Console.WriteLine($"{i2} took {c.ElapsedMilliseconds}ms");
             }
         }
-
+      
 
         public static unsafe void Main(string[] args)
         {
@@ -642,7 +651,7 @@ namespace Tests
 
             s1 = Shape.ArrayPool.UnreturnedArrayCount;
             Console.WriteLine(Shape.ObjectPool.UnreturnedCount);
-            Console.WriteLine(Tensor<float>.Host.UnreturnedArrayCount);
+            Console.WriteLine(TensorPool.Host.UnreturnedArrayCount);
             //Thread.Sleep(10000);
             //Thread.CurrentThread.Priority = ThreadPriority.Highest;
             //Stopwatch s = new Stopwatch();

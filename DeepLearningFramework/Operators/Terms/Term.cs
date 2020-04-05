@@ -29,10 +29,10 @@ namespace DeepLearningFramework.Operators.Terms
         public Shape Shape { get; internal set; } 
        
         public Term[] Terms;
-        public Tensor<float> Result { get; internal set; }
+        public Tensor Result { get; internal set; }
         public TermType Type { get; internal set; }
 
-        public Tensor<float> SumOfDerivatives;
+        public Tensor SumOfDerivatives;
         public int UniqueId { get; set; } = Helper.Id.GetNewId();
 
         volatile internal int Used = 0;
@@ -46,10 +46,10 @@ namespace DeepLearningFramework.Operators.Terms
         //how many times used
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public abstract Tensor<float> CalculateResult();
+        public abstract Tensor CalculateResult();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public virtual Tensor<float> GetResult()
+        public virtual Tensor GetResult()
         {
             lock (Terms)
             {
@@ -62,7 +62,7 @@ namespace DeepLearningFramework.Operators.Terms
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public abstract void CalculateDerivate(Tensor<float> s);
+        public abstract void CalculateDerivate(Tensor s);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Minimize()
@@ -70,7 +70,7 @@ namespace DeepLearningFramework.Operators.Terms
             this.DeleteResults();
             this.CalculateHowManyTimesUsed();
             this.GetResult();
-            Tensor<float> I = Tensor<float>.DerivativeIdentity(this.Shape);
+            Tensor I = Tensor.DerivativeIdentity(this.Shape, Data.Type.Float, DeviceIndicator.Host());
             this.Derivate(I);
             I.Dispose();
         }
@@ -82,14 +82,14 @@ namespace DeepLearningFramework.Operators.Terms
             this.DeleteResults();
             this.CalculateHowManyTimesUsed();
             this.GetResult();
-            Tensor<float> I = Tensor<float>.DerivativeIdentity(this.Shape);
+            Tensor I = Tensor.DerivativeIdentity(this.Shape, Data.Type.Float, DeviceIndicator.Host());
             I.MakeNegative();
             this.Derivate(I);
             I.Dispose();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public void Derivate(Tensor<float> m)
+        public void Derivate(Tensor m)
         {
             lock (Shape)
             {
@@ -115,15 +115,15 @@ namespace DeepLearningFramework.Operators.Terms
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        private void AddDerivative(Tensor<float> m)
+        private void AddDerivative(Tensor m)
         {
             if (SumOfDerivatives == null)
             {
-                SumOfDerivatives = Tensor<float>.Clone(m);
+                SumOfDerivatives = Tensor.Clone(m);
             }
             else
             {
-                SumOfDerivatives.Add(m);
+                SumOfDerivatives.AddTensor(m);
             }
         }
 

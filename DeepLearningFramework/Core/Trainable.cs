@@ -24,7 +24,7 @@ namespace DeepLearningFramework.Core
         /// <summary>
         /// Weights or data that is to be trained.
         /// </summary>
-        Tensor<float> Weights { get;  }
+        Tensor Weights { get;  }
 
         /// <summary>
         /// Unique Id.
