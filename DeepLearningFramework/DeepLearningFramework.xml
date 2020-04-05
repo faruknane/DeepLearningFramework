@@ -40,7 +40,7 @@
             </summary>
             <param name="a"></param>
             <param name="b"></param>
-            <returns cref="T:DeepLearningFramework.Core.DimensionPlus">A DimensionPlus object that holds value of a + b</returns>
+            <returns cref="T:DeepLearningFramework.Core.DimensionAdd">A DimensionPlus object that holds value of a + b</returns>
         </member>
         <member name="M:DeepLearningFramework.Core.Dimension.op_Multiply(DeepLearningFramework.Core.Dimension,DeepLearningFramework.Core.Dimension)">
             <summary>
@@ -48,11 +48,83 @@
             </summary>
             <param name="a"></param>
             <param name="b"></param>
-            <returns cref="T:DeepLearningFramework.Core.DimensionPlus">A DimensionPlus object that holds value of a + b</returns>
+            <returns cref="T:DeepLearningFramework.Core.DimensionMultiply">A DimensionMultiply object that holds value of a * b</returns>
+        </member>
+        <member name="M:DeepLearningFramework.Core.Dimension.op_Division(DeepLearningFramework.Core.Dimension,DeepLearningFramework.Core.Dimension)">
+            <summary>
+            Divide Operator.
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns cref="T:DeepLearningFramework.Core.DimensionDivide">A DimensionDivide object that holds value of a / b</returns>
+        </member>
+        <member name="M:DeepLearningFramework.Core.Dimension.op_Subtraction(DeepLearningFramework.Core.Dimension,DeepLearningFramework.Core.Dimension)">
+            <summary>
+            Subtract Operator.
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns cref="T:DeepLearningFramework.Core.DimensionSubtract">A DimensionSubtract object that holds value of a - b</returns>
+        </member>
+        <member name="T:DeepLearningFramework.Core.DimensionAdd">
+            <summary>
+            DimensionAdd class helps holding the addition process of two dimensions dynamically.
+            </summary>
+        </member>
+        <member name="T:DeepLearningFramework.Core.DimensionSubtract">
+            <summary>
+            DimensionSubtract class helps holding the subtraction process of two dimensions dynamically.
+            </summary>
+        </member>
+        <member name="T:DeepLearningFramework.Core.DimensionMultiply">
+            <summary>
+            DimensionMultiply class helps holding the multiplication process of two dimensions dynamically.
+            </summary>
+        </member>
+        <member name="T:DeepLearningFramework.Core.DimensionDivide">
+            <summary>
+            DimensionDivide class helps holding the division process of two dimensions dynamically.
+            </summary>
+        </member>
+        <member name="T:DeepLearningFramework.Core.DimensionIncompability">
+            <summary>
+            DimensionIncompability throws when there is an incompability issue with dimensions or shapes.
+            </summary>
+        </member>
+        <member name="T:DeepLearningFramework.Core.Helper">
+            <summary>
+            A global helper class that contains many helper classes inside.
+            </summary>
+        </member>
+        <member name="T:DeepLearningFramework.Core.Helper.Id">
+            <summary>
+            Helps assigning unique identitiy.
+            </summary>
+        </member>
+        <member name="M:DeepLearningFramework.Core.Helper.Id.GetNewId">
+            <summary>
+            Creates a new identity.
+            </summary>
+            <returns>New Identitiy</returns>
+        </member>
+        <member name="T:DeepLearningFramework.Core.Hyperparameters">
+            <summary>
+            Hyperparameters that are to be used in training session.
+            </summary>
+        </member>
+        <member name="F:DeepLearningFramework.Core.Hyperparameters.LearningRate">
+            <summary>
+            Learning Rate.
+            </summary>
+        </member>
+        <member name="F:DeepLearningFramework.Core.Hyperparameters.Optimizer">
+            <summary>
+            Optimizer Method.
+            </summary>
         </member>
         <member name="T:DeepLearningFramework.Core.Optimizers.SGD">
             <summary>
-            Stochastic Gradient Descent class is an optimizer method erived from VariableOptimizer Interface.
+            Stochastic Gradient Descent class is an optimizer method derived from VariableOptimizer Interface.
             </summary>
         </member>
         <member name="M:DeepLearningFramework.Core.Optimizers.SGD.#ctor">
@@ -60,7 +132,7 @@
             
             </summary>
         </member>
-        <member name="M:DeepLearningFramework.Core.Optimizers.SGD.UpdateWeights(DeepLearningFramework.Core.Trainable,PerformanceWork.OptimizedNumerics.Tensor{System.Single})">
+        <member name="M:DeepLearningFramework.Core.Optimizers.SGD.UpdateWeights(DeepLearningFramework.Core.Trainable,PerformanceWork.OptimizedNumerics.Tensor)">
             <summary>
             Updates the weights according to the derivative result.
             </summary>
@@ -73,7 +145,7 @@
             Optimizer Interface.
             </summary>
         </member>
-        <member name="M:DeepLearningFramework.Core.Optimizers.VariableOptimizer.UpdateWeights(DeepLearningFramework.Core.Trainable,PerformanceWork.OptimizedNumerics.Tensor{System.Single})">
+        <member name="M:DeepLearningFramework.Core.Optimizers.VariableOptimizer.UpdateWeights(DeepLearningFramework.Core.Trainable,PerformanceWork.OptimizedNumerics.Tensor)">
             <summary>
             Weight updating method.
             </summary>
@@ -81,7 +153,32 @@
             <param name="g">Gradient Tensor</param>
             <exception cref="T:DeepLearningFramework.Core.DimensionIncompability">Throws if the shapes of Variable and Gradient are different!</exception>
         </member>
-        <member name="M:DeepLearningFramework.Operators.Layers.Input.SetInput(PerformanceWork.OptimizedNumerics.Tensor{System.Single})">
+        <member name="T:DeepLearningFramework.Core.Trainable">
+            <summary>
+            Trainable interface helps to create a trainable object that is sent to optimizers.
+            </summary>
+        </member>
+        <member name="P:DeepLearningFramework.Core.Trainable.Trainable">
+            <summary>
+            The current statue of the Trainable.
+            </summary>
+        </member>
+        <member name="P:DeepLearningFramework.Core.Trainable.LearningRateMultiplier">
+            <summary>
+            Additional Learning Rate of the Trainable.
+            </summary>
+        </member>
+        <member name="P:DeepLearningFramework.Core.Trainable.Weights">
+            <summary>
+            Weights or data that is to be trained.
+            </summary>
+        </member>
+        <member name="P:DeepLearningFramework.Core.Trainable.UniqueId">
+            <summary>
+            Unique Id.
+            </summary>
+        </member>
+        <member name="M:DeepLearningFramework.Operators.Layers.Input.SetInput(PerformanceWork.OptimizedNumerics.Tensor)">
             <summary>
             <br>the new data will be assigned.</br>
             </summary>

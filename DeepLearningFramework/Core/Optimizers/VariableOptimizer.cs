@@ -19,7 +19,7 @@ namespace DeepLearningFramework.Core.Optimizers
         /// <param name="g">Gradient Tensor</param>
         /// <exception cref="DimensionIncompability">Throws if the shapes of Variable and Gradient are different!</exception>
 
-        void UpdateWeights(Trainable x, Tensor<float> derivatives);
+        void UpdateWeights(Trainable x, Tensor derivatives);
 
         //We can add refresh method to clear the instance if necessary
     }

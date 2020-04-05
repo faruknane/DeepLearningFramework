@@ -45,13 +45,13 @@ namespace DeepLearningFramework.Operators.Layers
                     if (EmptyVariable == null)
                     {
                         EmptyVariable = new Terms.Variable(InnerShape.Clone()) { Trainable = false };
-                        EmptyVariable.Weights.SetValue(0);
+                        EmptyVariable.Weights.SetFloat(0);
                     }
                     else if (!EmptyVariable.Shape.EqualShape(InnerShape))
                     {
                         EmptyVariable.Clean();
                         EmptyVariable = new Terms.Variable(InnerShape.Clone()) { Trainable = false };
-                        EmptyVariable.Weights.SetValue(0);
+                        EmptyVariable.Weights.SetFloat(0);
                     }
 
                     return EmptyVariable;

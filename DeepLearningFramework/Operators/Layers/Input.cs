@@ -13,7 +13,7 @@ namespace DeepLearningFramework.Operators.Layers
 {
     public class Input : Layer
     {
-        Tensor<float> InputData;
+        Tensor InputData;
         public int Size;
         public bool Trainable;
 
@@ -49,7 +49,7 @@ namespace DeepLearningFramework.Operators.Layers
             int end = begin + this.InnerShape.TotalSize;
 
             //dont create the clone of innershape because these Weight Tensors of Variable Terms wont be diposed because arrayreturned is set true.
-            return new Terms.Variable(Tensor<float>.Cut(InputData, begin, end, this.InnerShape)) { Trainable = Trainable };
+            return new Terms.Variable(Tensor.Cut(InputData, begin, end, this.InnerShape)) { Trainable = Trainable };
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace DeepLearningFramework.Operators.Layers
         /// <param name="inp">The new input data</param>
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public void SetInput(Tensor<float> inp)
+        public void SetInput(Tensor inp)
         {
             if (inp.Shape.N != InnerDimensions.Length + OuterDimensions.Length)
                 throw new Exception("dimension incompatibility");

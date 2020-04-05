@@ -16,7 +16,7 @@ namespace DeepLearningFramework.Operators.Terms
             this.Shape = v1.Shape.Clone();
         }
 
-        public override void CalculateDerivate(Tensor<float> s)
+        public override void CalculateDerivate(Tensor s)
         {
             Terms[0].Derivate(s);
             //when we go out, s should remain the same as it was.
@@ -25,9 +25,9 @@ namespace DeepLearningFramework.Operators.Terms
             s.MakeNegative();
         }
 
-        public override Tensor<float> CalculateResult()
+        public override Tensor CalculateResult()
         {
-            return Tensor<float>.Subtract(Terms[0].GetResult(), Terms[1].GetResult());
+            return Tensor.Subtract(Terms[0].GetResult(), Terms[1].GetResult());
         }
 
     }

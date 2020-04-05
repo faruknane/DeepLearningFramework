@@ -28,14 +28,14 @@ namespace DeepLearningFramework.Core.Optimizers
         /// <param name="g">Gradient Tensor</param>
         /// <exception cref="DimensionIncompability">Throws if the shapes of Variable and Gradient are different!</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public unsafe void UpdateWeights(Trainable v, Tensor<float> g)
+        public unsafe void UpdateWeights(Trainable v, Tensor g)
         {
             //Console.WriteLine("Updating The Variable with ID " + v.UniqueId); trainable should have uniqueID
             if (g.Shape.EqualShape(v.Weights.Shape))
             {
                 float* ptr_v = (float*)v.Weights.Array;
                 float* ptr_m = (float*)g.Array;
-                Vectorization.ElementWiseAddAVXBetaB(ptr_v, ptr_m, ptr_v, v.Weights.Shape.TotalSize, -v.LearningRateMultiplier * Hyperparameters.LearningRate);
+                VectorizationFloat.ElementWiseAddAVXBetaB(ptr_v, ptr_m, ptr_v, v.Weights.Shape.TotalSize, -v.LearningRateMultiplier * Hyperparameters.LearningRate);
             }
             else
                 throw new DimensionIncompability("The shapes of Variable and Gradient are different!");

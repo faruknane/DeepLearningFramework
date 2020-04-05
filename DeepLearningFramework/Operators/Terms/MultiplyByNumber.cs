@@ -17,17 +17,17 @@ namespace DeepLearningFramework.Operators.Terms
             this.Shape = v1.Shape.Clone();
         }
 
-        public override void CalculateDerivate(Tensor<float> s)
+        public override void CalculateDerivate(Tensor s)
         {
-            s.MultiplyBy(Multiplier);
+            s.MultiplyByFloat(Multiplier);
             Terms[0].Derivate(s);
-            s.DivideBy(Multiplier);
+            s.DivideByFloat(Multiplier);
         }
 
-        public override Tensor<float> CalculateResult()
+        public override Tensor CalculateResult()
         {
-            Tensor<float> res = Tensor<float>.Clone(Terms[0].GetResult());
-            res.MultiplyBy(Multiplier);
+            Tensor res = Tensor.Clone(Terms[0].GetResult());
+            res.MultiplyByFloat(Multiplier);
             return res;
         }
 
