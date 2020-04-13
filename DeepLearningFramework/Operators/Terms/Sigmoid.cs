@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using PerformanceWork.DeepLearning.Kernels.Cpu;
 
 namespace DeepLearningFramework.Operators.Terms
 {
@@ -21,23 +22,18 @@ namespace DeepLearningFramework.Operators.Terms
         {
             Tensor sigmo = GetResult();
 
-            Tensor combined = new Tensor(s.Shape.Clone(), Data.Type.Float, DeviceIndicator.Host());
-
-            //m[i1, i2, i1, i2] = sigmo[i1, i2] * (1 - sigmo[i1, i2]);
+            Tensor combined = CpuKernels.SigmoidFloat_GetGradient_0(s, sigmo);
             
-            VectorizationFloat.ElementWise_A_MultipliedBy_1_Minus_A_MultipliedByB((float*)sigmo.Array, (float*)s.Array, (float*)combined.Array, sigmo.Shape.TotalSize);
-               
             Terms[0].Derivate(combined);
+            
             combined.Dispose();
         }
 
 
         public override unsafe Tensor CalculateResult()
         {
-            Tensor sigmo = new Tensor(this.Shape.Clone(), Data.Type.Float, DeviceIndicator.Host());
             Tensor v = Terms[0].GetResult();
-            VectorizationFloat.Sigmoid((float*)v.Array, (float*)sigmo.Array, sigmo.Shape.TotalSize);
-            return sigmo;
+            return CpuKernels.SigmoidFloat(v);
         }
     }
 }

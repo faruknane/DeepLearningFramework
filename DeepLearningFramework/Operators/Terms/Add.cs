@@ -4,17 +4,21 @@ using System;
 using System.Threading.Tasks;
 using DeepLearningFramework.Core;
 using System.Threading;
+using PerformanceWork.DeepLearning.Kernels.Cpu;
 
 namespace DeepLearningFramework.Operators.Terms
 {
     public class Add : Term
     {
+        Tensor[] tensors;
+
         public Add(params Term[] v) // make args
         {
             if (v.Length < 2)
                 throw new Exception("length < 2!");
             Type = TermType.Plus;
             Terms = v;
+            tensors = new Tensor[v.Length];
             for (int i = 0; i < Terms.Length - 1; i++)
                 if (!this.Terms[i].Shape.EqualShape(this.Terms[i + 1].Shape)) //will be shape, not d1 or d2
                 {
@@ -25,62 +29,16 @@ namespace DeepLearningFramework.Operators.Terms
 
         public override void CalculateDerivate(Tensor s)
         {
-            if(Terms.Length < 1)
-            {
-                Task[] l = new Task[Terms.Length - 1];
-                for (int i = 0; i < Terms.Length - 1; i++)
-                {
-                    l[i] = new Task(new Action<object>((object o) => { ((Term)o).Derivate(s); }), Terms[i]);
-                    l[i].Start();
-                }
-
-                Terms[Terms.Length - 1].Derivate(s);
-
-                for (int i = 0; i < Terms.Length - 1; i++)
-                    l[i].Wait();
-            }
-            else
-            {
-                for (int i = 0; i < Terms.Length; i++)
-                 Terms[i].Derivate(s);
-            }
-
+            for (int i = 0; i < Terms.Length; i++)
+                Terms[i].Derivate(s);
         }
 
         public unsafe override Tensor CalculateResult()
         {
-            if (Terms.Length < 1)
-            {
-                Task[] l = new Task[Terms.Length - 1];
-                for (int i = 0; i < Terms.Length - 1; i++)
-                {
-                    l[i] = new Task(new Action<object>((object o) => { ((Term)o).GetResult(); }), Terms[i]);
-                    l[i].Start();
-                }
+            for (int i = 0; i < this.Terms.Length; i++)
+                tensors[i] = Terms[i].GetResult();
 
-                Terms[Terms.Length - 1].GetResult();
-
-                for (int i = 0; i < Terms.Length - 1; i++)
-                    l[i].Wait();
-
-                Tensor res = new Tensor(this.Shape.Clone(), Data.Type.Float, DeviceIndicator.Host());
-                VectorizationFloat.ElementWiseAddAVX((float*)Terms[0].GetResult().Array, (float*)Terms[1].GetResult().Array, (float*)res.Array, this.Shape.TotalSize);
-
-                for (int i = 2; i < Terms.Length; i++) //Optimize here. 
-                    VectorizationFloat.ElementWiseAddAVX((float*)res.Array, (float*)Terms[i].GetResult().Array, (float*)res.Array, this.Shape.TotalSize);
-                return res;
-            }
-            else
-            {
-                Tensor res = new Tensor(this.Shape.Clone(), Data.Type.Float, DeviceIndicator.Host());
-                VectorizationFloat.ElementWiseAddAVX((float*)Terms[0].GetResult().Array, (float*)Terms[1].GetResult().Array, (float*)res.Array, this.Shape.TotalSize);
-
-                for (int i = 2; i < Terms.Length; i++) //Optimize here. 
-                    VectorizationFloat.ElementWiseAddAVX((float*)res.Array, (float*)Terms[i].GetResult().Array, (float*)res.Array, this.Shape.TotalSize);
-                return res;
-
-            }
-
+            return CpuKernels.AddFloat(tensors);
         }
 
     }

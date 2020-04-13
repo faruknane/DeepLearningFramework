@@ -31,6 +31,8 @@ namespace DeepLearningFramework.Core.Optimizers
         public unsafe void UpdateWeights(Trainable v, Tensor g)
         {
             //Console.WriteLine("Updating The Variable with ID " + v.UniqueId); trainable should have uniqueID
+            //Console.Write("Updating The Variable with ID " + v.UniqueId);
+            //Console.WriteLine(" -> " + g);
             if (g.Shape.EqualShape(v.Weights.Shape))
             {
                 float* ptr_v = (float*)v.Weights.Array;

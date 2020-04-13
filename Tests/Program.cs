@@ -45,7 +45,7 @@ namespace Tests
             var y = new Input(1);
             var loss = Layer.SquaredError(model, y);
 
-           
+
             //Data preparation
             Tensor x_train = new Tensor((1, 4, 2), Data.Type.Float, DeviceIndicator.Host());
             Tensor y_train = new Tensor((1, 4, 1), Data.Type.Float, DeviceIndicator.Host());
@@ -98,12 +98,11 @@ namespace Tests
             PrintPools();
 
             //Print the results
-           
+
             var result = model.GetTerm(a).GetResult();
             Console.WriteLine("Results: " + result);
 
         }
-
         //public static unsafe void deneme2()
         //{
         //    LoadData();
@@ -515,8 +514,8 @@ namespace Tests
             Variable w3 = new Variable(new Dimension[] { 20, 10 }, Shape.NewShape(300, 400)); w3.Name = "w3";
             Variable w4 = new Variable(new Dimension[] { 20, 10 }, Shape.NewShape(500, 400)); w4.Name = "w4";
 
-            var d1 = new Subtract(w1, w2);d1.Name = "d1";
-            var d2 = new MatrixMultiply(d1, w3);d2.Name = "d2";
+            var d1 = new Subtract(w1, w2); d1.Name = "d1";
+            var d2 = new MatrixMultiply(d1, w3); d2.Name = "d2";
             var sum = new Power(new Subtract(d2,w4),2); sum.Name = "sum";
 
             //Shape s = Shape.NewShape(2, 10);
@@ -596,14 +595,6 @@ namespace Tests
             Variable w1 = new Variable(new Dimension[] { 10 }, Shape.NewShape(3, 4)); w1.Name = "w1";
 
             var sum = new Add(w1, x); sum.Name = "sum";
-            //sum.PreCheck();
-            //Index a = Index.NewIndex(x.OuterShape);
-            //a.SetZero();
-            //for (int i = 0; i < x.OuterShape.TotalSize; i++, a.Add(1))
-            //{
-            //    Console.WriteLine("Term " + i + ":" + x.GetTerm(a).GetResult());
-            //}
-            //sum.DeleteTerms();
 
 
             Stopwatch c = new Stopwatch();
@@ -617,11 +608,21 @@ namespace Tests
                     ((float*)data.Array)[i] = i / 12;
                 x.SetInput(data);
 
+                x.PreCheck();
+                
+                Index a = Index.NewIndex(x.OuterShape);
+                a.SetZero();
+                
+                for (int i = 0; i < x.OuterShape.TotalSize; i++, a.Add(1))
+                {
+                    Console.WriteLine("Term " + i + ":" + x.GetTerm(a).GetResult());
+                }
+
                 c.Restart();
                 sum.Minimize();
                 c.Stop();
                 data.Dispose();
-                //Console.WriteLine($"{i2} took {c.ElapsedMilliseconds}ms");
+                Console.WriteLine($"{i2} took {c.ElapsedMilliseconds}ms");
             }
         }
       
