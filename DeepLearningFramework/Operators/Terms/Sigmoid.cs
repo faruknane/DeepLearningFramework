@@ -21,11 +21,8 @@ namespace DeepLearningFramework.Operators.Terms
         public override unsafe void CalculateDerivate(Tensor s)
         {
             Tensor sigmo = GetResult();
-
             Tensor combined = CpuKernels.SigmoidFloat_GetGradient_0(s, sigmo);
-            
             Terms[0].Derivate(combined);
-            
             combined.Dispose();
         }
 

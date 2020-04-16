@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DeepLearningFramework.Core;
+using PerformanceWork;
 
 namespace DeepLearningFramework.Operators.Terms
 {
@@ -28,7 +29,7 @@ namespace DeepLearningFramework.Operators.Terms
         public override unsafe void CalculateDerivate(Tensor s)
         {
             Tensor res = Terms[0].GetResult(); 
-            Tensor combined = new Tensor(s.Shape.Clone(), Data.Type.Float, DeviceIndicator.Host()); // new MMDerivative(s.D1, s.D2, D1, D2, false);
+            Tensor combined = new Tensor(s.Shape.Clone(), DataType.Type.Float, DeviceIndicator.Host()); // new MMDerivative(s.D1, s.D2, D1, D2, false);
 
             if (PowerOf == 2)
             {
@@ -65,7 +66,7 @@ namespace DeepLearningFramework.Operators.Terms
         public unsafe override Tensor CalculateResult()
         {
             Tensor res = Terms[0].GetResult();
-            Tensor m = new Tensor(res.Shape.Clone(), Data.Type.Float, DeviceIndicator.Host());
+            Tensor m = new Tensor(res.Shape.Clone(), DataType.Type.Float, DeviceIndicator.Host());
 
             VectorizationFloat.ElementWiseAssignAVX((float*)m.Array, (float*)res.Array, res.Shape.TotalSize);
 

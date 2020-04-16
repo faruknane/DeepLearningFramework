@@ -6,6 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using DeepLearningFramework.Core;
 using Index = PerformanceWork.OptimizedNumerics.Index;
+using System.ComponentModel.DataAnnotations;
+using PerformanceWork;
+using DataType = PerformanceWork.DataType;
 
 namespace DeepLearningFramework.Operators.Terms
 {
@@ -26,7 +29,7 @@ namespace DeepLearningFramework.Operators.Terms
 
         public override unsafe void CalculateDerivate(Tensor s)
         {
-            Tensor combined = new Tensor(Terms[0].Shape.Clone(), Data.Type.Float, DeviceIndicator.Host());
+            Tensor combined = new Tensor(Terms[0].Shape.Clone(), DataType.Type.Float, DeviceIndicator.Host());
             combined.SetFloat(0);
 
             float* ptrcombined = (float*)combined.Array;
@@ -63,7 +66,7 @@ namespace DeepLearningFramework.Operators.Terms
 
         public unsafe override Tensor CalculateResult()
         {
-            Tensor res = new Tensor(this.Shape.Clone(), Data.Type.Float, DeviceIndicator.Host());
+            Tensor res = new Tensor(this.Shape.Clone(), DataType.Type.Float, DeviceIndicator.Host());
 
             Tensor v = Terms[0].GetResult();
 

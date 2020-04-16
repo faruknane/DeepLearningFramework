@@ -1,18 +1,15 @@
 ﻿using DeepLearningFramework.Core;
 using DeepLearningFramework.Core.Optimizers;
-
 using DeepLearningFramework.Operators.Layers;
+using PerformanceWork;
 using PerformanceWork.OptimizedNumerics;
+using PerformanceWork.OptimizedNumerics.Pool;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
-using System.Net.Sockets;
-using System.Runtime;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Index = PerformanceWork.OptimizedNumerics.Index;
 using Terms = DeepLearningFramework.Operators.Terms;
 
@@ -22,14 +19,240 @@ namespace Tests
     {
         public static void PrintPools()
         {
-            Console.WriteLine("ArrayPool.UnreturnedArrayCount: " + TensorPool.Host.UnreturnedArrayCount);
+            Console.WriteLine("TensorPool.UnreturnedArrayCount: " + TensorPool.Host.UnreturnedArrayCount);
             Console.WriteLine("ShapeArrayPool.UnreturnedArrayCount: " + Shape.ArrayPool.UnreturnedArrayCount);
             Console.WriteLine("ShapeObjectPool.UnreturnedArrayCount: " + Shape.ObjectPool.UnreturnedCount);
             Console.WriteLine("IndexArrayPool.UnreturnedArrayCount: " + Index.ArrayPool.UnreturnedArrayCount);
             Console.WriteLine("IndexObjectPool.UnreturnedArrayCount: " + Index.ObjectPool.UnreturnedCount);
         }
+        public static float[] LoadCurrentImage()
+        {
+            string file = @"C:\Users\faruk\source\repos\MNISTDemo\MNISTDemo\bin\Debug\img.txt";
+            int l2 = 28 * 28;
+            float[] data = new float[l2];
 
-        public unsafe static void deneme()
+            StreamReader sr = new StreamReader(file);
+            string a = sr.ReadToEnd();
+            sr.Close();
+
+            if (a.Length != l2)
+                throw new Exception("length");
+
+            for (int i = 0; i < 28; i++)
+                for (int j = 0; j < 28; j++)
+                    data[i * 28 + j] = a[i * 28 + j] - '0';
+            return data;
+        }
+        public static unsafe (float[,], float[,]) LoadMNISTDataSet()
+        {
+            int l1 = 42000;
+            int l2 = 28 * 28;
+            int l3 = 10;
+
+            float[,] data = new float[l1, l2];
+            float[, ] labels = new float[l1, l3];
+            //return (data, labels);
+
+            int digitcount = 10;
+            string path = @"C:\Users\faruk\source\repos\MNISTDemo\MNISTDemo\trainingSet\";
+
+            for (int i = 0; i < digitcount; i++)
+            {
+                int maxval = 0;
+                string[] files = Directory.GetFiles(path + i.ToString());
+                foreach (var file in files)
+                {
+                    Bitmap bmp = new Bitmap(file);
+                    string filename = Path.GetFileNameWithoutExtension(file);
+                    int c = int.Parse(filename.Substring(4, filename.Length - 4));
+                    {
+                        BitmapData bData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
+
+                        byte* scan0 = (byte*)bData.Scan0.ToPointer();
+
+                        for (int x = 0; x < bData.Height; ++x)
+                        {
+                            for (int y = 0; y < bData.Width; ++y)
+                            {
+                                byte* p = scan0 + (x * bData.Stride + y);
+                                if (*p >= 128)
+                                    data[c, (y * bData.Stride + x)] = 1;
+                                else
+                                    data[c, (y * bData.Stride + x)] = 0;
+                            }
+                        }
+
+                        bmp.UnlockBits(bData);
+                    }
+                    bmp.Dispose();
+
+                    for (int j = 0; j < 10; j++)
+                        labels[c, j] = 0;
+                    labels[c, i] = 1;
+                    maxval = Math.Max(maxval, c);
+                }
+                Console.WriteLine("okundu " + i + " max -> " + maxval);
+            }
+            return (data, labels);
+        }
+        
+        public static unsafe int MaxId(float* pp)
+        {
+            int maxid = -1;
+            float max = 0;
+
+            for (int i = 0; i < 10; i++)
+                if (pp[i] > max)
+                {
+                    max = pp[i];
+                    maxid = i;
+                }
+            return maxid;
+        }
+
+        public unsafe static void MNISTExample()
+        {
+            //Hyperparameters
+            Hyperparameters.LearningRate = 0.005f;
+            Hyperparameters.Optimizer = new SGD();
+
+
+            //Model Creation
+            var x = new Input(784);
+            var model = Layer.Dense(100, x, "sigmoid");
+            model = Layer.Dense(50, model, "sigmoid");
+            model = Layer.Dense(26, model, "sigmoid");
+            model = Layer.Dense(10, model, "softmax");
+
+
+            //Loss Function Creation
+            var y = new Input(10);
+            var loss = Layer.SquaredError(model, y);
+
+
+            //Data preparation
+            (float[,] traindata, float[, ] labels) = LoadMNISTDataSet();
+            int mnistsize = 42000;
+
+            Tensor x_train, y_train;
+
+            fixed (float* xptr = traindata, yptr = labels)
+            {
+               x_train = Tensor.LoadFloatToHost(xptr, 0, mnistsize * 784, Shape.NewShape(mnistsize, 784));
+               y_train = Tensor.LoadFloatToHost(yptr, 0, mnistsize * 10, Shape.NewShape(mnistsize, 10));
+            }
+
+            //Training
+            int batchsize = 100;
+            Shape shapebatchx = Shape.NewShape(1, batchsize, 784);
+            Shape shapebatchy = Shape.NewShape(1, batchsize, 10);
+
+            int trainl = 35000;
+            
+
+            for (int epoch = 0; epoch < 15; epoch++)
+            {
+                float l = 0;
+                float val = 0;
+
+                Console.WriteLine("Epoch " + epoch + " başladı.");
+                for (int batch = 0; batch < trainl / batchsize; batch++)
+                {
+                    Tensor batchx = Tensor.Cut(x_train, batch * (batchsize * 784), (batch + 1) * (batchsize * 784), shapebatchx);
+                    Tensor batchy = Tensor.Cut(y_train, batch * (batchsize * 10), (batch + 1) * (batchsize * 10), shapebatchy);
+                    
+                    x.SetInput(batchx);
+                    y.SetInput(batchy);
+
+                    loss.Minimize();
+
+                    Index zero = Index.NewIndex(loss.OuterShape);
+                    zero.SetZero();
+
+                    Tensor res = loss.GetTerm(zero).GetResult();
+                    float* pp = (float*)res.Array;
+
+                    for (int i = 0; i < res.Shape.TotalSize; i++)
+                        l += pp[i];
+
+                    Index.Return(zero);
+
+                }
+
+                for (int batch = trainl / batchsize; batch < mnistsize / batchsize; batch++)
+                {
+                    Tensor batchx = Tensor.Cut(x_train, batch * (batchsize * 784), (batch + 1) * (batchsize * 784), shapebatchx);
+                    Tensor batchy = Tensor.Cut(y_train, batch * (batchsize * 10), (batch + 1) * (batchsize * 10), shapebatchy);
+
+                    model.DeleteTerms();
+
+                    x.SetInput(batchx);
+                    y.SetInput(batchy);
+
+                    Index zero = Index.NewIndex(model.OuterShape);
+                    zero.SetZero();
+                    model.PreCheck();
+                    Tensor res = model.GetTerm(zero).GetResult();
+                    Index.Return(zero);
+
+                    for(int i = 0; i < batchsize; i++)
+                    {
+                        int myans = MaxId((float*)res.Array + i*10);
+                        int correctres = MaxId((float*)batchy.Array + i*10);
+                        val += (myans == correctres ? 1 : 0);
+                    }
+                }
+
+                Console.WriteLine("Epoch " + epoch + " biti.");
+                Console.WriteLine("Loss: " + l/trainl);
+                Console.WriteLine("Validation: " + val/(mnistsize - trainl));
+                
+            }
+
+            PrintPools();
+
+            shapebatchx.Dispose();
+            shapebatchy.Dispose();
+
+
+            Shape testx = Shape.NewShape(1, 1, 784);
+
+            while (true)
+            {
+                try
+                {
+                    float[] data = LoadCurrentImage();
+                    Tensor x_test;
+
+                    fixed (float* ptr = data)
+                        x_test = Tensor.LoadFloatToHost(ptr, 0, 784, testx);
+
+                    model.DeleteTerms();
+
+                    x.SetInput(x_test);
+
+                    Index zero = Index.NewIndex(model.OuterShape);
+                    zero.SetZero();
+                    model.PreCheck();
+                    Tensor res = model.GetTerm(zero).GetResult();
+                    Index.Return(zero);
+
+                   
+
+                    Console.WriteLine("Result: " + res);
+                    Console.WriteLine("Digit Prediction: " + MaxId((float*)res.Array));
+                    Console.WriteLine("-----------");
+                }
+                catch (Exception)
+                {
+
+                }
+                Thread.Sleep(500);
+            }
+            Shape.Return(testx);
+        }
+
+        public unsafe static void XORExample()
         {
             //Hyperparameters
             Hyperparameters.LearningRate = 0.01f;
@@ -47,8 +270,8 @@ namespace Tests
 
 
             //Data preparation
-            Tensor x_train = new Tensor((1, 4, 2), Data.Type.Float, DeviceIndicator.Host());
-            Tensor y_train = new Tensor((1, 4, 1), Data.Type.Float, DeviceIndicator.Host());
+            Tensor x_train = new Tensor((1, 4, 2), DataType.Type.Float, DeviceIndicator.Host());
+            Tensor y_train = new Tensor((1, 4, 1), DataType.Type.Float, DeviceIndicator.Host());
 
             float* xt = (float*)x_train.Array;
             float* yt = (float*)y_train.Array;
@@ -103,6 +326,7 @@ namespace Tests
             Console.WriteLine("Results: " + result);
 
         }
+       
         //public static unsafe void deneme2()
         //{
         //    LoadData();
@@ -467,7 +691,6 @@ namespace Tests
         //    a.Minimize();
         //}
 
-
         public static unsafe void Print(Tensor x)
         {
             float* ptr = (float*)x.Array;
@@ -602,7 +825,7 @@ namespace Tests
 
             for (int i2 = 0; i2 < 100; i2++)
             {
-                Tensor data = new Tensor((10, 3, 4), Data.Type.Float, DeviceIndicator.Host());
+                Tensor data = new Tensor((10, 3, 4), DataType.Type.Float, DeviceIndicator.Host());
 
                 for (int i = 0; i < data.Shape.TotalSize; i++)
                     ((float*)data.Array)[i] = i / 12;
@@ -629,7 +852,8 @@ namespace Tests
 
         public static unsafe void Main(string[] args)
         {
-            deneme();
+            MNISTExample();
+            //XORExample();
             return;
             //Thread t = new Thread(() => 
             //{ 

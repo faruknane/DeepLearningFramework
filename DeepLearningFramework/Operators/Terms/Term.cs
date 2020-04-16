@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 using DeepLearningFramework.Core;
+using PerformanceWork;
 
 namespace DeepLearningFramework.Operators.Terms
 {
@@ -70,7 +71,7 @@ namespace DeepLearningFramework.Operators.Terms
             this.DeleteResults();
             this.CalculateHowManyTimesUsed();
             this.GetResult();
-            Tensor I = Tensor.DerivativeIdentity(this.Shape, Data.Type.Float, DeviceIndicator.Host());
+            Tensor I = Tensor.DerivativeIdentity(this.Shape, DataType.Type.Float, DeviceIndicator.Host());
             this.Derivate(I);
             I.Dispose();
         }
@@ -82,7 +83,7 @@ namespace DeepLearningFramework.Operators.Terms
             this.DeleteResults();
             this.CalculateHowManyTimesUsed();
             this.GetResult();
-            Tensor I = Tensor.DerivativeIdentity(this.Shape, Data.Type.Float, DeviceIndicator.Host());
+            Tensor I = Tensor.DerivativeIdentity(this.Shape, DataType.Type.Float, DeviceIndicator.Host());
             I.MakeNegative();
             this.Derivate(I);
             I.Dispose();

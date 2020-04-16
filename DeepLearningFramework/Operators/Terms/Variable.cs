@@ -1,4 +1,5 @@
 ﻿using DeepLearningFramework.Core;
+using PerformanceWork;
 using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;
@@ -35,7 +36,7 @@ namespace DeepLearningFramework.Operators.Terms
         {
             Type = TermType.Variable;
             this.Shape = s;
-            m = new Tensor(s.Clone(), Data.Type.Float, DeviceIndicator.Host());
+            m = new Tensor(s.Clone(), DataType.Type.Float, DeviceIndicator.Host());
             Terms = Array.Empty<Term>();
         }
 

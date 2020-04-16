@@ -1,5 +1,5 @@
 ﻿using DeepLearningFramework.Core;
-
+using PerformanceWork;
 using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;
@@ -24,7 +24,7 @@ namespace DeepLearningFramework.Operators.Terms
         {
             {
                 Tensor B = Terms[1].GetResult();
-                var combinedleft = new Tensor(Terms[0].Shape.Clone(), Data.Type.Float, DeviceIndicator.Host());
+                var combinedleft = new Tensor(Terms[0].Shape.Clone(), DataType.Type.Float, DeviceIndicator.Host());
                 float* ptr_left = (float*)combinedleft.Array, ptr_s = (float*)s.Array, ptr_b = (float*)B.Array;
                 VectorizationFloat.TransposeBandMatrixMultiply(ptr_s, this.Shape[0], this.Shape[1], ptr_b, B.Shape[0], B.Shape[1], ptr_left);
 
@@ -34,7 +34,7 @@ namespace DeepLearningFramework.Operators.Terms
 
             {
                 Tensor A = Terms[0].GetResult();
-                var combinedright = new Tensor(Terms[1].Shape.Clone(), Data.Type.Float, DeviceIndicator.Host());
+                var combinedright = new Tensor(Terms[1].Shape.Clone(), DataType.Type.Float, DeviceIndicator.Host());
                 float* ptr_right = (float*)combinedright.Array, ptr_a = (float*)A.Array, ptr_s = (float*)s.Array;
                 VectorizationFloat.TransposeAandMatrixMultiply(ptr_a, A.Shape[0], A.Shape[1], ptr_s, this.Shape[0], this.Shape[1], ptr_right);
                 Terms[1].Derivate(combinedright);
