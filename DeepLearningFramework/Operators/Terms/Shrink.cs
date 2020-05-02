@@ -6,6 +6,7 @@ using System.Text;
 using DeepLearningFramework.Core;
 using Index = PerformanceWork.OptimizedNumerics.Index;
 using PerformanceWork;
+using PerformanceWork.DeepLearning.Kernels.Cpu;
 
 namespace DeepLearningFramework.Operators.Terms
 {
@@ -66,43 +67,8 @@ namespace DeepLearningFramework.Operators.Terms
 
         public unsafe override Tensor CalculateResult()
         {
-            Tensor res = new Tensor(this.Shape.Clone(), DataType.Type.Float, DeviceIndicator.Host());
-            res.SetFloat(0);
-
             Tensor v = Terms[0].GetResult();
-
-            float* ptrres = (float*)res.Array;
-            float* ptrv = (float*)v.Array;
-
-            Index iterator = Index.NewIndex(this.Terms[0].Shape);
-
-            for (int i = 0; i < iterator.N; i++)
-                iterator.Indices[i] = 0;
-
-            for (int h = 0; h < this.Terms[0].Shape.TotalSize; h++)
-            {
-                int indexs = 0;
-
-                for (int i = iterator.N - 1; i >= 0; i--)
-                {
-                    if (iterator.Indices[i] == this.Terms[0].Shape[i])
-                    {
-                        iterator.Indices[i] = 0;
-                        iterator.Indices[i - 1]++;
-                    }
-                    indexs += (iterator.Indices[i] / Divisor[i]) * this.Shape.Multiplied[i + 1];
-                }
-                ptrres[indexs] += ptrv[h];
-                iterator.Indices[iterator.N - 1]++;
-            }
-            Index.Return(iterator);
-            //int v1d1 = Terms[0].D1;
-            //int v1d2 = Terms[0].D2;
-
-            //for (int i3 = 0; i3 < v1d1; i3++)
-            //    for (int i4 = 0; i4 < v1d2; i4++)
-            //        res[i3 / RowDivider, i4 / ColumnDivider] += v[i3, i4];
-            return res;
+            return CpuKernels.ShrinkFloat(v, this.Shape, Terms[0].Shape, Divisor);
         }
 
         public override void Dispose()

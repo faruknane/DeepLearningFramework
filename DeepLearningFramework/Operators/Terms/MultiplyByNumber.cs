@@ -19,6 +19,7 @@ namespace DeepLearningFramework.Operators.Terms
 
         public override void CalculateDerivate(Tensor s)
         {
+            throw new Exception("hatalı, s should never change in multi thread version");
             s.MultiplyByFloat(Multiplier);
             Terms[0].Derivate(s);
             s.DivideByFloat(Multiplier);

@@ -9,6 +9,7 @@ using Index = PerformanceWork.OptimizedNumerics.Index;
 using System.ComponentModel.DataAnnotations;
 using PerformanceWork;
 using DataType = PerformanceWork.DataType;
+using PerformanceWork.DeepLearning.Kernels.Cpu;
 
 namespace DeepLearningFramework.Operators.Terms
 {
@@ -17,7 +18,7 @@ namespace DeepLearningFramework.Operators.Terms
         public Shape Multiplier { get; set; }
 
         /// <summary>
-        /// Shape object wont be returned to the pool
+        /// Shape object wont be returned to the pool back. 
         /// </summary>
         public Expand(Term v1, Shape multiplier)
         {
@@ -29,78 +30,15 @@ namespace DeepLearningFramework.Operators.Terms
 
         public override unsafe void CalculateDerivate(Tensor s)
         {
-            Tensor combined = new Tensor(Terms[0].Shape.Clone(), DataType.Type.Float, DeviceIndicator.Host());
-            combined.SetFloat(0);
-
-            float* ptrcombined = (float*)combined.Array;
-            float* ptrs = (float*)s.Array;
-
-            Index iterator = Index.NewIndex(this.Shape);
-
-            iterator.SetZero();
-
-            for (int h = 0; h < this.Shape.TotalSize; h++)
-            {
-
-                int indexs = 0;
-
-                for (int i = iterator.N - 1; i >= 0; i--)
-                {
-                    if (iterator.Indices[i] == this.Shape[i])
-                    {
-                        iterator.Indices[i] = 0;
-                        iterator.Indices[i - 1]++;
-                    }
-                    indexs += (iterator.Indices[i] / Multiplier[i]) * this.Terms[0].Shape.Multiplied[i + 1];
-                }
-
-                ptrcombined[indexs] += ptrs[h];
-                iterator.Indices[iterator.N - 1]++;
-            }
-            Index.Return(iterator);
-
+            Tensor combined = CpuKernels.ExpandFloat_GetGradient_0(s, this.Shape, Terms[0].Shape, Multiplier);
             Terms[0].Derivate(combined);
             combined.Dispose();
-
         }
 
         public unsafe override Tensor CalculateResult()
         {
-            Tensor res = new Tensor(this.Shape.Clone(), DataType.Type.Float, DeviceIndicator.Host());
-
             Tensor v = Terms[0].GetResult();
-
-            float* ptrres = (float*)res.Array;
-            float* ptrv = (float*)v.Array;
-
-            Index iterator = Index.NewIndex(this.Shape);
-
-            for (int i = 0; i < iterator.N; i++)
-                iterator.Indices[i] = 0;
-
-            for (int h = 0; h < this.Shape.TotalSize; h++)
-            {
-                int indexs = 0;
-
-                for (int i = iterator.N - 1; i >= 0; i--)
-                {
-                    if (iterator.Indices[i] == this.Shape[i])
-                    {
-                        iterator.Indices[i] = 0;
-                        iterator.Indices[i - 1]++;
-                    }
-                    indexs += (iterator.Indices[i] / Multiplier[i]) * this.Terms[0].Shape.Multiplied[i + 1];
-                }
-                ptrres[h] = ptrv[indexs];
-                iterator.Indices[iterator.N - 1]++;
-            }
-            Index.Return(iterator);
-            //int v1d1 = Terms[0].D1;
-            //int v1d2 = Terms[0].D2;
-
-            //for (int i3 = 0; i3 < v1d1; i3++)
-            //    for (int i4 = 0; i4 < v1d2; i4++)
-            //        res[i3 / RowDivider, i4 / ColumnDivider] += v[i3, i4];
+            Tensor res = CpuKernels.ExpandFloat(v, this.Shape, Terms[0].Shape, Multiplier);
             return res;
         }
 

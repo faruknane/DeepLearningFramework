@@ -10,9 +10,9 @@ namespace DeepLearningFramework.Operators.Layers
     public unsafe class Variable : Layer
     {
         public Terms.Variable W { get; private set; }
-        public Variable(Dimension[] Length, Shape s , bool setzero = false, bool randomize = true, string RandMethod = "") //add initializers etc
+        public Variable(Dimension[] OuterDimensions, Shape s , bool setzero = false, bool randomize = true, string RandMethod = "") //add initializers etc
         {
-            W = new Terms.Variable(s);
+            W = new Terms.Variable(s.Clone());
             
             if (setzero)
                 W.Weights.SetFloat(0);
@@ -24,7 +24,7 @@ namespace DeepLearningFramework.Operators.Layers
             for (int i = 0; i < s.N; i++)
                 this.InnerDimensions[i] = s[i];
 
-            this.OuterDimensions = Length;
+            this.OuterDimensions = OuterDimensions;
         }
 
         public override void InnerDimensionCheck()
@@ -50,6 +50,22 @@ namespace DeepLearningFramework.Operators.Layers
         {
             W.DeleteResults();
             Terms.Clear();
+        }
+
+        public void Dispose() //experimental
+        {
+            DeleteTerms();
+            
+            if(OuterShape != null)
+                Shape.Return(OuterShape);
+            
+            if(InnerShape != null)
+                Shape.Return(InnerShape);
+            
+            if (EmptyVariable != null && !EmptyVariable.IsDisposed)
+                EmptyVariable.Clean();
+            
+            W.Clean();
         }
     }
 }

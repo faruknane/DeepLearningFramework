@@ -22,7 +22,8 @@ namespace DeepLearningFramework.Operators.Terms
         SoftMax,
         Variable,
         Experimental,
-        Embedding
+        Embedding,
+        ReLU
     }
 
     public abstract class Term : IDisposable

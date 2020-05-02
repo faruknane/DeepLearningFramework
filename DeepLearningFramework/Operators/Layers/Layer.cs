@@ -22,8 +22,7 @@ namespace DeepLearningFramework.Operators.Layers
 
         public List<Term> Terms = new List<Term>();
         public List<Layer> InputLayers = new List<Layer>();
-
-        private Terms.Variable EmptyVariable;
+        internal Terms.Variable EmptyVariable;
         private bool InRecursion = false;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -282,6 +281,8 @@ namespace DeepLearningFramework.Operators.Layers
                 return (Layer x) => new Sigmoid(x);
             else if (name == "softmax")
                 return (Layer x) => new SoftMax(x);
+            else if (name == "relu")
+                return (Layer x) => new ReLU(x);
             return (Layer x) => x;
         }
 

@@ -113,15 +113,15 @@ namespace Tests
         public unsafe static void MNISTExample()
         {
             //Hyperparameters
-            Hyperparameters.LearningRate = 0.005f;
+            Hyperparameters.LearningRate = 0.0001f;
             Hyperparameters.Optimizer = new SGD();
 
 
             //Model Creation
             var x = new Input(784);
-            var model = Layer.Dense(100, x, "sigmoid");
-            model = Layer.Dense(50, model, "sigmoid");
-            model = Layer.Dense(26, model, "sigmoid");
+            var model = Layer.Dense(500, x, "relu");
+            model = Layer.Dense(200, model, "relu");
+            model = Layer.Dense(100, model, "relu");
             model = Layer.Dense(10, model, "softmax");
 
 
@@ -138,8 +138,8 @@ namespace Tests
 
             fixed (float* xptr = traindata, yptr = labels)
             {
-               x_train = Tensor.LoadFloatToHost(xptr, 0, mnistsize * 784, Shape.NewShape(mnistsize, 784));
-               y_train = Tensor.LoadFloatToHost(yptr, 0, mnistsize * 10, Shape.NewShape(mnistsize, 10));
+               x_train = Tensor.LoadFloatArrayToTensorHost(xptr, 0, mnistsize * 784, Shape.NewShape(mnistsize, 784));
+               y_train = Tensor.LoadFloatArrayToTensorHost(yptr, 0, mnistsize * 10, Shape.NewShape(mnistsize, 10));
             }
 
             //Training
@@ -148,13 +148,15 @@ namespace Tests
             Shape shapebatchy = Shape.NewShape(1, batchsize, 10);
 
             int trainl = 35000;
-            
+
+            Stopwatch s = new Stopwatch();
 
             for (int epoch = 0; epoch < 15; epoch++)
             {
                 float l = 0;
                 float val = 0;
 
+                s.Restart();
                 Console.WriteLine("Epoch " + epoch + " başladı.");
                 for (int batch = 0; batch < trainl / batchsize; batch++)
                 {
@@ -202,11 +204,12 @@ namespace Tests
                         val += (myans == correctres ? 1 : 0);
                     }
                 }
+                s.Stop();
 
                 Console.WriteLine("Epoch " + epoch + " biti.");
                 Console.WriteLine("Loss: " + l/trainl);
                 Console.WriteLine("Validation: " + val/(mnistsize - trainl));
-                
+                Console.WriteLine("Time: " + s.ElapsedMilliseconds  + "ms");
             }
 
             PrintPools();
@@ -225,7 +228,7 @@ namespace Tests
                     Tensor x_test;
 
                     fixed (float* ptr = data)
-                        x_test = Tensor.LoadFloatToHost(ptr, 0, 784, testx);
+                        x_test = Tensor.LoadFloatArrayToTensorHost(ptr, 0, 784, testx);
 
                     model.DeleteTerms();
 
@@ -260,7 +263,7 @@ namespace Tests
 
             //Model Creation
             var x = new Input(2);
-            var model = Layer.Dense(150, x, "sigmoid");
+            var model = Layer.Dense(100, x, "relu");
             model = Layer.Dense(1, model, "sigmoid");
 
 
@@ -849,6 +852,27 @@ namespace Tests
             }
         }
       
+        public static unsafe void bb5()
+        {
+            Variable v = new Variable(new[] { new Dimension(3) }, Shape.NewShape(10));
+
+            v.PreCheck();
+
+            Index a = Index.NewIndex(v.OuterShape);
+            a.SetZero();
+
+            Terms.ReLU r = new Terms.ReLU(v.GetTerm(a));
+
+            Console.WriteLine(v.GetTerm(a).GetResult());
+            Console.WriteLine(r.GetResult());
+
+            r.Dispose();
+
+            ((Terms.Variable)v.GetTerm(a)).Clean();
+
+            Index.Return(a);
+            v.Dispose();
+        }
 
         public static unsafe void Main(string[] args)
         {
