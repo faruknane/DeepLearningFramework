@@ -7,6 +7,7 @@ using DeepLearningFramework.Core;
 using Index = PerformanceWork.OptimizedNumerics.Index;
 using PerformanceWork;
 using PerformanceWork.DeepLearning.Kernels.Cpu;
+using System.Runtime.CompilerServices;
 
 namespace DeepLearningFramework.Operators.Terms
 {
@@ -65,17 +66,13 @@ namespace DeepLearningFramework.Operators.Terms
             combined.Dispose();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public unsafe override Tensor CalculateResult()
         {
             Tensor v = Terms[0].GetResult();
             return CpuKernels.ShrinkFloat(v, this.Shape, Terms[0].Shape, Divisor);
         }
 
-        public override void Dispose()
-        {
-            //Shape.Return(Divisor);
-            base.Dispose();
-        }
 
     }
 }

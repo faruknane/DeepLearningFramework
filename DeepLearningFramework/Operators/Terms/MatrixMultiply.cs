@@ -5,6 +5,7 @@ using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,6 +22,7 @@ namespace DeepLearningFramework.Operators.Terms
             this.Shape = Shape.NewShape(this.Terms[0].Shape[0], this.Terms[1].Shape[1]);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override unsafe void CalculateDerivate(Tensor s)
         {
             var combinedleft = CpuKernels.MatrixMultiplyFloat_GetGradient_0(s, Terms[1].GetResult(), this.Shape, Terms[0].Shape, Terms[1].Shape);
@@ -32,6 +34,7 @@ namespace DeepLearningFramework.Operators.Terms
             combinedright.Dispose();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override Tensor CalculateResult()
         {
             return CpuKernels.MatrixMultiplyFloat(Terms[0].GetResult(), Terms[1].GetResult());

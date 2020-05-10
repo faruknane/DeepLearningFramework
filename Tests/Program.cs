@@ -113,15 +113,19 @@ namespace Tests
         public unsafe static void MNISTExample()
         {
             //Hyperparameters
-            Hyperparameters.LearningRate = 0.0001f;
+            Hyperparameters.LearningRate = 0.001f;
             Hyperparameters.Optimizer = new SGD();
 
 
             //Model Creation
             var x = new Input(784);
-            var model = Layer.Dense(500, x, "relu");
+            var model = Layer.Dense(40, x, "relu");
+            model = Layer.Dense(400, model, "relu");
+            model = Layer.Dense(40, model, "relu");
             model = Layer.Dense(200, model, "relu");
+            model = Layer.Dense(30, model, "relu");
             model = Layer.Dense(100, model, "relu");
+            model = Layer.Dense(30, model, "relu");
             model = Layer.Dense(10, model, "softmax");
 
 
@@ -147,11 +151,11 @@ namespace Tests
             Shape shapebatchx = Shape.NewShape(1, batchsize, 784);
             Shape shapebatchy = Shape.NewShape(1, batchsize, 10);
 
-            int trainl = 35000;
+            int trainl = 41000;
 
             Stopwatch s = new Stopwatch();
 
-            for (int epoch = 0; epoch < 15; epoch++)
+            for (int epoch = 0; epoch < 35; epoch++)
             {
                 float l = 0;
                 float val = 0;
@@ -818,15 +822,14 @@ namespace Tests
         public static unsafe void bb4()
         {
             Input x = new Input(4, 2, 1);
-            Variable w1 = new Variable(new Dimension[] { 10 }, Shape.NewShape(3, 4)); w1.Name = "w1";
 
-            var sum = new Add(w1, x); sum.Name = "sum";
+            var sum = new ShiftTime(x, new Dimension[] { -1 }); sum.Name = "sum";
 
 
             Stopwatch c = new Stopwatch();
             c.Start();
 
-            for (int i2 = 0; i2 < 100; i2++)
+            for (int i2 = 0; i2 < 1; i2++)
             {
                 Tensor data = new Tensor((10, 3, 4), DataType.Type.Float, DeviceIndicator.Host());
 
@@ -834,14 +837,14 @@ namespace Tests
                     ((float*)data.Array)[i] = i / 12;
                 x.SetInput(data);
 
-                x.PreCheck();
+                sum.PreCheck();
                 
                 Index a = Index.NewIndex(x.OuterShape);
                 a.SetZero();
                 
                 for (int i = 0; i < x.OuterShape.TotalSize; i++, a.Add(1))
                 {
-                    Console.WriteLine("Term " + i + ":" + x.GetTerm(a).GetResult());
+                    Console.WriteLine("Term " + i + ":" + sum.GetTerm(a).GetResult());
                 }
 
                 c.Restart();
@@ -876,6 +879,8 @@ namespace Tests
 
         public static unsafe void Main(string[] args)
         {
+            bb4();
+            return;
             MNISTExample();
             //XORExample();
             return;

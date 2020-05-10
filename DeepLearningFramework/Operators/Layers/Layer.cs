@@ -67,6 +67,8 @@ namespace DeepLearningFramework.Operators.Layers
         }
 
         public abstract Term CreateTerm(Index time);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void PreCheck()
         {
             if (InRecursion) return;
@@ -80,14 +82,21 @@ namespace DeepLearningFramework.Operators.Layers
             InRecursion = false;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual void PreCheckOperation()
         {
+            BeforePreCheck();
             InnerDimensionCheck();
             OuterDimensionCheck();
             InnerShapeCalculation();
             OuterShapeCalculation();
+            AfterPreCheck();
         }
 
+        public virtual void BeforePreCheck() { }
+        public virtual void AfterPreCheck() { }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual void OuterDimensionCheck()
         {
             //default check for outer dimensions
@@ -109,6 +118,7 @@ namespace DeepLearningFramework.Operators.Layers
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual void InnerDimensionCheck()
         {
             //default check for inner dimensions
@@ -130,6 +140,7 @@ namespace DeepLearningFramework.Operators.Layers
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual void InnerShapeCalculation()
         {
             //assign inner shape.
@@ -144,6 +155,7 @@ namespace DeepLearningFramework.Operators.Layers
             InnerShape.CalculateMultiplied();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual void OuterShapeCalculation()
         {
             //assign outer shape.
@@ -157,6 +169,8 @@ namespace DeepLearningFramework.Operators.Layers
             }
             OuterShape.CalculateMultiplied();
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual void InnerDimensionCalculation()
         {
             //assign inner dimensions
@@ -172,6 +186,7 @@ namespace DeepLearningFramework.Operators.Layers
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual void OuterDimensionCalculation()
         {
             //assign outer dimensions
@@ -201,6 +216,7 @@ namespace DeepLearningFramework.Operators.Layers
             InRecursion = false;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual void DeleteTermsOperation()
         {
             for (int i = 0; i < Terms.Count; i++)

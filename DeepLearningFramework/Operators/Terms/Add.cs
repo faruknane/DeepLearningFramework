@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DeepLearningFramework.Core;
 using System.Threading;
 using PerformanceWork.DeepLearning.Kernels.Cpu;
+using System.Runtime.CompilerServices;
 
 namespace DeepLearningFramework.Operators.Terms
 {
@@ -27,12 +28,14 @@ namespace DeepLearningFramework.Operators.Terms
             this.Shape = v[0].Shape.Clone();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override void CalculateDerivate(Tensor s)
         {
             for (int i = 0; i < Terms.Length; i++)
                 Terms[i].Derivate(s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public unsafe override Tensor CalculateResult()
         {
             for (int i = 0; i < this.Terms.Length; i++)

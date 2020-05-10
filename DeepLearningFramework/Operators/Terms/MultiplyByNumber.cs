@@ -2,6 +2,7 @@
 using PerformanceWork.OptimizedNumerics;
 using System;
 using DeepLearningFramework.Core;
+using System.Runtime.CompilerServices;
 
 namespace DeepLearningFramework.Operators.Terms
 {
@@ -17,6 +18,7 @@ namespace DeepLearningFramework.Operators.Terms
             this.Shape = v1.Shape.Clone();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override void CalculateDerivate(Tensor s)
         {
             throw new Exception("hatalı, s should never change in multi thread version");
@@ -25,6 +27,7 @@ namespace DeepLearningFramework.Operators.Terms
             s.DivideByFloat(Multiplier);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override Tensor CalculateResult()
         {
             Tensor res = Tensor.Clone(Terms[0].GetResult());

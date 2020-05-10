@@ -40,6 +40,7 @@ namespace DeepLearningFramework.Operators.Terms
             Terms = Array.Empty<Term>();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public Variable(Tensor m)
         {
             Type = TermType.Variable;
@@ -48,11 +49,13 @@ namespace DeepLearningFramework.Operators.Terms
             Terms = Array.Empty<Term>();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void SetValue(Tensor n)
         {
             Weights = n;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public unsafe void SetValue(float[] n)
         {
             for (int i = 0; i < this.Shape.N; i++)
@@ -64,6 +67,7 @@ namespace DeepLearningFramework.Operators.Terms
                 VectorizationFloat.ElementWiseAssignAVX((float*)this.Weights.Array, ptr, this.Shape.TotalSize);
             }
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public unsafe void SetValue(float[,] n)
         {
             for (int i = 0; i < this.Shape.N; i++)
@@ -76,6 +80,7 @@ namespace DeepLearningFramework.Operators.Terms
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public unsafe void SetValue(float[,,] n)
         {
             for (int i = 0; i < this.Shape.N; i++)
@@ -88,6 +93,7 @@ namespace DeepLearningFramework.Operators.Terms
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override Tensor CalculateResult()
         {
             if(Trainable)
@@ -96,6 +102,7 @@ namespace DeepLearningFramework.Operators.Terms
                 return Weights;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override void CalculateDerivate(Tensor s)
         {
             if (Trainable)
@@ -104,6 +111,7 @@ namespace DeepLearningFramework.Operators.Terms
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override void DeleteResults()
         {
             if (InRecursion) return;
@@ -130,6 +138,7 @@ namespace DeepLearningFramework.Operators.Terms
         }
 
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Clean()
         {
             if (IsDisposed) return;

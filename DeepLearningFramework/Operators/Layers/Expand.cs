@@ -20,20 +20,19 @@ namespace DeepLearningFramework.Operators.Layers
             OuterDimensionCalculation();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override void InnerDimensionCalculation()
         {
             this.InnerDimensions = new Dimension[InputLayers[0].InnerDimensions.Length];
             for (int i = 0; i < InnerDimensions.Length; i++)
                 this.InnerDimensions[i] = new DimensionMultiply(InputLayers[0].InnerDimensions[i], MultiplierDimensions[i]);
         }
-        public unsafe override void InnerShapeCalculation()
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public override unsafe void AfterPreCheck()
         {
-            base.InnerShapeCalculation();
-
-            if (MultiplierShape != null)
-                Shape.Return(MultiplierShape);
-
-            MultiplierShape = Shape.NewShapeN(MultiplierDimensions.Length);
+            if (MultiplierShape == null)
+                MultiplierShape = Shape.NewShapeN(MultiplierDimensions.Length);
 
             for (int i = 0; i < MultiplierShape.N; i++)
                 MultiplierShape.Dimensions[i] = MultiplierDimensions[i];

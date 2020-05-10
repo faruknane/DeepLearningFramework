@@ -10,6 +10,7 @@ using System.ComponentModel.DataAnnotations;
 using PerformanceWork;
 using DataType = PerformanceWork.DataType;
 using PerformanceWork.DeepLearning.Kernels.Cpu;
+using System.Runtime.CompilerServices;
 
 namespace DeepLearningFramework.Operators.Terms
 {
@@ -28,6 +29,7 @@ namespace DeepLearningFramework.Operators.Terms
             Shape = Shape.Multiply(Terms[0].Shape, Multiplier);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override unsafe void CalculateDerivate(Tensor s)
         {
             Tensor combined = CpuKernels.ExpandFloat_GetGradient_0(s, this.Shape, Terms[0].Shape, Multiplier);
@@ -35,6 +37,7 @@ namespace DeepLearningFramework.Operators.Terms
             combined.Dispose();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public unsafe override Tensor CalculateResult()
         {
             Tensor v = Terms[0].GetResult();
@@ -42,11 +45,6 @@ namespace DeepLearningFramework.Operators.Terms
             return res;
         }
 
-        public override void Dispose()
-        {
-            //Shape.Return(Multiplier);
-            base.Dispose();
-        }
-
+        
     }
 }

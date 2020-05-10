@@ -28,6 +28,7 @@ namespace DeepLearningFramework.Operators.Layers
             OuterDimensionCalculation();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override void InnerDimensionCalculation()
         {
             for (int i = 0; i < InnerDimensions.Length - 1; i++)

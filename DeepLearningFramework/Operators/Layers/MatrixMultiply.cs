@@ -23,6 +23,7 @@ namespace DeepLearningFramework.Operators.Layers
             OuterDimensionCalculation();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override void InnerDimensionCalculation()
         {
             if (InputLayers.Count > 0)
@@ -34,6 +35,7 @@ namespace DeepLearningFramework.Operators.Layers
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override void InnerDimensionCheck()
         {
             if (InputLayers.Count != 2)

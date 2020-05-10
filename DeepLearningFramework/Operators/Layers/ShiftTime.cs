@@ -1,38 +1,49 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Runtime.CompilerServices;
-//using System.Text;
-//using DeepLearningFramework.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Text;
+using DeepLearningFramework.Core;
+using DeepLearningFramework.Operators.Terms;
+using PerformanceWork.OptimizedNumerics;
+using Index = PerformanceWork.OptimizedNumerics.Index;
 
-//namespace DeepLearningFramework.Operators.Layers
-//{
+namespace DeepLearningFramework.Operators.Layers
+{
 
-//    public class ShiftTime : Layer
-//    {
-//        public Layer L { get; private set; }
-//        public override Dimension D1 { get; internal set; }
-//        public override Dimension BatchSize { get; internal set; }
-//        public int Shift { get; internal set; }
+    public class ShiftTime : Layer
+    {
+        public Shape ShiftShape { get; internal set; }
+        public Dimension[] ShiftDimensions { get; internal set; }
 
-//        public ShiftTime(Layer l, int shift)
-//        {
-//            this.L = l;
-//            D1 = l.D1;
-//            BatchSize = l.BatchSize;
-//            this.SequenceLength = L.SequenceLength;
-//            this.Shift = shift;
-//        }
+        public ShiftTime(Layer l, Dimension[] shift)
+        {
+            this.InputLayers.Add(l);
 
-//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-//        public override Terms.Term CreateTerm(int time)
-//        {
-//            return L.GetTerm(time + Shift);
-//        }
+            InnerDimensionCalculation();
+            OuterDimensionCalculation();
 
-//        public override void DeleteTerms()
-//        {
-//            base.DeleteTerms();
-//            L.DeleteTerms();
-//        }
-//    }
-//}
+            if (l.OuterDimensions.Length != shift.Length)
+                throw new DimensionIncompability("ShiftTime: OuterDimensions does not match!");
+
+            ShiftDimensions = shift;
+        }
+
+        public unsafe override void AfterPreCheck()
+        {
+            if (ShiftShape == null)
+                ShiftShape = Shape.NewShapeN(ShiftDimensions.Length);
+
+            for (int i = 0; i < ShiftShape.N; i++)
+                ShiftShape.Dimensions[i] = ShiftDimensions[i].Value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public override Term CreateTerm(Index time)
+        {
+            time += ShiftShape;
+            Term t = InputLayers[0].GetTerm(time);
+            time -= ShiftShape;
+            return t;
+        }
+    }
+}

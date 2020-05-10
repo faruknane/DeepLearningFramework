@@ -2,6 +2,7 @@
 using System;
 using DeepLearningFramework.Core;
 using PerformanceWork.DeepLearning.Kernels.Cpu;
+using System.Runtime.CompilerServices;
 
 namespace DeepLearningFramework.Operators.Terms
 {
@@ -16,6 +17,7 @@ namespace DeepLearningFramework.Operators.Terms
             this.Shape = v1.Shape.Clone();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override void CalculateDerivate(Tensor s)
         {
             Tensor d2 = CpuKernels.SubtractFloat_GetGradient_1(s, Terms[0].GetResult(), Terms[1].GetResult());
@@ -34,9 +36,13 @@ namespace DeepLearningFramework.Operators.Terms
         //Terms[0].Derivate(s);
         //Terms[1].Derivate(negative of s);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override Tensor CalculateResult()
         {
-            return CpuKernels.SubtractFloat(Terms[0].GetResult(), Terms[1].GetResult());
+            Tensor v1 = Terms[0].GetResult();
+            Tensor v2 = Terms[1].GetResult();
+            Tensor res = CpuKernels.SubtractFloat(v1, v2);
+            return res;
         }
 
     }
