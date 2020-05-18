@@ -20,10 +20,13 @@ namespace DeepLearningFramework.Operators.Terms
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override void CalculateDerivate(Tensor s)
         {
-            Tensor d2 = CpuKernels.SubtractFloat_GetGradient_1(s, Terms[0].GetResult(), Terms[1].GetResult());
-            Terms[0].Derivate(s);
-            Terms[1].Derivate(d2);
-            d2.Dispose();
+            if (Terms[0].ContainsTrainable)
+            {
+                Tensor d2 = CpuKernels.SubtractFloat_GetGradient_1(s, Terms[0].GetResult(), Terms[1].GetResult());
+                Terms[0].Derivate(s);
+                Terms[1].Derivate(d2);
+                d2.Dispose();
+            }
         }
 
         //todo memoryi azaltmak için aynı s kullanılabilir, nasıl olmalı? seçenek olmalı mı

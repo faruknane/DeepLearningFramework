@@ -11,7 +11,7 @@ namespace DeepLearningFramework.Operators.Terms
 {
     public class Add : Term
     {
-        Tensor[] tensors;
+        readonly Tensor[] tensors;
 
         public Add(params Term[] v) // make args
         {
@@ -32,7 +32,8 @@ namespace DeepLearningFramework.Operators.Terms
         public override void CalculateDerivate(Tensor s)
         {
             for (int i = 0; i < Terms.Length; i++)
-                Terms[i].Derivate(s);
+                if(Terms[i].ContainsTrainable)
+                    Terms[i].Derivate(s);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

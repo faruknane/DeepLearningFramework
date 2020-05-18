@@ -23,7 +23,7 @@ namespace DeepLearningFramework.Operators.Layers
         public List<Term> Terms = new List<Term>();
         public List<Layer> InputLayers = new List<Layer>();
         internal Terms.Variable EmptyVariable;
-        private bool InRecursion = false;
+        private bool InRecursion = false; //todo does nothing, you can delete
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual unsafe Term GetTerm(Index time)
@@ -236,10 +236,10 @@ namespace DeepLearningFramework.Operators.Layers
 
             PreCheck();
 
-            Index a = Index.NewIndex(OuterShape);
+            Index a = new Index(OuterShape);
             a.SetZero();
 
-            for (int i = 0; i < OuterShape.TotalSize; i++, a.Add(1))
+            for (int i = 0; i < OuterShape.TotalSize; i++, a.Increase(1))
                 GetTerm(a);
 
             if(Terms.Count > 1)
@@ -254,7 +254,6 @@ namespace DeepLearningFramework.Operators.Layers
             }
             
 
-            Index.Return(a);
             DeleteTerms();
         }
 
@@ -307,6 +306,8 @@ namespace DeepLearningFramework.Operators.Layers
             if (input.InnerDimensions.Length != 2)
                 throw new Exception("Inner shape of Input Layer must be 2");
 
+            //Index         0        1
+            //Inner shape of the input = (batchsize, mysize)
             //X*W + B
             //X = m*n   (m is batchsize, n is layer size)
             //W =  (n, mysize)
@@ -324,7 +325,5 @@ namespace DeepLearningFramework.Operators.Layers
 
 }
 
-//Index         0        1
-//Input = (batchsize, mysize)
 
 

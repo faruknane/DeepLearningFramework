@@ -25,13 +25,18 @@ namespace DeepLearningFramework.Operators.Terms
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override unsafe void CalculateDerivate(Tensor s)
         {
-            var combinedleft = CpuKernels.MatrixMultiplyFloat_GetGradient_0(s, Terms[1].GetResult(), this.Shape, Terms[0].Shape, Terms[1].Shape);
-            Terms[0].Derivate(combinedleft);
-            combinedleft.Dispose();
-
-            var combinedright = CpuKernels.MatrixMultiplyFloat_GetGradient_1(s, Terms[0].GetResult(), this.Shape, Terms[0].Shape, Terms[1].Shape);
-            Terms[1].Derivate(combinedright);
-            combinedright.Dispose();
+            if (Terms[0].ContainsTrainable)
+            {
+                var combinedleft = CpuKernels.MatrixMultiplyFloat_GetGradient_0(s, Terms[1].GetResult(), this.Shape, Terms[0].Shape, Terms[1].Shape);
+                Terms[0].Derivate(combinedleft);
+                combinedleft.Dispose();
+            }
+            if (Terms[1].ContainsTrainable)
+            {
+                var combinedright = CpuKernels.MatrixMultiplyFloat_GetGradient_1(s, Terms[0].GetResult(), this.Shape, Terms[0].Shape, Terms[1].Shape);
+                Terms[1].Derivate(combinedright);
+                combinedright.Dispose();
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

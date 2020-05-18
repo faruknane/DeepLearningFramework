@@ -23,7 +23,10 @@ namespace DeepLearningFramework.Operators.Terms
         Variable,
         Experimental,
         Embedding,
-        ReLU
+        ReLU,
+        Multiply,
+        DropoutProbability,
+        Dropout
     }
 
     public abstract class Term : IDisposable
@@ -39,8 +42,9 @@ namespace DeepLearningFramework.Operators.Terms
 
         volatile internal int Used = 0;
 
-        public bool IsDisposed = false;
-        public bool InRecursion = false;
+        public bool IsDisposed { get; internal set; } = false;
+        public bool ContainsTrainable { get; internal set; } = false;
+        internal bool IsCalculated = false;
 
         //add
         //contains trainable variable ? 
@@ -70,6 +74,7 @@ namespace DeepLearningFramework.Operators.Terms
         public void Minimize()
         {
             this.DeleteResults();
+            this.CalculateContainsTrainable();
             this.CalculateHowManyTimesUsed();
             this.GetResult();
             Tensor I = Tensor.DerivativeIdentity(this.Shape, DataType.Type.Float, DeviceIndicator.Host());
@@ -82,6 +87,7 @@ namespace DeepLearningFramework.Operators.Terms
         public void Maximize()
         {
             this.DeleteResults();
+            this.CalculateContainsTrainable();
             this.CalculateHowManyTimesUsed();
             this.GetResult();
             Tensor I = Tensor.DerivativeIdentity(this.Shape, DataType.Type.Float, DeviceIndicator.Host());
@@ -129,6 +135,19 @@ namespace DeepLearningFramework.Operators.Terms
             }
         }
 
+        public virtual void CalculateContainsTrainable()
+        {
+            if (IsCalculated) return;
+            IsCalculated = true;
+
+            for (int i = 0; i < Terms.Length; i++)
+                Terms[i].CalculateContainsTrainable();
+
+            ContainsTrainable = false;
+            for (int i = 0; i < Terms.Length; i++)
+                ContainsTrainable = ContainsTrainable || Terms[i].ContainsTrainable;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void CalculateHowManyTimesUsed()
         {
@@ -145,10 +164,8 @@ namespace DeepLearningFramework.Operators.Terms
         {
             if (SumOfDerivatives == null && Result == null) return;
 
-            if (InRecursion) return;
-            InRecursion = true;
-
             Used = 0;
+            IsCalculated = false;
 
             if (SumOfDerivatives != null && !SumOfDerivatives.ArrayReturned)
             {
@@ -165,7 +182,6 @@ namespace DeepLearningFramework.Operators.Terms
             for (int i = 0; i < Terms.Length; i++)
                 Terms[i].DeleteResults();
 
-            InRecursion = false;
         }
 
         public virtual void Dispose()

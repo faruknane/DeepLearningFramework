@@ -22,7 +22,7 @@ namespace DeepLearningFramework.Operators.Terms
             this.PowerOf = pow;
 
             if (PowerOf <= 1)
-                throw new Exception("Power cannot less than two!");
+                throw new Exception("Power cannot be less than two!");
 
             Shape = v1.Shape.Clone();
         }
@@ -30,17 +30,20 @@ namespace DeepLearningFramework.Operators.Terms
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override unsafe void CalculateDerivate(Tensor s)
         {
-            Tensor res = Terms[0].GetResult(); 
-            
-            if (PowerOf == 2)
+            if (Terms[0].ContainsTrainable)
             {
-                Tensor combined = CpuKernels.Power2Float_GetGradient_0(s, res);
-                Terms[0].Derivate(combined);
-                combined.Dispose();
-            }
-            else
-            {
-                throw new Exception("Unsupported Power factor!");
+                Tensor res = Terms[0].GetResult();
+
+                if (PowerOf == 2)//todo move this power check to the power kernel
+                {
+                    Tensor combined = CpuKernels.Power2Float_GetGradient_0(s, res);
+                    Terms[0].Derivate(combined);
+                    combined.Dispose();
+                }
+                else
+                {
+                    throw new Exception("Unsupported Power factor!");
+                }
             }
         }
 
@@ -48,7 +51,14 @@ namespace DeepLearningFramework.Operators.Terms
         public unsafe override Tensor CalculateResult()
         {
             Tensor res = Terms[0].GetResult();
-            return CpuKernels.Power2Float(res);
+            if (PowerOf == 2)
+            {
+                return CpuKernels.Power2Float(res);
+            }
+            else
+            {
+                throw new Exception("Unsupported Power factor!");
+            }
         }
 
     }

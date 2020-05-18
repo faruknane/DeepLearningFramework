@@ -87,6 +87,8 @@ namespace DeepLearningFramework.Operators.Layers
 
             if (InnerDimensions[InnerDimensions.Length - 1].Value != Size)
                 throw new Exception("Size!");
+
+            PreCheck();
         }
 
         public override void DeleteTermsOperation()

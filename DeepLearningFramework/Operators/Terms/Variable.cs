@@ -21,11 +21,11 @@ namespace DeepLearningFramework.Operators.Terms
             set
             {
                 if(this.Shape.N != value.Shape.N)
-                    throw new Exception("The Tensor should have the same dimensions with the Variable!");
+                    throw new Exception("The tensor should have the same dimensions with the Variable!");
 
                 for(int i = 0; i < this.Shape.N; i++)
                     if (this.Shape[i] != value.Shape[i])
-                        throw new Exception("The Matrix should have the same dimensions with the Variable!");
+                        throw new Exception("The tensor should have the same dimensions with the Variable!");
 
                 m = value;
             }
@@ -102,6 +102,13 @@ namespace DeepLearningFramework.Operators.Terms
                 return Weights;
         }
 
+        public override void CalculateContainsTrainable()
+        {
+            if (IsCalculated) return;
+            IsCalculated = true;
+            ContainsTrainable = Trainable;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override void CalculateDerivate(Tensor s)
         {
@@ -114,10 +121,8 @@ namespace DeepLearningFramework.Operators.Terms
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override void DeleteResults()
         {
-            if (InRecursion) return;
-            InRecursion = true;
-
             Used = 0;
+            IsCalculated = false;
 
             if (SumOfDerivatives != null && !SumOfDerivatives.ArrayReturned)
             {
@@ -133,8 +138,6 @@ namespace DeepLearningFramework.Operators.Terms
 
             for (int i = 0; i < Terms.Length; i++)
                 Terms[i].DeleteResults();
-
-            InRecursion = false;
         }
 
 
