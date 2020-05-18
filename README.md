@@ -1,4 +1,7 @@
 # Note: This is old readme file
+## Dependencies
+PerformanceWork: https://github.com/faruknane/Performance-Work
+
 # DeepLearningFramework
 Every expression is a term whose derivative can be calculated by the DeepLearningFramework automatically. Every Layer is consist of Terms which corresponds to sequential input. An example of XOR model is shown below.
 
