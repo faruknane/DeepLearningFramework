@@ -1,7 +1,6 @@
-﻿using PerformanceWork.OptimizedNumerics;
+﻿using PerformanceWork.DeepLearning.Kernels.Cpu;
+using PerformanceWork.OptimizedNumerics;
 using System;
-using DeepLearningFramework.Core;
-using PerformanceWork.DeepLearning.Kernels.Cpu;
 using System.Runtime.CompilerServices;
 
 namespace DeepLearningFramework.Operators.Terms
@@ -22,8 +21,11 @@ namespace DeepLearningFramework.Operators.Terms
         {
             if (Terms[0].ContainsTrainable)
             {
-                Tensor d2 = CpuKernels.SubtractFloat_GetGradient_1(s, Terms[0].GetResult(), Terms[1].GetResult());
                 Terms[0].Derivate(s);
+            }
+            if (Terms[1].ContainsTrainable)
+            {
+                Tensor d2 = CpuKernels.SubtractFloat_GetGradient_1(s, Terms[0].GetResult(), Terms[1].GetResult());
                 Terms[1].Derivate(d2);
                 d2.Dispose();
             }

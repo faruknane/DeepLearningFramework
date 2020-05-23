@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Runtime.CompilerServices;
 
 namespace DeepLearningFramework.Core
 {
@@ -19,7 +15,7 @@ namespace DeepLearningFramework.Core
         /// Dimension value initialized to -1.
         /// </summary>
         public virtual int Value { [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)] get; [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]  set; } = -1;
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -28,7 +24,7 @@ namespace DeepLearningFramework.Core
         {
         }
 
-       
+
         /// <param name="val">Initial Value</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public Dimension(int val)

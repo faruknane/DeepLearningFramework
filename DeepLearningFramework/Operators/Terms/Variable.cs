@@ -2,9 +2,7 @@
 using PerformanceWork;
 using PerformanceWork.OptimizedNumerics;
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace DeepLearningFramework.Operators.Terms
 {
@@ -20,10 +18,10 @@ namespace DeepLearningFramework.Operators.Terms
             get { return m; }
             set
             {
-                if(this.Shape.N != value.Shape.N)
+                if (this.Shape.N != value.Shape.N)
                     throw new Exception("The tensor should have the same dimensions with the Variable!");
 
-                for(int i = 0; i < this.Shape.N; i++)
+                for (int i = 0; i < this.Shape.N; i++)
                     if (this.Shape[i] != value.Shape[i])
                         throw new Exception("The tensor should have the same dimensions with the Variable!");
 
@@ -96,7 +94,7 @@ namespace DeepLearningFramework.Operators.Terms
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override Tensor CalculateResult()
         {
-            if(Trainable)
+            if (Trainable)
                 return Tensor.Clone(Weights);
             else
                 return Weights;

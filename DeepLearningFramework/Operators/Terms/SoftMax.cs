@@ -1,8 +1,6 @@
 ﻿
-using PerformanceWork.OptimizedNumerics;
-using System;
-using DeepLearningFramework.Core;
 using PerformanceWork.DeepLearning.Kernels.Cpu;
+using PerformanceWork.OptimizedNumerics;
 using System.Runtime.CompilerServices;
 
 namespace DeepLearningFramework.Operators.Terms
@@ -35,7 +33,7 @@ namespace DeepLearningFramework.Operators.Terms
             Tensor v = Terms[0].GetResult();
             return CpuKernels.SoftmaxFloat(v);
         }
-      
+
     }
 
 }

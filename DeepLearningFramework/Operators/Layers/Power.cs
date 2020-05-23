@@ -1,9 +1,5 @@
 ﻿using DeepLearningFramework.Operators.Terms;
-using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text;
-using DeepLearningFramework.Core;
 using Index = PerformanceWork.OptimizedNumerics.Index;
 
 namespace DeepLearningFramework.Operators.Layers

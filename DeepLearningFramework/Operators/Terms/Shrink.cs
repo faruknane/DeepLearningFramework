@@ -1,13 +1,9 @@
 ﻿
-using PerformanceWork.OptimizedNumerics;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using DeepLearningFramework.Core;
-using Index = PerformanceWork.OptimizedNumerics.Index;
 using PerformanceWork;
 using PerformanceWork.DeepLearning.Kernels.Cpu;
+using PerformanceWork.OptimizedNumerics;
 using System.Runtime.CompilerServices;
+using Index = PerformanceWork.OptimizedNumerics.Index;
 
 namespace DeepLearningFramework.Operators.Terms
 {

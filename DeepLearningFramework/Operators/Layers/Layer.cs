@@ -1,12 +1,11 @@
 ﻿
+using DeepLearningFramework.Core;
 using DeepLearningFramework.Operators.Terms;
 using PerformanceWork.OptimizedNumerics;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
-using System.Text;
-using DeepLearningFramework.Core;
 using Index = PerformanceWork.OptimizedNumerics.Index;
 
 namespace DeepLearningFramework.Operators.Layers
@@ -61,7 +60,7 @@ namespace DeepLearningFramework.Operators.Layers
                 Terms.Add(null);
 
             if (Terms[index] == null)
-                return Terms[index] = CreateTerm(time); 
+                return Terms[index] = CreateTerm(time);
 
             return Terms[index];
         }
@@ -224,7 +223,7 @@ namespace DeepLearningFramework.Operators.Layers
                 {
                     Terms[i].DeleteResults();
                     //if(Terms[i].Type != TermType.Variable)
-                        Terms[i].Dispose(); //term.disposed doesnt work for Terms.Variable
+                    Terms[i].Dispose(); //term.disposed doesnt work for Terms.Variable
                 }
             Terms.Clear();
         }
@@ -242,17 +241,17 @@ namespace DeepLearningFramework.Operators.Layers
             for (int i = 0; i < OuterShape.TotalSize; i++, a.Increase(1))
                 GetTerm(a);
 
-            if(Terms.Count > 1)
+            if (Terms.Count > 1)
             {
                 Terms.Add min = new Terms.Add(Terms.ToArray());
                 min.Minimize();
                 min.Dispose();
             }
-            else if(Terms.Count == 1)
+            else if (Terms.Count == 1)
             {
                 Terms[0].Minimize();
             }
-            
+
 
             DeleteTerms();
         }
@@ -316,7 +315,7 @@ namespace DeepLearningFramework.Operators.Layers
             Variable W = new Variable(input.OuterDimensions, Shape.NewShape(input.InnerDimensions[1], size));
             Variable B = new Variable(input.OuterDimensions, Shape.NewShape(1, size));
 
-            Layer res = new Add(new MatrixMultiply(input, W), new Expand(B, new Dimension[] { input.InnerDimensions[0], 1  }));
+            Layer res = new Add(new MatrixMultiply(input, W), new Expand(B, new Dimension[] { input.InnerDimensions[0], 1 }));
             res = GetActivationFunction(act)(res);
             return res;
         }

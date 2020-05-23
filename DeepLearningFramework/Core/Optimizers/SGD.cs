@@ -1,10 +1,5 @@
-﻿
-using DeepLearningFramework.Operators.Terms;
-using PerformanceWork.OptimizedNumerics;
-using System;
-using System.Collections.Generic;
+﻿using PerformanceWork.OptimizedNumerics;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace DeepLearningFramework.Core.Optimizers
 {

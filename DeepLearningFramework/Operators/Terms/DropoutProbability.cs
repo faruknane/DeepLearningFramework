@@ -2,10 +2,6 @@
 using PerformanceWork.DeepLearning.Kernels.Cpu;
 using PerformanceWork.OptimizedNumerics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DeepLearningFramework.Operators.Terms
 {

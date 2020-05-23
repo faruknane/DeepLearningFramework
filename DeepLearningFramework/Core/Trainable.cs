@@ -1,8 +1,5 @@
 ﻿
 using PerformanceWork.OptimizedNumerics;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DeepLearningFramework.Core
 {
@@ -24,7 +21,7 @@ namespace DeepLearningFramework.Core
         /// <summary>
         /// Weights or data that is to be trained.
         /// </summary>
-        Tensor Weights { get;  }
+        Tensor Weights { get; }
 
         /// <summary>
         /// Unique Id.

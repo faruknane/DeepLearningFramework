@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using DeepLearningFramework.Core;
 using DeepLearningFramework.Operators.Terms;
-using DeepLearningFramework.Core;
-using PerformanceWork.OptimizedNumerics;
+using System;
+using System.Runtime.CompilerServices;
 using Index = PerformanceWork.OptimizedNumerics.Index;
 
 namespace DeepLearningFramework.Operators.Layers
@@ -48,7 +45,7 @@ namespace DeepLearningFramework.Operators.Layers
                 || item.InnerDimensions[1].Value != item2.InnerDimensions[0].Value)
                 throw new Exception("Inner dimension incompatibility!");
         }
-       
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override Term CreateTerm(Index time)

@@ -1,10 +1,7 @@
 ﻿
+using PerformanceWork.DeepLearning.Kernels.Cpu;
 using PerformanceWork.OptimizedNumerics;
 using System;
-using System.Threading.Tasks;
-using DeepLearningFramework.Core;
-using System.Threading;
-using PerformanceWork.DeepLearning.Kernels.Cpu;
 using System.Runtime.CompilerServices;
 
 namespace DeepLearningFramework.Operators.Terms
@@ -32,7 +29,7 @@ namespace DeepLearningFramework.Operators.Terms
         public override void CalculateDerivate(Tensor s)
         {
             for (int i = 0; i < Terms.Length; i++)
-                if(Terms[i].ContainsTrainable)
+                if (Terms[i].ContainsTrainable)
                     Terms[i].Derivate(s);
         }
 

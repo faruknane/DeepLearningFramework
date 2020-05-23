@@ -3,8 +3,6 @@ using DeepLearningFramework.Operators.Terms;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerformanceWork.OptimizedNumerics;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Tests
 {
@@ -18,14 +16,14 @@ namespace Tests
             {
 
                 Variable v1 = new Variable(new Shape(3, 2));
-                    v1.SetValue(new float[3, 2] {
+                v1.SetValue(new float[3, 2] {
                     { 1, 2 },
                     { 3, 4 },
                     { 5, 6 }
                 });
 
                 Variable v2 = new Variable(new Shape(3, 2));
-                    v2.SetValue(new float[3, 2] {
+                v2.SetValue(new float[3, 2] {
                     { 0, 1 },
                     { 2, 3 },
                     { 4, 5 }

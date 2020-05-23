@@ -1,7 +1,6 @@
 ﻿
 using PerformanceWork.OptimizedNumerics;
 using System;
-using DeepLearningFramework.Core;
 using System.Runtime.CompilerServices;
 
 namespace DeepLearningFramework.Operators.Terms

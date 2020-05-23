@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
-
-using DeepLearningFramework.Operators.Layers;
+﻿using DeepLearningFramework.Core;
 using DeepLearningFramework.Operators.Terms;
 using PerformanceWork.OptimizedNumerics;
-using DeepLearningFramework.Core;
+using System;
+using System.Runtime.CompilerServices;
 using Index = PerformanceWork.OptimizedNumerics.Index;
 
 namespace DeepLearningFramework.Operators.Layers
@@ -73,7 +69,7 @@ namespace DeepLearningFramework.Operators.Layers
 
             this.DeleteTermsOperation();
 
-            if (InputData != null && !InputData.ArrayReturned) 
+            if (InputData != null && !InputData.ArrayReturned)
                 InputData.Dispose();
 
             InputData = inp;
@@ -95,7 +91,7 @@ namespace DeepLearningFramework.Operators.Layers
         {
             foreach (var item in Terms)
             {
-                if(item != null)
+                if (item != null)
                 {
                     Terms.Variable x = item as Terms.Variable;
                     x.Clean();

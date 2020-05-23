@@ -49,7 +49,7 @@ namespace Tests
             int l3 = 10;
 
             float[,] data = new float[l1, l2];
-            float[, ] labels = new float[l1, l3];
+            float[,] labels = new float[l1, l3];
             //return (data, labels);
 
             int digitcount = 10;
@@ -94,7 +94,7 @@ namespace Tests
             }
             return (data, labels);
         }
-        
+
         public static unsafe int MaxId(float* pp)
         {
             int maxid = -1;
@@ -118,16 +118,12 @@ namespace Tests
 
             //Model Creation
             var x = new Input(784);
-            //var dropout = new Dropout(x, 0.3f);
-            var model = Layer.Dense(500, x, "relu");
-            //model = Layer.Dense(600, model, "relu");
-            //model = Layer.Dense(80, model, "relu");
-            //model = Layer.Dense(400, model, "relu");
-            //model = Layer.Dense(60, model, "relu");
-            //model = Layer.Dense(200, model, "relu");
-            //model = Layer.Dense(40, model, "relu");
-            //model = Layer.Dense(100, model, "relu");
-            //model = Layer.Dense(20, model, "relu");
+            //var dropout = new Dropout(x, 0.1f);
+            //var model = Layer.Dense(500, x, "relu");
+            var model = Layer.Dense(100, x, "relu");
+            model = Layer.Dense(400, model, "relu");
+            model = Layer.Dense(200, model, "relu");
+            model = Layer.Dense(100, model, "relu");
             model = Layer.Dense(10, model, "softmax");
 
 
@@ -137,15 +133,15 @@ namespace Tests
 
 
             //Data preparation
-            (float[,] traindata, float[, ] labels) = LoadMNISTDataSet();
+            (float[,] traindata, float[,] labels) = LoadMNISTDataSet();
             int mnistsize = 42000;
 
             Tensor x_train, y_train;
 
             fixed (float* xptr = traindata, yptr = labels)
             {
-               x_train = Tensor.LoadFloatArrayToTensorHost(xptr, 0, mnistsize * 784, Shape.NewShape(mnistsize, 784));
-               y_train = Tensor.LoadFloatArrayToTensorHost(yptr, 0, mnistsize * 10, Shape.NewShape(mnistsize, 10));
+                x_train = Tensor.LoadFloatArrayToTensorHost(xptr, 0, mnistsize * 784, Shape.NewShape(mnistsize, 784));
+                y_train = Tensor.LoadFloatArrayToTensorHost(yptr, 0, mnistsize * 10, Shape.NewShape(mnistsize, 10));
             }
 
             //Training
@@ -168,7 +164,7 @@ namespace Tests
                 {
                     Tensor batchx = Tensor.Cut(x_train, batch * (batchsize * 784), (batch + 1) * (batchsize * 784), shapebatchx);
                     Tensor batchy = Tensor.Cut(y_train, batch * (batchsize * 10), (batch + 1) * (batchsize * 10), shapebatchy);
-                    
+
                     x.SetInput(batchx);
                     y.SetInput(batchy);
 
@@ -199,19 +195,19 @@ namespace Tests
                     model.PreCheck();
                     Tensor res = model.GetTerm(zero).GetResult();
 
-                    for(int i = 0; i < batchsize; i++)
+                    for (int i = 0; i < batchsize; i++)
                     {
-                        int myans = MaxId((float*)res.Array + i*10);
-                        int correctres = MaxId((float*)batchy.Array + i*10);
+                        int myans = MaxId((float*)res.Array + i * 10);
+                        int correctres = MaxId((float*)batchy.Array + i * 10);
                         val += (myans == correctres ? 1 : 0);
                     }
                 }
                 s.Stop();
 
                 Console.WriteLine("Epoch " + epoch + " biti.");
-                Console.WriteLine("Loss: " + l/trainl);
-                Console.WriteLine("Validation: " + val/(mnistsize - trainl));
-                Console.WriteLine("Time: " + s.ElapsedMilliseconds  + "ms");
+                Console.WriteLine("Loss: " + l / trainl);
+                Console.WriteLine("Validation: " + val / (mnistsize - trainl));
+                Console.WriteLine("Time: " + s.ElapsedMilliseconds + "ms");
             }
 
             PrintPools();
@@ -241,7 +237,7 @@ namespace Tests
                     model.PreCheck();
                     Tensor res = model.GetTerm(zero).GetResult();
 
-                   
+
 
                     Console.WriteLine("Result: " + res);
                     Console.WriteLine("Digit Prediction: " + MaxId((float*)res.Array));
@@ -330,7 +326,7 @@ namespace Tests
             Console.WriteLine("Results: " + result);
 
         }
-       
+
         public static unsafe void Print(Tensor x)
         {
             float* ptr = (float*)x.Array;
@@ -379,7 +375,7 @@ namespace Tests
 
             var d1 = new Subtract(w1, w2); d1.Name = "d1";
             var d2 = new MatrixMultiply(d1, w3); d2.Name = "d2";
-            var sum = new Power(new Subtract(d2,w4),2); sum.Name = "sum";
+            var sum = new Power(new Subtract(d2, w4), 2); sum.Name = "sum";
 
             //Shape s = Shape.NewShape(2, 10);
             //Index a = Index.NewIndex(s);
@@ -389,7 +385,7 @@ namespace Tests
             //Console.WriteLine("w: ");
             //for (int i = 0; i < s.TotalSize; i++, a.Add(1))
             //    Console.WriteLine(w.GetTerm(a).GetResult());
-            
+
             //a.SetZero();
             //Console.WriteLine("w2: ");
             //for (int i = 0; i < s.TotalSize; i++, a.Add(1))
@@ -399,18 +395,18 @@ namespace Tests
             //Console.WriteLine("sum: ");
             //for (int i = 0; i < s.TotalSize; i++, a.Add(1))
             //    Console.WriteLine(sum.GetTerm(a).GetResult());
-            
+
             Hyperparameters.LearningRate = 0.02f;
 
             Stopwatch c = new Stopwatch();
             for (int i2 = 0; i2 < 10; i2++)
             {
                 c.Restart();
-                sum.Minimize(); 
+                sum.Minimize();
                 c.Stop();
                 Console.WriteLine($"{i2} took {c.ElapsedMilliseconds}ms");
             }
-            
+
             //sum.PreCheck();
             //a.SetZero();
             //Console.WriteLine("w: ");
@@ -471,10 +467,10 @@ namespace Tests
                 x.SetInput(data);
 
                 sum.PreCheck();
-                
+
                 Index a = new Index(x.OuterShape);
                 a.SetZero();
-                
+
                 for (int i = 0; i < x.OuterShape.TotalSize; i++, a.Increase(1))
                 {
                     Console.WriteLine("Term " + i + ":" + sum.GetTerm(a).GetResult());
@@ -512,11 +508,11 @@ namespace Tests
         public static unsafe void bb6()
         {
             Variable v = new Variable(new Dimension[] { 6 }, Shape.NewShape(3));
-            
+
             DynamicRecurrent r = new DynamicRecurrent(v.OuterDimensions, v.InnerDimensions, new[] { v },
                 (Layer me, List<Layer> x, Index t) =>
                 {
-                    if(t[0] % 2 == 1)
+                    if (t[0] % 2 == 1)
                         return new Terms.Add(x[0].GetTerm(t), me.GetTerm(t - 1));
                     else
                         return x[0].GetTerm(t);
@@ -525,10 +521,10 @@ namespace Tests
             r.PreCheck();
 
 
-            Index a =  new Index(r.OuterShape);
+            Index a = new Index(r.OuterShape);
             a.SetZero();
 
-            for(int i = 0; i < r.OuterShape.TotalSize; i++, a.Increase(1))
+            for (int i = 0; i < r.OuterShape.TotalSize; i++, a.Increase(1))
                 Console.WriteLine(r.GetTerm(a).GetResult());
         }
         //todo term + layer gibi işlemlere izin vermelisin mi? Serialization sıkıntı çıkarır??  ? ? ?   ? ?   ? ? ? ?? ? 

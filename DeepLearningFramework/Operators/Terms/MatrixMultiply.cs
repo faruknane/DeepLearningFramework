@@ -1,13 +1,7 @@
-﻿using DeepLearningFramework.Core;
-using PerformanceWork;
-using PerformanceWork.DeepLearning.Kernels.Cpu;
+﻿using PerformanceWork.DeepLearning.Kernels.Cpu;
 using PerformanceWork.OptimizedNumerics;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace DeepLearningFramework.Operators.Terms
 {

@@ -1,11 +1,9 @@
 ﻿
-using PerformanceWork.OptimizedNumerics;
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
 using DeepLearningFramework.Core;
 using PerformanceWork;
+using PerformanceWork.OptimizedNumerics;
+using System;
+using System.Runtime.CompilerServices;
 
 namespace DeepLearningFramework.Operators.Terms
 {
@@ -31,8 +29,8 @@ namespace DeepLearningFramework.Operators.Terms
 
     public abstract class Term : IDisposable
     {
-        public Shape Shape { get; internal set; } 
-       
+        public Shape Shape { get; internal set; }
+
         public Term[] Terms;
         public Tensor Result { get; internal set; }
         public TermType Type { get; internal set; }

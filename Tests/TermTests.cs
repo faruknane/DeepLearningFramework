@@ -1,15 +1,9 @@
-﻿using DeepLearningFramework.Core;
-using DeepLearningFramework.Operators.Layers;
+﻿using DeepLearningFramework.Operators.Layers;
 using DeepLearningFramework.Operators.Terms;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PerformanceWork;
 using PerformanceWork.OptimizedNumerics;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Index = PerformanceWork.OptimizedNumerics.Index;
 
 namespace Tests

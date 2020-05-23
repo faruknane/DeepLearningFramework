@@ -1,11 +1,6 @@
 ﻿using PerformanceWork.DeepLearning.Kernels.Cpu;
 using PerformanceWork.OptimizedNumerics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DeepLearningFramework.Operators.Terms
 {
@@ -23,7 +18,7 @@ namespace DeepLearningFramework.Operators.Terms
         {
             if (Terms[0].ContainsTrainable)
             {
-                Tensor v = GetResult();
+                Tensor v = Terms[0].GetResult();
                 Tensor combined = CpuKernels.ReluFloat_GetGradient_0(s, v);
                 Terms[0].Derivate(combined);
                 combined.Dispose();

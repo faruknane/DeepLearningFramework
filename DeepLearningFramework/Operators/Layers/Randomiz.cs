@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-using DeepLearningFramework.Operators.Terms;
-using PerformanceWork.OptimizedNumerics;
-
 namespace DeepLearningFramework.Operators.Layers
 {
     public class Randomiz
@@ -15,8 +12,8 @@ namespace DeepLearningFramework.Operators.Layers
 
             Random r = new Random();
             for (int i = 0; i < Length; i++)
-                a[i] = (float)(r.NextDouble() * (max-min) + min);
+                a[i] = (float)(r.NextDouble() * (max - min) + min);
             return a;
         }
     }
- }
+}

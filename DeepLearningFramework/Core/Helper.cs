@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DeepLearningFramework.Core
+﻿namespace DeepLearningFramework.Core
 {
     /// <summary>
     /// A global helper class that contains many helper classes inside.

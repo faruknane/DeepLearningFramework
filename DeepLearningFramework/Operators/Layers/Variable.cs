@@ -1,19 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
-using DeepLearningFramework.Operators;
-using DeepLearningFramework.Core;
+﻿using DeepLearningFramework.Core;
 using PerformanceWork.OptimizedNumerics;
+using System.Runtime.CompilerServices;
 
 namespace DeepLearningFramework.Operators.Layers
 {
     public unsafe class Variable : Layer
     {
         public Terms.Variable W { get; private set; }
-        public Variable(Dimension[] OuterDimensions, Shape s , bool setzero = false, bool randomize = true, string RandMethod = "") //add initializers etc
+        public Variable(Dimension[] OuterDimensions, Shape s, bool setzero = false, bool randomize = true, string RandMethod = "") //add initializers etc
         {
             W = new Terms.Variable(s.Clone());
-            
+
             if (setzero)
                 W.Weights.SetFloat(0);
             else if (randomize)
@@ -55,16 +52,16 @@ namespace DeepLearningFramework.Operators.Layers
         public void Dispose() //experimental
         {
             DeleteTerms();
-            
-            if(OuterShape != null)
+
+            if (OuterShape != null)
                 Shape.Return(OuterShape);
-            
-            if(InnerShape != null)
+
+            if (InnerShape != null)
                 Shape.Return(InnerShape);
-            
+
             if (EmptyVariable != null && !EmptyVariable.IsDisposed)
                 EmptyVariable.Clean();
-            
+
             W.Clean();
         }
     }

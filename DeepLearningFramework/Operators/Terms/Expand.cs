@@ -1,15 +1,6 @@
 ﻿
-using PerformanceWork.OptimizedNumerics;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using DeepLearningFramework.Core;
-using Index = PerformanceWork.OptimizedNumerics.Index;
-using System.ComponentModel.DataAnnotations;
-using PerformanceWork;
-using DataType = PerformanceWork.DataType;
 using PerformanceWork.DeepLearning.Kernels.Cpu;
+using PerformanceWork.OptimizedNumerics;
 using System.Runtime.CompilerServices;
 
 namespace DeepLearningFramework.Operators.Terms
@@ -48,6 +39,6 @@ namespace DeepLearningFramework.Operators.Terms
             return res;
         }
 
-        
+
     }
 }
