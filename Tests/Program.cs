@@ -1,4 +1,5 @@
-﻿using DeepLearningFramework.Core;
+﻿using DeepLearningFramework;
+using DeepLearningFramework.Core;
 using DeepLearningFramework.Core.Optimizers;
 using DeepLearningFramework.Operators.Layers;
 using PerformanceWork;
@@ -13,6 +14,7 @@ using System.IO;
 using System.Threading;
 using Index = PerformanceWork.OptimizedNumerics.Index;
 using Terms = DeepLearningFramework.Operators.Terms;
+using static System.Console;
 
 namespace Tests
 {
@@ -21,9 +23,8 @@ namespace Tests
         public static void PrintPools()
         {
             Console.WriteLine("TensorPool.UnreturnedArrayCount: " + TensorPool.Host.UnreturnedArrayCount);
-            Console.WriteLine("ShapeArrayPool.UnreturnedArrayCount: " + Shape.ArrayPool.UnreturnedArrayCount);
-            Console.WriteLine("ShapeObjectPool.UnreturnedArrayCount: " + Shape.ObjectPool.UnreturnedCount);
         }
+
         public static float[] LoadCurrentImage()
         {
             string file = @"C:\Users\faruk\source\repos\MNISTDemo\MNISTDemo\bin\Debug\img.txt";
@@ -120,35 +121,27 @@ namespace Tests
             var x = new Input(784);
             //var dropout = new Dropout(x, 0.1f);
             //var model = Layer.Dense(500, x, "relu");
-            var model = Layer.Dense(100, x, "relu");
-            model = Layer.Dense(400, model, "relu");
-            model = Layer.Dense(200, model, "relu");
-            model = Layer.Dense(100, model, "relu");
-            model = Layer.Dense(10, model, "softmax");
+            var model = LayerBuilder.Dense(100, x, "relu");
+            model = LayerBuilder.Dense(400, model, "relu");
+            model = LayerBuilder.Dense(200, model, "relu");
+            model = LayerBuilder.Dense(100, model, "relu");
+            model = LayerBuilder.Dense(10, model, "softmax");
 
 
             //Loss Function Creation
             var y = new Input(10);
-            var loss = Layer.SquaredError(model, y);
+            var loss = LayerBuilder.SquaredError(model, y);
 
 
             //Data preparation
             (float[,] traindata, float[,] labels) = LoadMNISTDataSet();
             int mnistsize = 42000;
 
-            Tensor x_train, y_train;
-
-            fixed (float* xptr = traindata, yptr = labels)
-            {
-                x_train = Tensor.LoadFloatArrayToTensorHost(xptr, 0, mnistsize * 784, Shape.NewShape(mnistsize, 784));
-                y_train = Tensor.LoadFloatArrayToTensorHost(yptr, 0, mnistsize * 10, Shape.NewShape(mnistsize, 10));
-            }
+            Tensor x_train = Tensor.LoadFloatArray(traindata, new Shape((mnistsize, 784)));
+            Tensor y_train = Tensor.LoadFloatArray(labels, new Shape((mnistsize, 10)));
 
             //Training
             int batchsize = 100;
-            Shape shapebatchx = Shape.NewShape(1, batchsize, 784);
-            Shape shapebatchy = Shape.NewShape(1, batchsize, 10);
-
             int trainl = 41000;
 
             Stopwatch s = new Stopwatch();
@@ -162,8 +155,8 @@ namespace Tests
                 Console.WriteLine("Epoch " + epoch + " başladı.");
                 for (int batch = 0; batch < trainl / batchsize; batch++)
                 {
-                    Tensor batchx = Tensor.Cut(x_train, batch * (batchsize * 784), (batch + 1) * (batchsize * 784), shapebatchx);
-                    Tensor batchy = Tensor.Cut(y_train, batch * (batchsize * 10), (batch + 1) * (batchsize * 10), shapebatchy);
+                    Tensor batchx = Tensor.Cut(x_train, batch * (batchsize * 784), (batch + 1) * (batchsize * 784), new Shape((1, batchsize, 784)));
+                    Tensor batchy = Tensor.Cut(y_train, batch * (batchsize * 10), (batch + 1) * (batchsize * 10), new Shape((1, batchsize, 10)));
 
                     x.SetInput(batchx);
                     y.SetInput(batchy);
@@ -178,12 +171,13 @@ namespace Tests
 
                     for (int i = 0; i < res.Shape.TotalSize; i++)
                         l += pp[i];
+
                 }
 
                 for (int batch = trainl / batchsize; batch < mnistsize / batchsize; batch++)
                 {
-                    Tensor batchx = Tensor.Cut(x_train, batch * (batchsize * 784), (batch + 1) * (batchsize * 784), shapebatchx);
-                    Tensor batchy = Tensor.Cut(y_train, batch * (batchsize * 10), (batch + 1) * (batchsize * 10), shapebatchy);
+                    Tensor batchx = Tensor.Cut(x_train, batch * (batchsize * 784), (batch + 1) * (batchsize * 784), new Shape((1, batchsize, 784)));
+                    Tensor batchy = Tensor.Cut(y_train, batch * (batchsize * 10), (batch + 1) * (batchsize * 10), new Shape((1, batchsize, 10)));
 
                     model.DeleteTerms();
 
@@ -201,6 +195,7 @@ namespace Tests
                         int correctres = MaxId((float*)batchy.Array + i * 10);
                         val += (myans == correctres ? 1 : 0);
                     }
+
                 }
                 s.Stop();
 
@@ -212,21 +207,12 @@ namespace Tests
 
             PrintPools();
 
-            shapebatchx.Dispose();
-            shapebatchy.Dispose();
-
-
-            Shape testx = Shape.NewShape(1, 1, 784);
-
             while (true)
             {
                 try
                 {
                     float[] data = LoadCurrentImage();
-                    Tensor x_test;
-
-                    fixed (float* ptr = data)
-                        x_test = Tensor.LoadFloatArrayToTensorHost(ptr, 0, 784, testx);
+                    Tensor x_test = Tensor.LoadFloatArray(data, new Shape((1, 1, 784)));
 
                     model.DeleteTerms();
 
@@ -249,24 +235,25 @@ namespace Tests
                 }
                 Thread.Sleep(500);
             }
-            Shape.Return(testx);
         }
 
         public unsafe static void XORExample()
         {
             //Hyperparameters
-            Hyperparameters.LearningRate = 0.01f;
+            Hyperparameters.LearningRate = 0.1f;
             Hyperparameters.Optimizer = new SGD();
 
             //Model Creation
-            var x = new Input(2);
-            var model = Layer.Dense(100, x, "relu");
-            model = Layer.Dense(1, model, "sigmoid");
+            var l1 = LayerBuilder.Dense(16, "sigmoid");
+            var l2 = LayerBuilder.Dense(1, "sigmoid")[l1];
 
+
+            var x = new Input(2);
+            Layer model = l2[x];
 
             //Loss Function Creation
             var y = new Input(1);
-            var loss = Layer.SquaredError(model, y);
+            var loss = LayerBuilder.SquaredError(model, y);
 
 
             //Data preparation
@@ -325,6 +312,17 @@ namespace Tests
             var result = model.GetTerm(a).GetResult();
             Console.WriteLine("Results: " + result);
 
+
+            //Print the results of clone model
+            Input x2 = new Input(2);
+            x2.SetInput(x_train);
+            var clonemodel = l2[x2];
+            clonemodel.PreCheck();
+            var result2 = clonemodel.GetTerm(a).GetResult();
+            Console.WriteLine("Results: " + result2);
+
+            clonemodel.DeleteTerms();
+            model.DeleteTerms();
         }
 
         public static unsafe void Print(Tensor x)
@@ -337,12 +335,12 @@ namespace Tests
 
         public static unsafe void bb()
         {
-            Terms.Variable w = new Terms.Variable(Shape.NewShape(1, 3));
+            Terms.Variable w = new Terms.Variable(new Shape((1, 3)));
             w.SetValue(new float[1, 3] {
                     { 2, 3, 1 }
                 });
 
-            Terms.Variable w2 = new Terms.Variable(Shape.NewShape(1, 3));
+            Terms.Variable w2 = new Terms.Variable(new Shape((1, 3)));
             w2.SetValue(new float[1, 3] {
                     { 1, 1, 1 }
                 });
@@ -368,10 +366,10 @@ namespace Tests
 
         public static unsafe void bb2()
         {
-            Variable w1 = new Variable(new Dimension[] { 20, 10 }, Shape.NewShape(500, 300)); w1.Name = "w1";
-            Variable w2 = new Variable(new Dimension[] { 20, 10 }, Shape.NewShape(500, 300)); w2.Name = "w2";
-            Variable w3 = new Variable(new Dimension[] { 20, 10 }, Shape.NewShape(300, 400)); w3.Name = "w3";
-            Variable w4 = new Variable(new Dimension[] { 20, 10 }, Shape.NewShape(500, 400)); w4.Name = "w4";
+            Variable w1 = new Variable(new Dimension[] { 20, 10 }, new Shape((500, 300))); w1.Name = "w1";
+            Variable w2 = new Variable(new Dimension[] { 20, 10 }, new Shape((500, 300))); w2.Name = "w2";
+            Variable w3 = new Variable(new Dimension[] { 20, 10 }, new Shape((300, 400))); w3.Name = "w3";
+            Variable w4 = new Variable(new Dimension[] { 20, 10 }, new Shape((500, 400))); w4.Name = "w4";
 
             var d1 = new Subtract(w1, w2); d1.Name = "d1";
             var d2 = new MatrixMultiply(d1, w3); d2.Name = "d2";
@@ -429,9 +427,9 @@ namespace Tests
 
         public static unsafe void bb3()
         {
-            Variable w1 = new Variable(new Dimension[] { 2, 10 }, Shape.NewShape(1000, 3000)); w1.Name = "w1";
-            Variable w2 = new Variable(new Dimension[] { 2, 10 }, Shape.NewShape(1000, 3000)); w2.Name = "w2";
-            Variable w4 = new Variable(new Dimension[] { 2, 10 }, Shape.NewShape(1000, 3000)); w4.Name = "w4";
+            Variable w1 = new Variable(new Dimension[] { 2, 10 }, new Shape((1000, 3000))); w1.Name = "w1";
+            Variable w2 = new Variable(new Dimension[] { 2, 10 }, new Shape((1000, 3000))); w2.Name = "w2";
+            Variable w4 = new Variable(new Dimension[] { 2, 10 }, new Shape((1000, 3000))); w4.Name = "w4";
 
             var d1 = new Add(w1, w2); d1.Name = "d1";
             var sum = new Power(new Add(d1, w4), 2); sum.Name = "sum";
@@ -486,7 +484,7 @@ namespace Tests
 
         public static unsafe void bb5()
         {
-            Variable v = new Variable(new[] { new Dimension(3) }, Shape.NewShape(10));
+            Variable v = new Variable(new[] { new Dimension(3) }, new Shape((10, true)));
 
             v.PreCheck();
 
@@ -507,7 +505,7 @@ namespace Tests
 
         public static unsafe void bb6()
         {
-            Variable v = new Variable(new Dimension[] { 6 }, Shape.NewShape(3));
+            Variable v = new Variable(new Dimension[] { 6 }, new Shape((3,true)));
 
             DynamicRecurrent r = new DynamicRecurrent(v.OuterDimensions, v.InnerDimensions, new[] { v },
                 (Layer me, List<Layer> x, Index t) =>
@@ -527,7 +525,7 @@ namespace Tests
             for (int i = 0; i < r.OuterShape.TotalSize; i++, a.Increase(1))
                 Console.WriteLine(r.GetTerm(a).GetResult());
         }
-        //todo term + layer gibi işlemlere izin vermelisin mi? Serialization sıkıntı çıkarır??  ? ? ?   ? ?   ? ? ? ?? ? 
+        //todo term + layer gibi işlemlere izin vermelisin mi? Serialization sıkıntı çıkarır mı??  ? ? ?   ? ?   ? ? ? ?? ? 
 
 
 
@@ -548,15 +546,13 @@ namespace Tests
             //t.Start();
 
 
-            int s1 = Shape.ArrayPool.UnreturnedArrayCount;
-
+            
             for (int i = 0; i < 1; i++)
             {
                 bb4();
             }
 
-            s1 = Shape.ArrayPool.UnreturnedArrayCount;
-            Console.WriteLine(Shape.ObjectPool.UnreturnedCount);
+            
             Console.WriteLine(TensorPool.Host.UnreturnedArrayCount);
             //Thread.Sleep(10000);
             //Thread.CurrentThread.Priority = ThreadPriority.Highest;

@@ -151,7 +151,6 @@ namespace DeepLearningFramework.Operators.Terms
                 m = null;
             }
             DeleteResults();
-            Shape.Return(this.Shape);
             GC.SuppressFinalize(this);
         }
 

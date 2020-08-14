@@ -28,7 +28,7 @@ namespace DeepLearningFramework.Operators.Layers
         public unsafe override void AfterPreCheck()
         {
             if (ShiftShape == null)
-                ShiftShape = Shape.NewShapeN(ShiftDimensions.Length);
+                ShiftShape = new Shape(ShiftDimensions.Length);
 
             for (int i = 0; i < ShiftShape.N; i++)
                 ShiftShape.Dimensions[i] = ShiftDimensions[i].Value;

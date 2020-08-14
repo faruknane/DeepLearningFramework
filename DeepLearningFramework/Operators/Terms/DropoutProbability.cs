@@ -13,12 +13,12 @@ namespace DeepLearningFramework.Operators.Terms
             Probability = p;
             Type = TermType.DropoutProbability;
             Terms = Array.Empty<Term>();
-            Shape = s.Clone();
+            Shape = s;
         }
 
         public override void CalculateDerivate(Tensor s)
         {
-            Console.WriteLine("Bug! Please report that bug: DropoutProbability");
+            Console.WriteLine("If code comes here, it means there is a bug? There is no trainable parameter here!");
         }
 
         public override Tensor CalculateResult()

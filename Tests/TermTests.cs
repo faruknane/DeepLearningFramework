@@ -25,7 +25,6 @@ namespace Tests
             Index a = new Index(x.OuterShape);
             a.SetZero();
 
-            Console.WriteLine(Shape.ObjectPool.ReturnedCount);
 
             for (int i = 0; i < x.OuterShape.TotalSize; i++, a.Increase(1))
             {

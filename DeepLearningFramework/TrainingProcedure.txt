@@ -1,1 +1,0 @@
-﻿Variables should be cleaned manually and disposed manually! All other terms should call dispose method. 

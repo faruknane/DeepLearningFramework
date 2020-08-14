@@ -18,7 +18,7 @@ namespace DeepLearningFramework.Operators.Layers
         public override Term CreateTerm(Index time)
         {
             Term x = InputLayers[0].GetTerm(time);
-            return new Multiply(new DropoutProbability(x.Shape, Probability), x);
+            return new Multiply(new DropoutProbability(x.Shape.Clone(), Probability), x);
         }
     }
 }

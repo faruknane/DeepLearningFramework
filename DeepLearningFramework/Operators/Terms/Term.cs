@@ -188,7 +188,6 @@ namespace DeepLearningFramework.Operators.Terms
             if (IsDisposed) return;
             IsDisposed = true;
             DeleteResults();
-            Shape.Return(this.Shape);
 
             for (int i = 0; i < Terms.Length; i++)
                 if (Terms[i].Type != TermType.Variable)

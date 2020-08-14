@@ -1,17 +1,16 @@
-﻿1 - If there is no variable to be trained in a term expression, we should not dive into, waste of time. (Terms.Used should be equal to 0, shouldnt dive for Terms.Used as well)
-5 - Optimize expand and shrink terms
+﻿5 - Optimize expand and shrink terms
 7 - Disable Throw exceptions in Release mode? So that methods can be inlined;
 8 - ExpandWithSame "make warning system!" where the code is unoptimized!
 11 - ShrinkBySumming Etc classes are not optimized.
-14-
-{
-
-public void Dispose()
-{
-GC.SuppressFinalize(this);
-} 
-
-}
-
 16- Minimize yapmadan önce dropout = true yaptıktan sonra dropout = false gibi bir şey yapmak lazım test ve training time'ı ayırabilmek için. veya direk training = true yapılabilir. Model classı içinde yapılmalı bu
 17 - Dimension her seferinde yeniden hesaplanmalı mı? Yoksa bir kere define edilmeli mi? Bence bir kere düzgün define edilmeli.
+
+
+
+5 konu var.
+
+3 - layer builder metot veya fonksiyonlar (done, convert it to a class named denselayerbuilder to be able to use index function [])
+2 - gpu implementation
+5 - gpu/cpu tensörleri nasıl load edeceğim?
+1 - model class'ı oluşturmak
+4 - model serialization

@@ -24,6 +24,23 @@ namespace DeepLearningFramework.Operators.Layers
             this.OuterDimensions = OuterDimensions;
         }
 
+        public Variable(Dimension[] OuterDimensions, Terms.Variable w, bool setzero = false, bool randomize = true, string RandMethod = "") 
+        {
+            this.W = w;
+
+            if (setzero)
+                W.Weights.SetFloat(0);
+            else if (randomize)
+                Randomiz.Randomize((float*)W.Weights.Array, W.Shape.TotalSize);
+
+            this.InnerShape = w.Shape.Clone();
+            this.InnerDimensions = new Dimension[w.Shape.N];
+            for (int i = 0; i < w.Shape.N; i++)
+                this.InnerDimensions[i] = w.Shape[i];
+
+            this.OuterDimensions = OuterDimensions;
+        }
+
         public override void InnerDimensionCheck()
         {
 
@@ -52,12 +69,6 @@ namespace DeepLearningFramework.Operators.Layers
         public void Dispose() //experimental
         {
             DeleteTerms();
-
-            if (OuterShape != null)
-                Shape.Return(OuterShape);
-
-            if (InnerShape != null)
-                Shape.Return(InnerShape);
 
             if (EmptyVariable != null && !EmptyVariable.IsDisposed)
                 EmptyVariable.Clean();

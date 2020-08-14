@@ -144,7 +144,7 @@ namespace DeepLearningFramework.Operators.Layers
         {
             //assign inner shape.
             if (InnerShape == null)
-                InnerShape = Shape.NewShapeN(this.InnerDimensions.Length);
+                InnerShape = new Shape(this.InnerDimensions.Length);
 
             unsafe
             {
@@ -159,7 +159,7 @@ namespace DeepLearningFramework.Operators.Layers
         {
             //assign outer shape.
             if (OuterShape == null)
-                OuterShape = Shape.NewShapeN(this.OuterDimensions.Length);
+                OuterShape = new Shape(this.OuterDimensions.Length);
 
             unsafe
             {
@@ -281,46 +281,7 @@ namespace DeepLearningFramework.Operators.Layers
         #endregion
     }
 
-    public partial class Layer
-    {
-        public static Layer SquaredError(Layer x1, Layer x2)
-        {
-            return new Power(new Subtract(x1, x2), 2);
-        }
-
-        public static Func<Layer, Layer> GetActivationFunction(string name)
-        {
-            name = name.ToLower(CultureInfo.GetCultureInfoByIetfLanguageTag("en"));
-            if (name == "sigmoid")
-                return (Layer x) => new Sigmoid(x);
-            else if (name == "softmax")
-                return (Layer x) => new SoftMax(x);
-            else if (name == "relu")
-                return (Layer x) => new ReLU(x);
-            return (Layer x) => x;
-        }
-
-        public static Layer Dense(int size, Layer input, string act)
-        {
-            if (input.InnerDimensions.Length != 2)
-                throw new Exception("Inner shape of Input Layer must be 2");
-
-            //Index         0        1
-            //Inner shape of the input = (batchsize, mysize)
-            //X*W + B
-            //X = m*n   (m is batchsize, n is layer size)
-            //W =  (n, mysize)
-            // X*W  = (m, mysize)  + B
-            //B = (1, mysize)
-            Variable W = new Variable(input.OuterDimensions, Shape.NewShape(input.InnerDimensions[1], size));
-            Variable B = new Variable(input.OuterDimensions, Shape.NewShape(1, size));
-
-            Layer res = new Add(new MatrixMultiply(input, W), new Expand(B, new Dimension[] { input.InnerDimensions[0], 1 }));
-            res = GetActivationFunction(act)(res);
-            return res;
-        }
-
-    }
+   
 
 }
 
