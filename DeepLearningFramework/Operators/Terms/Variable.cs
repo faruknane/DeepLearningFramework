@@ -140,6 +140,7 @@ namespace DeepLearningFramework.Operators.Terms
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "<Pending>")]
         public void Clean()
         {
             if (IsDisposed) return;

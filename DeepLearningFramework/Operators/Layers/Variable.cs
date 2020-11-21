@@ -66,14 +66,5 @@ namespace DeepLearningFramework.Operators.Layers
             Terms.Clear();
         }
 
-        public void Dispose() //experimental
-        {
-            DeleteTerms();
-
-            if (EmptyVariable != null && !EmptyVariable.IsDisposed)
-                EmptyVariable.Clean();
-
-            W.Clean();
-        }
     }
 }

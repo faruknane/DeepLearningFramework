@@ -32,7 +32,7 @@ namespace Tests
                 Console.WriteLine("Term " + i + ": " + x.GetTerm(a).GetResult());
                 Term mul = new Multiply(t, t);
                 Console.WriteLine("Term " + i + ": " + mul.GetResult());
-                mul.Dispose();
+                mul.DeleteResults();
                 //todo check the result.
             }
         }

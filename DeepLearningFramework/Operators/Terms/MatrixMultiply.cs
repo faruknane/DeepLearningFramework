@@ -11,7 +11,9 @@ namespace DeepLearningFramework.Operators.Terms
         {
             Type = TermType.MatrixMultiply;
             Terms = new Term[2] { v1, v2 };
-            if (v1.Shape.N != 2 || v2.Shape.N != 2 || this.Terms[0].Shape[1] != this.Terms[1].Shape[0])
+            if (v1.Shape.N != 2 || v2.Shape.N != 2) 
+                throw new Exception("the same dimensions should be 2!");
+            if(this.Terms[0].Shape[1] != this.Terms[1].Shape[0])
                 throw new Exception("the same dimensions should match correctly!");
             this.Shape = new Shape((this.Terms[0].Shape[0], this.Terms[1].Shape[1]));
         }

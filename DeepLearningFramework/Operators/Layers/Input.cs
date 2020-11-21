@@ -10,10 +10,21 @@ namespace DeepLearningFramework.Operators.Layers
     public class Input : Layer
     {
         Tensor InputData;
-        public int Size;
+        public int[] Size;
         public bool Trainable;
 
         public Input(int size, int innerdimension = 2, int outerdimension = 1, bool trainable = false)
+        {
+            Trainable = trainable;
+            Size = new int[1] { size };
+            InnerDimensions = new Dimension[innerdimension];
+            OuterDimensions = new Dimension[outerdimension];
+
+            InnerDimensionCalculation();
+            OuterDimensionCalculation();
+        }
+
+        public Input(int[] size, int innerdimension = 2, int outerdimension = 1, bool trainable = false)
         {
             Trainable = trainable;
             Size = size;
@@ -27,9 +38,10 @@ namespace DeepLearningFramework.Operators.Layers
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override void InnerDimensionCalculation()
         {
-            for (int i = 0; i < InnerDimensions.Length - 1; i++)
+            for (int i = 0; i < InnerDimensions.Length - Size.Length; i++)
                 InnerDimensions[i] = new Dimension();
-            InnerDimensions[InnerDimensions.Length - 1] = Size;
+            for (int i = InnerDimensions.Length - Size.Length; i < InnerDimensions.Length; i++)
+                InnerDimensions[i] = Size[i - (InnerDimensions.Length - Size.Length)];
         }
 
         public override void OuterDimensionCalculation()
@@ -81,8 +93,9 @@ namespace DeepLearningFramework.Operators.Layers
             for (int i = 0; i < InnerDimensions.Length; i++)
                 InnerDimensions[i].Value = InputData.Shape[i2++]; //make this function in shape class?
 
-            if (InnerDimensions[InnerDimensions.Length - 1].Value != Size)
-                throw new Exception("Size!");
+            for (int i = InnerDimensions.Length - Size.Length; i < InnerDimensions.Length; i++)
+                if(InnerDimensions[i].Value != Size[i - (InnerDimensions.Length - Size.Length)])
+                    throw new Exception($"Size Expected {Size[i - (InnerDimensions.Length - Size.Length)]}, found {InnerDimensions[i].Value}!");
 
             PreCheck();
         }

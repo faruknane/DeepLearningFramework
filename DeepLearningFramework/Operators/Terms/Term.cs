@@ -27,7 +27,7 @@ namespace DeepLearningFramework.Operators.Terms
         Dropout
     }
 
-    public abstract class Term : IDisposable
+    public abstract class Term
     {
         public Shape Shape { get; internal set; }
 
@@ -181,20 +181,5 @@ namespace DeepLearningFramework.Operators.Terms
                 Terms[i].DeleteResults();
 
         }
-
-        public virtual void Dispose()
-        {
-            if (this.Type == TermType.Variable) return;
-            if (IsDisposed) return;
-            IsDisposed = true;
-            DeleteResults();
-
-            for (int i = 0; i < Terms.Length; i++)
-                if (Terms[i].Type != TermType.Variable)
-                    Terms[i].Dispose();
-
-            GC.SuppressFinalize(this);
-        }
-
     }
 }

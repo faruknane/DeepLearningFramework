@@ -111,7 +111,7 @@ namespace DeepLearningFramework.Operators.Layers
                 {
                     int val = item.OuterDimensions[j].Value;
 
-                    if (val <= 0 || val != item2.OuterDimensions[j].Value)
+                    if (val < 0 || val != item2.OuterDimensions[j].Value)
                         throw new Exception("Outer Shape incompatilbiity!");
                 }
             }
@@ -133,7 +133,7 @@ namespace DeepLearningFramework.Operators.Layers
                 {
                     int val = item.InnerDimensions[j].Value;
 
-                    if (val <= 0 || val != item2.InnerDimensions[j].Value)
+                    if (val < 0 || val != item2.InnerDimensions[j].Value)
                         throw new Exception("Inner Shape incompatilbiity!");
                 }
             }
@@ -220,11 +220,7 @@ namespace DeepLearningFramework.Operators.Layers
         {
             for (int i = 0; i < Terms.Count; i++)
                 if (Terms[i] != null)
-                {
                     Terms[i].DeleteResults();
-                    //if(Terms[i].Type != TermType.Variable)
-                    Terms[i].Dispose(); //term.disposed doesnt work for Terms.Variable
-                }
             Terms.Clear();
         }
 
@@ -245,7 +241,7 @@ namespace DeepLearningFramework.Operators.Layers
             {
                 Terms.Add min = new Terms.Add(Terms.ToArray());
                 min.Minimize();
-                min.Dispose();
+                min.DeleteResults();
             }
             else if (Terms.Count == 1)
             {

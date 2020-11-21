@@ -15,6 +15,10 @@ using System.Threading;
 using Index = PerformanceWork.OptimizedNumerics.Index;
 using Terms = DeepLearningFramework.Operators.Terms;
 using static System.Console;
+using System.Runtime.CompilerServices;
+using DeepLearningFramework.Modules;
+
+//todo crete helper class to use static, shorten the methods
 
 namespace Tests
 {
@@ -120,7 +124,7 @@ namespace Tests
             //Model Creation
             var x = new Input(784);
             //var dropout = new Dropout(x, 0.1f);
-            //var model = Layer.Dense(500, x, "relu");
+            //var model = LayerBuilder.Dense(500, x, "relu");
             var model = LayerBuilder.Dense(100, x, "relu");
             model = LayerBuilder.Dense(400, model, "relu");
             model = LayerBuilder.Dense(200, model, "relu");
@@ -150,7 +154,7 @@ namespace Tests
             {
                 float l = 0;
                 float val = 0;
-
+                
                 s.Restart();
                 Console.WriteLine("Epoch " + epoch + " başladı.");
                 for (int batch = 0; batch < trainl / batchsize; batch++)
@@ -222,8 +226,6 @@ namespace Tests
                     zero.SetZero();
                     model.PreCheck();
                     Tensor res = model.GetTerm(zero).GetResult();
-
-
 
                     Console.WriteLine("Result: " + res);
                     Console.WriteLine("Digit Prediction: " + MaxId((float*)res.Array));
@@ -325,13 +327,52 @@ namespace Tests
             model.DeleteTerms();
         }
 
-        public static unsafe void Print(Tensor x)
+        public unsafe static void XORExampleNew()
         {
-            float* ptr = (float*)x.Array;
-            for (int i = 0; i < x.Shape.TotalSize; i++)
-                Console.Write(ptr[i] + ", ");
-            Console.WriteLine();
+            //Hyperparameters
+            Hyperparameters.LearningRate = 0.1f;
+            Hyperparameters.Optimizer = new SGD();
+
+            //Model Creation
+            //var l1 = new DenseModule(2, 16, "sigmoid");
+            //var model = new DenseModule(16, 1, "sigmoid", l1);
+
+            var model = new Sequential(
+                new DenseModule(2, 16, "sigmoid"),
+                new DenseModule(16, 1, "sigmoid")
+            );
+
+
+            //Data preparation
+            Tensor x_train = new Tensor((4, 2), DataType.Type.Float, DeviceIndicator.Host());
+            Tensor y_train = new Tensor((4, 1), DataType.Type.Float, DeviceIndicator.Host());
+
+            float* xt = (float*)x_train.Array;
+            float* yt = (float*)y_train.Array;
+
+            // 1,1 = 0
+            // 1,0 = 1
+            // 0,1 = 1
+            // 0,0 = 0
+
+            xt[0] = 1; xt[1] = 1;
+            xt[2] = 1; xt[3] = 0;
+            xt[4] = 0; xt[5] = 1;
+            xt[6] = 0; xt[7] = 0;
+
+            yt[0] = 0;
+            yt[1] = 1;
+            yt[2] = 1;
+            yt[3] = 0;
+
+            //Give data to the model
+            Terms.Term[] data = new Terms.Term[] { new Terms.Variable(x_train) };
+            Terms.Term[] label = new Terms.Term[] { new Terms.Variable(y_train) };
+
+            Terms.Term[] res = model.Forward(data);
+            WriteLine(res[0].GetResult());
         }
+
 
         public static unsafe void bb()
         {
@@ -360,7 +401,7 @@ namespace Tests
 
             w.Clean();
             w2.Clean();
-            s.Dispose();
+            s.DeleteResults();
             //Variables should be cleaned manually and disposed manually! All other terms should call dispose method. 
         }
 
@@ -484,8 +525,7 @@ namespace Tests
 
         public static unsafe void bb5()
         {
-            Variable v = new Variable(new[] { new Dimension(3) }, new Shape((10, true)));
-
+            Variable v = new Variable(new[] { new Dimension(3) }, new Shape((1000, true)));
             v.PreCheck();
 
             Index a = new Index(v.OuterShape);
@@ -493,14 +533,13 @@ namespace Tests
 
             Terms.ReLU r = new Terms.ReLU(v.GetTerm(a));
 
-            Console.WriteLine(v.GetTerm(a).GetResult());
-            Console.WriteLine(r.GetResult());
+            //Console.WriteLine(v.GetTerm(a).GetResult());
+            //Console.WriteLine(r.GetResult());
 
-            r.Dispose();
+            r.DeleteResults();
 
             ((Terms.Variable)v.GetTerm(a)).Clean();
 
-            v.Dispose();
         }
 
         public static unsafe void bb6()
@@ -525,14 +564,14 @@ namespace Tests
             for (int i = 0; i < r.OuterShape.TotalSize; i++, a.Increase(1))
                 Console.WriteLine(r.GetTerm(a).GetResult());
         }
-        //todo term + layer gibi işlemlere izin vermelisin mi? Serialization sıkıntı çıkarır mı??  ? ? ?   ? ?   ? ? ? ?? ? 
-
 
 
         public static unsafe void Main(string[] args)
         {
+            //todo delete dimensions, redesign layers (assume that the input layer is already prepared with its dimensions and its tensor).
             MNISTExample();
             //XORExample();
+            //XORExampleNew();
             return;
             //Thread t = new Thread(() => 
             //{ 

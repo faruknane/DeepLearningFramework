@@ -8,7 +8,8 @@ namespace DeepLearningFramework.Operators.Layers
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static unsafe float* Randomize(float* a, int Length)
         {
-            float max = 0.15f, min = -0.15f;
+            float max = 0.15f;
+            float min = -max;
 
             Random r = new Random();
             for (int i = 0; i < Length; i++)
