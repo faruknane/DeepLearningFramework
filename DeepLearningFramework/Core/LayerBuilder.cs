@@ -42,8 +42,8 @@ namespace DeepLearningFramework.Core
             //W =  (n, mysize)
             //X*W  = (m, mysize)  + B
             //B = (1, mysize)
-            Variable W = new Variable(input.OuterDimensions, new Shape((input.InnerDimensions[1], size)));
-            Variable B = new Variable(input.OuterDimensions, new Shape((1, size)));
+            Variable W = new Variable(input.OuterDimensions, new Shape(input.InnerDimensions[1], size));
+            Variable B = new Variable(input.OuterDimensions, new Shape(1, size));
 
             Layer res = new Add(new MatrixMultiply(input, W), new Expand(B, new Dimension[] { input.InnerDimensions[0], 1 }));
             res = GetActivationFunction(act)(res);

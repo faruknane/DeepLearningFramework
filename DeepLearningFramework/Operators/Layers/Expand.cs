@@ -30,7 +30,7 @@ namespace DeepLearningFramework.Operators.Layers
         public override unsafe void AfterPreCheck()
         {
             if (MultiplierShape == null)
-                MultiplierShape = new Shape(MultiplierDimensions.Length);
+                MultiplierShape = Shape.DimensionOf(MultiplierDimensions.Length);
 
             for (int i = 0; i < MultiplierShape.N; i++)
                 MultiplierShape.Dimensions[i] = MultiplierDimensions[i];

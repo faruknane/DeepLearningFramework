@@ -34,7 +34,7 @@ namespace DeepLearningFramework.Operators.Terms
         {
             Type = TermType.Variable;
             this.Shape = s;
-            m = new Tensor(s.Clone(), DataType.Type.Float, DeviceIndicator.Host());
+            m = new Tensor(s.Clone(), DeviceConfig.Host_Float);
             Terms = Array.Empty<Term>();
         }
 
@@ -100,11 +100,13 @@ namespace DeepLearningFramework.Operators.Terms
                 return Weights;
         }
 
-        public override void CalculateContainsTrainable()
+        public override void PreCalculation()
         {
-            if (IsCalculated) return;
-            IsCalculated = true;
-            ContainsTrainable = Trainable;
+            if (Used == 0)
+            {
+                ContainsTrainable = Trainable;
+            }
+            Used++;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -120,7 +122,6 @@ namespace DeepLearningFramework.Operators.Terms
         public override void DeleteResults()
         {
             Used = 0;
-            IsCalculated = false;
 
             if (SumOfDerivatives != null && !SumOfDerivatives.ArrayReturned)
             {

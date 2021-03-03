@@ -42,7 +42,6 @@ namespace DeepLearningFramework.Operators.Terms
 
         public bool IsDisposed { get; internal set; } = false;
         public bool ContainsTrainable { get; internal set; } = false;
-        internal bool IsCalculated = false;
 
         //add
         //contains trainable variable ? 
@@ -72,10 +71,9 @@ namespace DeepLearningFramework.Operators.Terms
         public void Minimize()
         {
             this.DeleteResults();
-            this.CalculateContainsTrainable();
-            this.CalculateHowManyTimesUsed();
+            this.PreCalculation();
             this.GetResult();
-            Tensor I = Tensor.DerivativeIdentity(this.Shape, DataType.Type.Float, DeviceIndicator.Host());
+            Tensor I = Tensor.DerivativeIdentity(this.Shape, DeviceConfig.Host_Float);
             this.Derivate(I);
             I.Dispose();
         }
@@ -85,10 +83,9 @@ namespace DeepLearningFramework.Operators.Terms
         public void Maximize()
         {
             this.DeleteResults();
-            this.CalculateContainsTrainable();
-            this.CalculateHowManyTimesUsed();
+            this.PreCalculation();
             this.GetResult();
-            Tensor I = Tensor.DerivativeIdentity(this.Shape, DataType.Type.Float, DeviceIndicator.Host());
+            Tensor I = Tensor.DerivativeIdentity(this.Shape, DeviceConfig.Host_Float);
             I.MakeNegative();
             this.Derivate(I);
             I.Dispose();
@@ -99,9 +96,12 @@ namespace DeepLearningFramework.Operators.Terms
         {
             lock (Shape)
             {
+                if (!ContainsTrainable)
+                    return;
+
                 //Console.WriteLine(UniqueId + ", " + Type + ", " + Terms.Length +  " -> " + Used);
                 if (Used <= 0)
-                    throw new Exception("Impossible case a!");
+                    throw new Exception("Impossible case, cannot calculate derivative of unused term!");
 
                 Used--;
 
@@ -133,29 +133,20 @@ namespace DeepLearningFramework.Operators.Terms
             }
         }
 
-        public virtual void CalculateContainsTrainable()
-        {
-            if (IsCalculated) return;
-            IsCalculated = true;
-
-            for (int i = 0; i < Terms.Length; i++)
-                Terms[i].CalculateContainsTrainable();
-
-            ContainsTrainable = false;
-            for (int i = 0; i < Terms.Length; i++)
-                ContainsTrainable = ContainsTrainable || Terms[i].ContainsTrainable;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public void CalculateHowManyTimesUsed()
+        public virtual void PreCalculation()
         {
             if (Used == 0)
             {
                 for (int i = 0; i < Terms.Length; i++)
-                    Terms[i].CalculateHowManyTimesUsed();
+                    Terms[i].PreCalculation();
+
+                ContainsTrainable = false;
+                for (int i = 0; i < Terms.Length; i++)
+                    ContainsTrainable = ContainsTrainable || Terms[i].ContainsTrainable;
             }
             Used++;
         }
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public virtual void DeleteResults()
@@ -163,7 +154,6 @@ namespace DeepLearningFramework.Operators.Terms
             if (SumOfDerivatives == null && Result == null) return;
 
             Used = 0;
-            IsCalculated = false;
 
             if (SumOfDerivatives != null && !SumOfDerivatives.ArrayReturned)
             {

@@ -23,7 +23,7 @@ namespace DeepLearningFramework.Operators.Terms
         {
             if (Terms[0].ContainsTrainable) //todo kernelize this!
             {
-                Tensor combined = new Tensor(Terms[0].Shape.Clone(), DataType.Type.Float, DeviceIndicator.Host());
+                Tensor combined = new Tensor(Terms[0].Shape.Clone(), DeviceConfig.Host_Float);
 
 
                 float* ptrcombined = (float*)combined.Array;

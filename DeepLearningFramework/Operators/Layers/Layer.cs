@@ -144,7 +144,7 @@ namespace DeepLearningFramework.Operators.Layers
         {
             //assign inner shape.
             if (InnerShape == null)
-                InnerShape = new Shape(this.InnerDimensions.Length);
+                InnerShape = Shape.DimensionOf(this.InnerDimensions.Length);
 
             unsafe
             {
@@ -159,7 +159,7 @@ namespace DeepLearningFramework.Operators.Layers
         {
             //assign outer shape.
             if (OuterShape == null)
-                OuterShape = new Shape(this.OuterDimensions.Length);
+                OuterShape = Shape.DimensionOf(this.OuterDimensions.Length);
 
             unsafe
             {

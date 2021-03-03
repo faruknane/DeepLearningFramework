@@ -23,7 +23,7 @@ namespace DeepLearningFramework.Operators.Terms
 
         public override Tensor CalculateResult()
         {
-            Tensor t = new Tensor(Shape.Clone(), DataType.Type.Float, DeviceIndicator.Host());
+            Tensor t = new Tensor(Shape.Clone(), DeviceConfig.Host_Float);
             CpuKernels.Probability.DropoutFloat(t, Probability);
             return t;
         }

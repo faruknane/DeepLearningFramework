@@ -15,7 +15,7 @@ namespace DeepLearningFramework.Operators.Terms
                 throw new Exception("the same dimensions should be 2!");
             if(this.Terms[0].Shape[1] != this.Terms[1].Shape[0])
                 throw new Exception("the same dimensions should match correctly!");
-            this.Shape = new Shape((this.Terms[0].Shape[0], this.Terms[1].Shape[1]));
+            this.Shape = new Shape(this.Terms[0].Shape[0], this.Terms[1].Shape[1]);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -38,7 +38,9 @@ namespace DeepLearningFramework.Operators.Terms
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override Tensor CalculateResult()
         {
-            return CpuKernels.MatrixMultiplyFloat(Terms[0].GetResult(), Terms[1].GetResult());
+            var x1 = Terms[0].GetResult();
+            var x2 = Terms[1].GetResult();
+            return CpuKernels.MatrixMultiplyFloat(x1, x2);
         }
 
     }

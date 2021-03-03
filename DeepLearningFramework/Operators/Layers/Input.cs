@@ -53,12 +53,12 @@ namespace DeepLearningFramework.Operators.Layers
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public override Term CreateTerm(Index time)
         {
-            int outerindex = this.OuterShape.Index(time);
+            int outerindex = this.OuterShape.Index(time.Indices);
             int begin = outerindex * this.InnerShape.TotalSize;
             int end = begin + this.InnerShape.TotalSize;
 
             //dont create the clone of innershape because these Weight Tensors of Variable Terms wont be diposed because arrayreturned is set true.
-            return new Terms.Variable(Tensor.Cut(InputData, begin, end, this.InnerShape.Clone())) { Trainable = Trainable };
+            return new Terms.Variable(Tensor.Cut(InputData, begin, this.InnerShape.Clone())) { Trainable = Trainable };
         }
 
         /// <summary>

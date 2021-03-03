@@ -4,9 +4,9 @@ namespace DeepLearningFramework.Core
 {
     public static class Settings
     {
-        static DeviceIndicator device;
+        static DeviceConfig device;
 
-        public static DeviceIndicator Device
+        public static DeviceConfig Device
         {
             get
             {

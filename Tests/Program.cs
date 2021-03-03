@@ -31,7 +31,7 @@ namespace Tests
 
         public static float[] LoadCurrentImage()
         {
-            string file = @"C:\Users\faruk\source\repos\MNISTDemo\MNISTDemo\bin\Debug\img.txt";
+            string file = @"C:\Users\faruk\Desktop\Faruk Nane\Projeler\Visual Studio Projeleri\MNISTDemo\MNISTDemo\bin\Debug\img.txt";
             int l2 = 28 * 28;
             float[] data = new float[l2];
 
@@ -58,7 +58,7 @@ namespace Tests
             //return (data, labels);
 
             int digitcount = 10;
-            string path = @"C:\Users\faruk\source\repos\MNISTDemo\MNISTDemo\trainingSet\";
+            string path = @"C:\Users\faruk\Desktop\Faruk Nane\Projeler\Visual Studio Projeleri\MNISTDemo\MNISTDemo\trainingSet\";
 
             for (int i = 0; i < digitcount; i++)
             {
@@ -141,8 +141,8 @@ namespace Tests
             (float[,] traindata, float[,] labels) = LoadMNISTDataSet();
             int mnistsize = 42000;
 
-            Tensor x_train = Tensor.LoadFloatArray(traindata, new Shape((mnistsize, 784)));
-            Tensor y_train = Tensor.LoadFloatArray(labels, new Shape((mnistsize, 10)));
+            Tensor x_train = Tensor.LoadArrayToDisposedTensor(traindata, new Shape(mnistsize, 784), DeviceConfig.Host_Float);
+            Tensor y_train = Tensor.LoadArrayToDisposedTensor(labels, new Shape(mnistsize, 10), DeviceConfig.Host_Float);
 
             //Training
             int batchsize = 100;
@@ -159,8 +159,8 @@ namespace Tests
                 Console.WriteLine("Epoch " + epoch + " başladı.");
                 for (int batch = 0; batch < trainl / batchsize; batch++)
                 {
-                    Tensor batchx = Tensor.Cut(x_train, batch * (batchsize * 784), (batch + 1) * (batchsize * 784), new Shape((1, batchsize, 784)));
-                    Tensor batchy = Tensor.Cut(y_train, batch * (batchsize * 10), (batch + 1) * (batchsize * 10), new Shape((1, batchsize, 10)));
+                    Tensor batchx = Tensor.Cut(x_train, batch * (batchsize * 784), new Shape(1, batchsize, 784));
+                    Tensor batchy = Tensor.Cut(y_train, batch * (batchsize * 10), new Shape(1, batchsize, 10));
 
                     x.SetInput(batchx);
                     y.SetInput(batchy);
@@ -180,8 +180,8 @@ namespace Tests
 
                 for (int batch = trainl / batchsize; batch < mnistsize / batchsize; batch++)
                 {
-                    Tensor batchx = Tensor.Cut(x_train, batch * (batchsize * 784), (batch + 1) * (batchsize * 784), new Shape((1, batchsize, 784)));
-                    Tensor batchy = Tensor.Cut(y_train, batch * (batchsize * 10), (batch + 1) * (batchsize * 10), new Shape((1, batchsize, 10)));
+                    Tensor batchx = Tensor.Cut(x_train, batch * (batchsize * 784), new Shape(1, batchsize, 784));
+                    Tensor batchy = Tensor.Cut(y_train, batch * (batchsize * 10), new Shape(1, batchsize, 10));
 
                     model.DeleteTerms();
 
@@ -216,7 +216,7 @@ namespace Tests
                 try
                 {
                     float[] data = LoadCurrentImage();
-                    Tensor x_test = Tensor.LoadFloatArray(data, new Shape((1, 1, 784)));
+                    Tensor x_test = Tensor.LoadArrayToDisposedTensor(data, new Shape(1, 1, 784), DeviceConfig.Host_Float);
 
                     model.DeleteTerms();
 
@@ -259,8 +259,8 @@ namespace Tests
 
 
             //Data preparation
-            Tensor x_train = new Tensor((1, 4, 2), DataType.Type.Float, DeviceIndicator.Host());
-            Tensor y_train = new Tensor((1, 4, 1), DataType.Type.Float, DeviceIndicator.Host());
+            Tensor x_train = new Tensor((1, 4, 2), DeviceConfig.Host_Float);
+            Tensor y_train = new Tensor((1, 4, 1), DeviceConfig.Host_Float);
 
             float* xt = (float*)x_train.Array;
             float* yt = (float*)y_train.Array;
@@ -344,8 +344,8 @@ namespace Tests
 
 
             //Data preparation
-            Tensor x_train = new Tensor((4, 2), DataType.Type.Float, DeviceIndicator.Host());
-            Tensor y_train = new Tensor((4, 1), DataType.Type.Float, DeviceIndicator.Host());
+            Tensor x_train = new Tensor((4, 2), DeviceConfig.Host_Float);
+            Tensor y_train = new Tensor((4, 1), DeviceConfig.Host_Float);
 
             float* xt = (float*)x_train.Array;
             float* yt = (float*)y_train.Array;
@@ -376,12 +376,12 @@ namespace Tests
 
         public static unsafe void bb()
         {
-            Terms.Variable w = new Terms.Variable(new Shape((1, 3)));
+            Terms.Variable w = new Terms.Variable(new Shape(1, 3));
             w.SetValue(new float[1, 3] {
                     { 2, 3, 1 }
                 });
 
-            Terms.Variable w2 = new Terms.Variable(new Shape((1, 3)));
+            Terms.Variable w2 = new Terms.Variable(new Shape(1, 3));
             w2.SetValue(new float[1, 3] {
                     { 1, 1, 1 }
                 });
@@ -407,10 +407,10 @@ namespace Tests
 
         public static unsafe void bb2()
         {
-            Variable w1 = new Variable(new Dimension[] { 20, 10 }, new Shape((500, 300))); w1.Name = "w1";
-            Variable w2 = new Variable(new Dimension[] { 20, 10 }, new Shape((500, 300))); w2.Name = "w2";
-            Variable w3 = new Variable(new Dimension[] { 20, 10 }, new Shape((300, 400))); w3.Name = "w3";
-            Variable w4 = new Variable(new Dimension[] { 20, 10 }, new Shape((500, 400))); w4.Name = "w4";
+            Variable w1 = new Variable(new Dimension[] { 20, 10 }, new Shape(500, 300)); w1.Name = "w1";
+            Variable w2 = new Variable(new Dimension[] { 20, 10 }, new Shape(500, 300)); w2.Name = "w2";
+            Variable w3 = new Variable(new Dimension[] { 20, 10 }, new Shape(300, 400)); w3.Name = "w3";
+            Variable w4 = new Variable(new Dimension[] { 20, 10 }, new Shape(500, 400)); w4.Name = "w4";
 
             var d1 = new Subtract(w1, w2); d1.Name = "d1";
             var d2 = new MatrixMultiply(d1, w3); d2.Name = "d2";
@@ -468,9 +468,9 @@ namespace Tests
 
         public static unsafe void bb3()
         {
-            Variable w1 = new Variable(new Dimension[] { 2, 10 }, new Shape((1000, 3000))); w1.Name = "w1";
-            Variable w2 = new Variable(new Dimension[] { 2, 10 }, new Shape((1000, 3000))); w2.Name = "w2";
-            Variable w4 = new Variable(new Dimension[] { 2, 10 }, new Shape((1000, 3000))); w4.Name = "w4";
+            Variable w1 = new Variable(new Dimension[] { 2, 10 }, new Shape(1000, 3000)); w1.Name = "w1";
+            Variable w2 = new Variable(new Dimension[] { 2, 10 }, new Shape(1000, 3000)); w2.Name = "w2";
+            Variable w4 = new Variable(new Dimension[] { 2, 10 }, new Shape(1000, 3000)); w4.Name = "w4";
 
             var d1 = new Add(w1, w2); d1.Name = "d1";
             var sum = new Power(new Add(d1, w4), 2); sum.Name = "sum";
@@ -499,7 +499,7 @@ namespace Tests
 
             for (int i2 = 0; i2 < 1; i2++)
             {
-                Tensor data = new Tensor((10, 3, 4), DataType.Type.Float, DeviceIndicator.Host());
+                Tensor data = new Tensor((10, 3, 4), DeviceConfig.Host_Float);
 
                 for (int i = 0; i < data.Shape.TotalSize; i++)
                     ((float*)data.Array)[i] = i / 12;
@@ -525,7 +525,7 @@ namespace Tests
 
         public static unsafe void bb5()
         {
-            Variable v = new Variable(new[] { new Dimension(3) }, new Shape((1000, true)));
+            Variable v = new Variable(new[] { new Dimension(3) }, new Shape(1000));
             v.PreCheck();
 
             Index a = new Index(v.OuterShape);
@@ -544,7 +544,7 @@ namespace Tests
 
         public static unsafe void bb6()
         {
-            Variable v = new Variable(new Dimension[] { 6 }, new Shape((3,true)));
+            Variable v = new Variable(new Dimension[] { 6 }, new Shape(3));
 
             DynamicRecurrent r = new DynamicRecurrent(v.OuterDimensions, v.InnerDimensions, new[] { v },
                 (Layer me, List<Layer> x, Index t) =>

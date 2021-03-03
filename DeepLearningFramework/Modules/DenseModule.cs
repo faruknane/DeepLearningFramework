@@ -23,8 +23,8 @@ namespace DeepLearningFramework.Modules
             this.activation = act;
             this.size = size;
             this.prevsize = prevsize;
-            w = new Terms.Variable(new Shape((prevsize, size)));
-            b = new Terms.Variable(new Shape((1, size)));
+            w = new Terms.Variable(new Shape(prevsize, size));
+            b = new Terms.Variable(new Shape(1, size));
             Randomiz.Randomize((float*)w.Weights.Array, w.Shape.TotalSize);
             Randomiz.Randomize((float*)b.Weights.Array, b.Shape.TotalSize);
         }
@@ -35,7 +35,7 @@ namespace DeepLearningFramework.Modules
             for (int i = 0; i < x.Length; i++)
             {
                 dynamic xn = x[i];
-                xn = new Terms.Add(new Terms.MatrixMultiply(xn, w), new Terms.Expand(b, new Shape((xn.Shape[0], 1))));
+                xn = new Terms.Add(new Terms.MatrixMultiply(xn, w), new Terms.Expand(b, new Shape(xn.Shape[0], 1)));
                 if (this.activation == "sigmoid")
                     xn = new Terms.Sigmoid(xn);
                 else

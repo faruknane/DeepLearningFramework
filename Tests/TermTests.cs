@@ -16,7 +16,7 @@ namespace Tests
         public unsafe void MultiplyTerm()
         {
             Input x = new Input(4, 2, 1);
-            Tensor data = new Tensor((10, 3, 4), DataType.Type.Float, DeviceIndicator.Host());
+            Tensor data = new Tensor((10, 3, 4), DeviceConfig.Host_Float);
 
             for (int i = 0; i < data.Shape.TotalSize; i++)
                 ((float*)data.Array)[i] = i / 12;
