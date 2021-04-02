@@ -6,7 +6,7 @@ PerformanceWork: https://github.com/faruknane/Performance-Work
 
 IntelMKL 2020
 
-# DeepLearningFramework
+# DeepLearningFramework <img src="https://user-images.githubusercontent.com/37745467/113457878-a5b30c00-9419-11eb-9f75-3b0126ac31a6.png" width="44">
 Every expression is a term whose derivative can be calculated by the DeepLearningFramework automatically. Every Layer is consist of Terms which corresponds to sequential input. An example of XOR model is shown below.
 
 ### Hyperparameters
