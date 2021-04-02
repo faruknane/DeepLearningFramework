@@ -1,4 +1,4 @@
-(not continuing)
+This project is no longer maintained!
 
 # Note: This is old readme file
 ## Dependencies
